@@ -10,7 +10,7 @@ import {
   TextInput,
   GestureResponderEvent,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   hp,
   validateEmail,
@@ -26,6 +26,7 @@ import Logo from "@/assets/images/svg/Logo";
 import { Colors } from "@/constants/Colors";
 import PhoneIC from "@/assets/images/svg/PhoneIC";
 import MailIc from "@/assets/images/svg/MailIc";
+import CustomTextInput from "@/components/CustomTextInput";
 
 const ForgotPassword = () => {
   const { top } = useSafeAreaInsets();
@@ -84,52 +85,28 @@ const ForgotPassword = () => {
 
         {/* Form */}
         <View style={styles.formContainer}>
-          <Animated.View
-            entering={FadeInRight.delay(400).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor: !validateNigerianPhoneNumber(phone_number)
-                  ? Colors.main.description
-                  : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"numeric"}
-              maxLength={11}
-              value={phone_number}
-              onChangeText={setPhone_number}
-              placeholder="Phone Number"
-              keyboardType="phone-pad"
-              style={styles.inputField}
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
-            />
-            <PhoneIC width={16} height={16} />
-          </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(300).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor: !validateEmail(email)
-                  ? Colors.main.description
-                  : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"email"}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize={false}
-              maxLength={200}
-              placeholder="Email (Optional)"
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
-              style={styles.inputField}
-            />
-            <MailIc width={15} height={15} />
-          </Animated.View>
+          <CustomTextInput
+            inputMode={"numeric"}
+            value={phone_number}
+            onChange={setPhone_number}
+            iconName="phone"
+            iconHieght={16}
+            iconWidth={16}
+            keyboardType="phone-pad"
+            maxLength={11}
+            placeholder="Phone Number"
+          />
+          <CustomTextInput
+            inputMode={"email"}
+            value={email}
+            onChange={setEmail}
+            iconName="mail"
+            iconHieght={15}
+            iconWidth={15}
+            keyboardType="email-address"
+            maxLength={50}
+            placeholder="Email (Optional)"
+          />
         </View>
         {/* Footer */}
         <Animated.View
@@ -199,23 +176,6 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 16,
     marginVertical: 20,
-  },
-  inputFieldContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
-    height: hp(6.2),
-    borderWidth: 0.7,
-    borderRadius: 4,
-    paddingLeft: 20,
-    paddingRight: 30,
-  },
-
-  inputField: {
-    fontFamily: "Montserrat-Regular",
-    width: "100%",
-    height: "100%",
-    color: Colors.main.text,
   },
   footer: {
     // backgroundColor: "red",

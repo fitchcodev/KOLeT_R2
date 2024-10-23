@@ -14,15 +14,13 @@ import { Colors } from "@/constants/Colors";
 import { hp, validateNigerianPhoneNumber, wp } from "@/helpers/common";
 import Logo from "@/assets/images/svg/Logo";
 import Animated, { FadeInDown, FadeInLeft, FadeInRight } from "react-native-reanimated";
-import PhoneIC from "@/assets/images/svg/PhoneIC";
-import ViewOn from "@/assets/images/svg/ViewOn";
-import ViewOff from "@/assets/images/svg/ViewOff";
 import { router } from "expo-router";
 import XIC from "@/assets/images/svg/XIC";
 import FB from "@/assets/images/svg/FB";
 import GoogleIc from "@/assets/images/svg/GoogleIc";
 import AppleIC from "@/assets/images/svg/AppleIC";
 import { StatusBar } from "expo-status-bar";
+import CustomTextInput from "@/components/CustomTextInput";
 
 const Login = () => {
   const { top } = useSafeAreaInsets();
@@ -34,7 +32,7 @@ const Login = () => {
   const checkButtonDisabled = () => {
     return !(validateNigerianPhoneNumber(phone_number) || password.length > 4);
   };
-  console.log(checkButtonDisabled())
+  //console.log(checkButtonDisabled())
 
   return (
     <KeyboardAvoidingView
@@ -49,7 +47,7 @@ const Login = () => {
           width: wp(100),
           gap: 15,
         }}
-        keyboardDismissMode="on-drag"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         horizontal={false}
       >
@@ -65,53 +63,24 @@ const Login = () => {
 
         {/* Form */}
         <View style={styles.formContainer}>
-          <Animated.View
-            entering={FadeInRight.delay(600).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor: !validateNigerianPhoneNumber(phone_number)
-                  ? Colors.main.description
-                  : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"numeric"}
+          <CustomTextInput  
+          inputMode="numeric"
               maxLength={11}
               value={phone_number}
-              onChangeText={setPhone_number}
+              onChange={setPhone_number}
               placeholder="Phone Number"
-              keyboardType="phone-pad"
-              style={styles.inputField}
-              placeholderTextColor={'rgba(0,0,0,0.5)'}
-            />
-            <PhoneIC width={16} height={18}  />
-          </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(600).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor: !(password.length > 3)
-                  ? Colors.main.description
-                  : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              maxLength={20}
-              secureTextEntry={showPassword}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Password"
-              style={styles.inputField}
-              placeholderTextColor={'rgba(0,0,0,0.5)'}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              {showPassword ? <ViewOn width={20} height={20}  /> : <ViewOff width={20} height={20}/>}
-            </TouchableOpacity>
-          </Animated.View>
+              keyboardType="phone-pad" iconName="phone" iconHieght={18} iconWidth={16}/>
+          <CustomTextInput
+            maxLength={20}
+            secureTextEntry={showPassword}
+            setShowconfirmPassword={setShowPassword}
+            value={password}
+            onChange={setPassword}
+            placeholder="Password"
+            iconName={showPassword ? "viewOn" : "viewOff"}
+            iconWidth={20}
+            iconHieght={20}
+          />
         </View>
         {/* Forgot password */}
         <Animated.View style={{ alignSelf: 'flex-end', paddingHorizontal: 4,}} entering={FadeInRight.delay(600).springify()}>

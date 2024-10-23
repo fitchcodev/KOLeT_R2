@@ -12,3 +12,8 @@ export  * from "./FB";
 export  * from "./XIC";
 export  * from "./GoogleIc";
 export  * from "./AppleIC";
+export  * from "./UserTabIc";
+export  * from "./ArrowLefRightIC";
+export  * from "./MenuIC";
+export  * from "./HomeIC";
+export  * from "./NtoficationIC";

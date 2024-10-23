@@ -1,5 +1,4 @@
 import { Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
 
 export default function RootLayout() {
   return (
@@ -11,6 +10,7 @@ export default function RootLayout() {
       <Stack.Screen name="auth/forgotPassword/otpScreen" />
       <Stack.Screen name="auth/otpScreen" />
       <Stack.Screen name="auth/createPassword" />
+      <Stack.Screen name="(tabs)" />
     </Stack>
   );
 }

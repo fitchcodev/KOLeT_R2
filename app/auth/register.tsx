@@ -3,10 +3,10 @@ import {
   Text,
   View,
   ScrollView,
-  TextInput,
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,18 +18,14 @@ import {
   wp,
 } from "@/helpers/common";
 import { Colors } from "@/constants/Colors";
-import UserIC from "@/assets/images/svg/UserIC";
-import PhoneIC from "@/assets/images/svg/PhoneIC";
-import MailIc from "@/assets/images/svg/MailIc";
-import CalenderIC from "@/assets/images/svg/CalenderIC";
 import { router } from "expo-router";
 import Animated, {
   FadeIn,
   FadeInDown,
-  FadeInRight,
 } from "react-native-reanimated";
 import DatePicker from "react-native-date-picker";
 import { StatusBar } from "expo-status-bar";
+import CustomTextInput from "@/components/CustomTextInput";
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
@@ -68,7 +64,7 @@ const Register = () => {
           width: wp(100),
           gap: 15,
         }}
-        keyboardDismissMode="on-drag"
+        keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
         horizontal={false}
       >
@@ -91,121 +87,62 @@ const Register = () => {
 
         {/* form */}
         <View style={styles.formContainer}>
-          <Animated.View
-            entering={FadeInRight.delay(600).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor:
-                  first_name.length < 2
-                    ? Colors.main.description
-                    : Colors.main.primary,
-              },
-            ]}
+          <CustomTextInput
+            inputMode="text"
+            maxLength={200}
+            value={first_name}
+            onChange={setFirst_name}
+            placeholder="First Name"
+            iconName="user"
+            iconHieght={15}
+            iconWidth={15}
+            keyboardType="default"
+          />
+          <CustomTextInput
+            inputMode="text"
+            maxLength={200}
+            value={last_name}
+            onChange={setLast_name}
+            placeholder="Last Name"
+            iconName="user"
+            iconHieght={15}
+            iconWidth={15}
+            keyboardType="default"
+          />
+          <CustomTextInput
+            inputMode="numeric"
+            maxLength={11}
+            value={phone_number}
+            onChange={setPhone_number}
+            placeholder="Phone Number"
+            keyboardType="phone-pad"
+            iconName="phone"
+            iconHieght={18}
+            iconWidth={16}
+          />
+          <CustomTextInput
+            inputMode={"email"}
+            value={email}
+            onChange={setEmail}
+            iconName="mail"
+            iconHieght={15}
+            iconWidth={15}
+            keyboardType="email-address"
+            maxLength={50}
+            placeholder="Email (Optional)"
+          />
+          <Pressable
+           
           >
-            <TextInput
+            <CustomTextInput
               inputMode={"text"}
-              autoComplete={"name"}
-              maxLength={200}
-              value={first_name}
-              onChangeText={setFirst_name}
-              placeholder="First Name"
-              style={styles.inputField}
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
-            />
-            <UserIC width={15} height={15}/>
-          </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(500).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor:
-                  last_name.length < 2
-                    ? Colors.main.description
-                    : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"text"}
-              autoComplete={"name"}
-              value={last_name}
-              onChangeText={setLast_name}
-              maxLength={200}
-              placeholder="Last Name"
-              style={styles.inputField}
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
-            />
-            <UserIC  width={15} height={15} />
-          </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(400).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor: !validateNigerianPhoneNumber(phone_number)
-                  ? Colors.main.description
-                  : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"numeric"}
-              maxLength={11}
-              value={phone_number}
-              onChangeText={setPhone_number}
-              placeholder="Phone Number"
-              keyboardType="phone-pad"
-              style={styles.inputField}
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
-            />
-            <PhoneIC width={16} height={16} />
-          </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(300).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor: !validateEmail(email)
-                  ? Colors.main.description
-                  : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"email"}
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize={false}
-              maxLength={200}
-              placeholder="Email (Optional)"
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
-              style={styles.inputField}
-            />
-            <MailIc width={15} height={15} />
-          </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(200).springify()}
-            style={[
-              styles.inputFieldContainer,
-              {
-                borderColor:
-                  date_of_birth.length > 3
-                    ? Colors.main.description
-                    : Colors.main.primary,
-              },
-            ]}
-          >
-            <TextInput
-              inputMode={"text"}
-              autoComplete={"name"}
               maxLength={200}
               value={formatDate(date_of_birth)}
               placeholder="Date of Birth"
-              style={styles.inputField}
-              placeholderTextColor={"rgba(0,0,0,0.5)"}
               editable={false}
+              iconName="calendar"
+              iconHieght={15}
+              iconWidth={15}
               onPressIn={() => {
                 setOpen(true);
               }}
@@ -224,8 +161,7 @@ const Register = () => {
                 setOpen(false);
               }}
             />
-            <CalenderIC  width={15} height={15}/>
-          </Animated.View>
+          </Pressable>
         </View>
 
         {/* progressBar */}

@@ -8,6 +8,8 @@
 export const Colors = {
     main:{
       background: '#f5f5f6',
+      border:'#bdc3c7',
+      tab: '#3498DB33',
       primary: '#3498db',
       link: '#2980b9',
       text: '#333333',

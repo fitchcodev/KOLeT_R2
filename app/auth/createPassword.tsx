@@ -21,6 +21,8 @@ import Animated, {
 import ViewOff from "@/assets/images/svg/ViewOff";
 import ViewOn from "@/assets/images/svg/ViewOn";
 import { StatusBar } from "expo-status-bar";
+import CustomTextInput from "@/components/CustomTextInput";
+import { router } from "expo-router";
 
 const CreatePassword = () => {
   const { top } = useSafeAreaInsets();
@@ -65,23 +67,17 @@ const CreatePassword = () => {
         {/* Haeding End */}
         {/* form */}
         <View style={styles.formContainer}>
-          <Animated.View
-            entering={FadeInRight.delay(600).springify()}
-            style={styles.inputFieldContainer}
-          >
-            <TextInput
-              maxLength={20}
-              secureTextEntry={showPassword}
-              value={password}
-              onChangeText={setPassword}
-              placeholder="Create Password"
-              style={styles.inputField}
-              placeholderTextColor={'rgba(0,0,0,0.5)'}
-            />
-            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-              {showPassword ? <ViewOn /> : <ViewOff />}
-            </TouchableOpacity>
-          </Animated.View>
+        <CustomTextInput
+            maxLength={20}
+            secureTextEntry={showPassword}
+            setShowPassword={setShowPassword}
+            value={password}
+            onChange={setPassword}
+            placeholder="Create Password"
+            iconName={showPassword ? "viewOn" : "viewOff"}
+            iconWidth={20}
+            iconHieght={20}
+          />
           {validatePassword(password) && (
             <Animated.View entering={FadeInRight.delay(300).springify()}>
               <Text
@@ -121,25 +117,17 @@ const CreatePassword = () => {
               letters, numbers, and symbols.
             </Text>
           </Animated.View>
-          <Animated.View
-            entering={FadeInRight.delay(600).springify()}
-            style={[styles.inputFieldContainer, { marginTop: 12 }]}
-          >
-            <TextInput
-              maxLength={20}
-              secureTextEntry={showconfirmPassword}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              placeholder="Confrim Password"
-              style={styles.inputField}
-              placeholderTextColor={'rgba(0,0,0,0.5)'}
-            />
-            <TouchableOpacity
-              onPress={() => setShowconfirmPassword(!showconfirmPassword)}
-            >
-              {showconfirmPassword ? <ViewOn /> : <ViewOff />}
-            </TouchableOpacity>
-          </Animated.View>
+          <CustomTextInput
+            maxLength={20}
+            secureTextEntry={showconfirmPassword}
+            setShowconfirmPassword={setShowconfirmPassword}
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            placeholder="Confrim Password"
+            iconName={showconfirmPassword ? "viewOn" : "viewOff"}
+            iconWidth={20}
+            iconHieght={20}
+          />
           {confirmPassword.length > 1 && !(confirmPassword == password) && (
             <Animated.View entering={FadeInRight.delay(300).springify()}>
               <Text
@@ -179,6 +167,7 @@ const CreatePassword = () => {
             <Text style={{ color: Colors.main.primary }}>Privacy Policy</Text>
           </Text>
           <TouchableOpacity
+          onPress={()=> router.navigate('/auth/login')}
             style={[
               styles.footerBtn,
               { opacity: checkButtonIsDisabled() ? 0.5 : 1 },
@@ -222,25 +211,6 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 10,
   },
-  inputFieldContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
-    height: 55,
-    borderColor: "#bdc3c7",
-    borderWidth: 0.7,
-    borderRadius: 4,
-    paddingLeft: 20,
-    paddingRight: 30,
-  },
-
-  inputField: {
-    fontFamily: "Montserrat-Regular",
-    width: "100%",
-    height: "100%",
-    color: "#333",
-  },
-
   progressBar: {
     width: "100%",
     flexDirection: "row",
