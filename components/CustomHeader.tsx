@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
         //height: hp(12),
         backgroundColor:Colors.main.background,
         paddingHorizontal: 30,
-        paddingBottom: 25,
+        paddingBottom: hp(2.5),
     },
     headerText: {
         fontSize: 22,

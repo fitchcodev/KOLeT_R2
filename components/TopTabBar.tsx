@@ -1,6 +1,6 @@
 import { Colors } from "@/constants/Colors";
 import { hp } from "@/helpers/common";
-import { Animated, View, TouchableOpacity, StyleSheet } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 
 function TopTabBar({ state, descriptors, navigation, position }) {
   return (
@@ -39,7 +39,7 @@ function TopTabBar({ state, descriptors, navigation, position }) {
           const inputRange = state.routes.map((_, i) => i);
           const borderRadius = position.interpolate({
             inputRange,
-            outputRange: inputRange.map((i) => (i === index ? 5 : 0)),
+            outputRange: inputRange.map((i) => (i === index ? 5 : 2)),
           });
           const backgroundColor = position.interpolate({
             inputRange,
@@ -72,7 +72,7 @@ function TopTabBar({ state, descriptors, navigation, position }) {
                 },
               ]}
             >
-              <Animated.Text style={styles.buttonText}>{label}</Animated.Text>
+              <Text style={styles.buttonText}>{label}</Text>
             </TouchableOpacity>
           );
         })}
@@ -91,9 +91,9 @@ const styles = StyleSheet.create({
   innerContainer: {
     height: hp(5.5),
     flexDirection: "row",
-    borderRadius: 5,
+    borderRadius: 2,
     borderCurve: "continuous",
-    backgroundColor: "#3498DB1A",
+    backgroundColor:  "#3498DB1A",
   },
   button: {
     flex: 1,

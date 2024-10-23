@@ -73,7 +73,7 @@ const CustomTextInput: FunctionComponent<InputProps> = ({inputMode, maxLength, v
     >
       <TextInput
         inputMode={inputMode}
-        maxLength={11}
+        maxLength={maxLength}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}

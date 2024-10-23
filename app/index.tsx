@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.main.background,
     alignItems: "center",
     paddingHorizontal: 30,
-    gap: 50,
+    gap: hp(5),
     borderRadius: 30,
     zIndex: 1,
   },
@@ -259,6 +259,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+    //backgroundColor:'red',
   },
   dot: {
     height: 10,
