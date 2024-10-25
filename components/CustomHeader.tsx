@@ -12,7 +12,7 @@ const CustomHeader = () => {
   return (
     <View style={[styles.container, {paddingTop:paddinTop}]}>
         <View style={{ backgroundColor: Colors.main.inputBg, padding: 10, borderRadius: 100, marginRight:10}}>
-            <UserIC width={20} height={20}/>
+            <UserIC width={20} height={20} fill="#BDC3C7" stroke={"#BDC3C7"}/>
         </View>
         
       <Text style={[styles.headerText, {fontWeight: "400",}]}>Hello <Text style={{fontWeight: "600",}}>Candy!</Text></Text>

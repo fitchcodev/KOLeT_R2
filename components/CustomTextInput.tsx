@@ -75,6 +75,7 @@ const CustomTextInput: FunctionComponent<InputProps> = ({inputMode, maxLength, v
     >
       <TextInput
         inputMode={inputMode}
+        keyboardAppearance='light'
         maxLength={maxLength}
         value={value}
         onChangeText={(text)=>onChange(text)}
