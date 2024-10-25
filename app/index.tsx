@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   Image,
   Dimensions,
+  StatusBar,
 } from "react-native";
 import React, { useEffect, useRef } from "react";
 import { Colors } from "@/constants/Colors";
 import { hp, wp } from "@/helpers/common";
-import { StatusBar } from "expo-status-bar";
+//import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 //import { useFonts, Montserrat_300Light} from "@expo-google-fonts/dev";
 // export interface OnboardingData {
@@ -102,7 +103,7 @@ const index = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="dark"/>
+      <StatusBar barStyle={"dark-content"}/>
       {/* <Text>index</Text> */}
       <FlatList
         ref={flatListRef}

@@ -5,11 +5,11 @@ interface KeyPadInputType {
     handleNumberPress:  (
         number: number
     )=>void,
-    handleAdditionPress:()=>void,
     handleClearPress:()=>void,
+    handleDelPress:()=>void,
 
 }
-const KeyPadInput: FC<KeyPadInputType> = ({handleNumberPress,handleAdditionPress,handleClearPress}) => {
+const KeyPadInput: FC<KeyPadInputType> = ({handleNumberPress,handleDelPress,handleClearPress}) => {
   return (
     <View style={styles.calculator}>
             {/* rgba(46, 204, 113, 0.15) */}
@@ -182,12 +182,13 @@ const KeyPadInput: FC<KeyPadInputType> = ({handleNumberPress,handleAdditionPress
                 <Text style={styles.calculatorItemText}>0</Text>
               </Pressable>
               <Pressable
+              onPress={handleDelPress}
                 style={({ pressed }) => [
                   styles.calculatorItem,
                   {
                     borderColor: "transparent",
                     backgroundColor: pressed
-                      ? "rgba(46, 204, 113, 0.15)"
+                      ? "rgba(231, 76, 60, 0.15)"
                       : "transparent",
                   },
                 ]}
@@ -195,10 +196,10 @@ const KeyPadInput: FC<KeyPadInputType> = ({handleNumberPress,handleAdditionPress
                 <Text
                   style={[
                     styles.calculatorItemText,
-                    { color: Colors.main.success },
+                    { color: Colors.main.error },
                   ]}
                 >
-                  +
+                  del
                 </Text>
               </Pressable>
             </View>

@@ -30,7 +30,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
 
   const checkButtonDisabled = () => {
-    return !(validateNigerianPhoneNumber(phone_number) || password.length > 4);
+    return !(validateNigerianPhoneNumber(phone_number) || (password.length < 4));
   };
   //console.log(checkButtonDisabled())
 

@@ -11,6 +11,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { hp } from "@/helpers/common";
 import { Colors } from "@/constants/Colors";
 import KeyPadInput from "@/components/KeyPad";
+import { router } from "expo-router";
 
 const Keypad = () => {
   const [narrattion, setNarration] = useState("");
@@ -28,22 +29,24 @@ const Keypad = () => {
      
     };
   
-    // Function to handle "+" (addition) press
-    const handleAdditionPress = () => {
-      // Add any additional logic if needed for handling addition (e.g., storing the value for next calculation)
-      console.log("Addition Pressed");
+    // Function to handle "del" (del) press
+    const handleDelPress = () => {
+      setAmount((prevAmount) => {
+        // Convert the current amount to a string and remove the last character
+        const updatedAmount = prevAmount.toString().slice(0, -1);
+        
+        // If the updated amount is empty, set it to 0, otherwise parse the remaining string as a float
+        return updatedAmount === '' ? 0 : parseFloat(updatedAmount);
+      });
     };
+    
 
       // Function to clear the amount
   const handleClearPress = () => {
     setAmount(0.00); // Reset the amount back to 0.00
   };
 
-  const handleClearSearch = () => {
-    console.log('object')
-    setNarration('');  
-    textInputRef?.current?.clear();
-  };
+
 
   // Format the amount with commas and limit to 2 decimal places
   const formattedAmount = amount.toLocaleString(undefined, {
@@ -96,8 +99,14 @@ const Keypad = () => {
             />
             {/* <TouchableOpacity onPress={handleClearSearch} style={{marginRight: 20, backgroundColor: Colors.main.primary, padding:10, borderRadius:100}}><Text style={{fontWeight:'bold', fontSize:10, fontFamily:'Monserrat-Regular'}}>X</Text></TouchableOpacity> */}
           </Pressable>
-          <KeyPadInput handleAdditionPress={handleAdditionPress} handleClearPress={handleClearPress} handleNumberPress={handleNumberPress}/>
-          <TouchableOpacity disabled={amount<=0} style={[styles.payButton, {backgroundColor: amount<=0? "#3498DB1A": Colors.main.primary}]}>
+          <KeyPadInput handleDelPress={handleDelPress} handleClearPress={handleClearPress} handleNumberPress={handleNumberPress}/>
+          <TouchableOpacity onPress={()=> router.push({
+            pathname: '/(tabs)/nfcPayment',
+            params: {
+              amount,
+              narrattion
+            }
+          })} disabled={amount<=0} style={[styles.payButton, {backgroundColor: amount<=0? "#3498DB1A": Colors.main.primary}]}>
             <Text style={styles.payButtonText}>Pay{amount > 0 ? ` ₦${amount}`:null}</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -121,8 +130,14 @@ const Keypad = () => {
             </Text>
           </Pressable>
           
-          <KeyPadInput handleAdditionPress={handleAdditionPress} handleClearPress={handleClearPress} handleNumberPress={handleNumberPress}/>
-          <TouchableOpacity disabled={amount<=0} style={[styles.payButton, {backgroundColor: amount<=0? "#3498DB1A": Colors.main.primary}]}>
+          <KeyPadInput handleDelPress={handleDelPress} handleClearPress={handleClearPress} handleNumberPress={handleNumberPress}/>
+          <TouchableOpacity onPress={()=> router.replace({
+            pathname: '/(tabs)/nfcPayment',
+            params: {
+              amount,
+              narrattion
+            }
+          })} disabled={amount<=0} style={[styles.payButton, {backgroundColor: amount<=0? "#3498DB1A": Colors.main.primary}]}>
             <Text style={styles.payButtonText}>Pay{amount > 0 ? ` ₦${amount}`:null}</Text>
           </TouchableOpacity>
         </View>

@@ -12,7 +12,6 @@ import { Colors } from "@/constants/Colors";
 import { hp, wp } from "@/helpers/common";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
-  FadeIn,
   FadeInDown,
   FadeInUp,
 } from "react-native-reanimated";

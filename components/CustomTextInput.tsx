@@ -9,6 +9,7 @@ import ViewOn from '@/assets/images/svg/ViewOn'
 import ViewOff from '@/assets/images/svg/ViewOff'
 import UserIC from '@/assets/images/svg/UserIC'
 import CalenderIC from '@/assets/images/svg/CalenderIC'
+import SmartCardIC from '@/assets/images/svg/SmartCardIC'
 
 interface IconProps{
     width: number,
@@ -38,7 +39,8 @@ const CustomTextInput: FunctionComponent<InputProps> = ({inputMode, maxLength, v
       viewOn: <ViewOn width={iconWidth} height={iconHieght}/>,
       viewOff: <ViewOff width={iconWidth} height={iconHieght}/>,
       user: <UserIC width={iconWidth} height={iconHieght}/>,
-      calendar: <CalenderIC width={iconWidth} height={iconHieght} />
+      calendar: <CalenderIC width={iconWidth} height={iconHieght} />,
+      card: <SmartCardIC width={iconWidth} height={iconHieght} />,
 }
     const customOnFocus = () => {
         props?.onFocus;
@@ -75,7 +77,7 @@ const CustomTextInput: FunctionComponent<InputProps> = ({inputMode, maxLength, v
         inputMode={inputMode}
         maxLength={maxLength}
         value={value}
-        onChangeText={onChange}
+        onChangeText={(text)=>onChange(text)}
         placeholder={placeholder}
         keyboardType={keyboardType}
         style={styles.inputField}
