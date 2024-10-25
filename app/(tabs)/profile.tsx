@@ -7,6 +7,9 @@ import {
 } from "react-native-safe-area-context";
 import SearchIC from "@/assets/images/svg/SearchIC";
 import UserIC from "@/assets/images/svg/UserIC";
+import { hp } from "@/helpers/common";
+import PhoneIC from "@/assets/images/svg/PhoneIC";
+import MailIc from "@/assets/images/svg/MailIc";
 
 const Profile = () => {
   const { top } = useSafeAreaInsets();
@@ -37,22 +40,28 @@ const Profile = () => {
         </View>
         {/* Form */}
         <View style={styles.formContainer}>
-          <View>
-            <UserIC width={10} height={10} />
-            <Text>Gi</Text>
-            <Text>Gi</Text>
+        <View style={styles.form}>
+            <UserIC width={20} height={20} stroke={Colors.main.primary} />
+            <View style={styles.formTextCon}>
+              <Text style={{fontSize: 16, fontWeight:'500', fontFamily:'Raleway-Regular', color: Colors.main.text}}>John Doe</Text>
+              <Text style={{fontSize: 12, fontWeight:'500', fontFamily:'Raleway-Regular', color: Colors.main.description}}>Full Name</Text>
+            </View>
           </View>
 
-          <View>
-            <UserIC width={10} height={10} />
-            <Text>Gi</Text>
-            <Text>Gi</Text>
+          <View style={styles.form}>
+            <PhoneIC width={20} height={20} stroke={Colors.main.primary} />
+            <View style={styles.formTextCon}>
+              <Text style={{fontSize: 16, fontWeight:'500', fontFamily:'Raleway-Regular', color: Colors.main.text}}>23481412345678</Text>
+              <Text style={{fontSize: 12, fontWeight:'500', fontFamily:'Raleway-Regular', color: Colors.main.description}}>Phone Number</Text>
+            </View>
           </View>
 
-          <View>
-            <UserIC width={10} height={10} />
-            <Text>Gi</Text>
-            <Text>Gi</Text>
+          <View style={styles.form}>
+            <MailIc width={20} height={20} stroke={Colors.main.primary} />
+            <View style={styles.formTextCon}>
+              <Text style={{fontSize: 16, fontWeight:'500', fontFamily:'Raleway-Regular', color: Colors.main.text}}>johndoe@gmail.com</Text>
+              <Text style={{fontSize: 12, fontWeight:'500', fontFamily:'Raleway-Regular', color: Colors.main.description}}>Email</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -69,7 +78,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 20,
-    gap: 5,
   },
   mainContainer: {
     flex: 1,
@@ -100,8 +108,21 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 0.4,
-    //backgroundColor: 'yellow',
     width: "100%",
+    gap: 10,
+    paddingTop: hp(2.5)
+  },
+  form: {
+    flex: 1,
+    alignItems: "center",
+    flexDirection: "row",
+    borderBottomColor: Colors.main.border,
+    borderBottomWidth: 0.7,
+  },
+  formTextCon: {
+    //backgroundColor: "red",
+    flex: 1,
+    paddingHorizontal: 20,
     gap: 10,
   },
 });
