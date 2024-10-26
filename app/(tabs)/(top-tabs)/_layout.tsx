@@ -5,7 +5,7 @@ import {
     MaterialTopTabNavigationOptions,
     createMaterialTopTabNavigator,
   } from "@react-navigation/material-top-tabs";
-import { withLayoutContext, } from "expo-router";
+import { useLocalSearchParams, withLayoutContext, } from "expo-router";
 import { ParamListBase, TabNavigationState } from "@react-navigation/native";
 import TopTabBar from '@/components/TopTabBar';
 import { Colors } from '@/constants/Colors';

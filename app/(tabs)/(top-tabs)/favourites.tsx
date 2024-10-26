@@ -1,10 +1,13 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { Colors } from '@/constants/Colors'
+import NotificationModal from '@/components/NotificationModal'
 
 const Favourites = () => {
   return (
     <View style={styles.container}>
+       {/* Notification */}
+       <NotificationModal />
       <Text style={styles.title}>📲 Add & Find 🔎 Your Favourite Services Here</Text>
     </View>
   )

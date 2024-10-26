@@ -81,7 +81,7 @@ const CardDetailsForm = () => {
     >
       <View style={{ width: "100%", paddingVertical: 5, paddingHorizontal: 20,flexDirection:'row', justifyContent:'space-between' }}>
         <TouchableOpacity
-        onPress={() => router.back()}
+        onPress={() => router.navigate('/(tabs)/payment')}
         
       >
         <ArrowLftIC width={30} height={30} />
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   heading: {
     //backgroundColor:'red',
     alignItems: "center",
-    gap: 25,
+    gap: hp(2.5),
     height: hp(30),
   },
   headerImg: {
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     width: "100%",
-    marginTop: 30,
+    marginTop: hp(2),
     gap: 20,
     //backgroundColor: 'red'
   },
@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
 
   footer: {
     //backgroundColor: "red",
-    marginVertical: 40,
+    marginVertical: hp(2.5),
     //flex: 1,
     width: "100%",
     //gap: hp(3.5),

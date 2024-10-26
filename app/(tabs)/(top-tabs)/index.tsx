@@ -7,55 +7,50 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, {  useEffect, useRef, useState } from "react";
 import { hp } from "@/helpers/common";
 import { Colors } from "@/constants/Colors";
 import KeyPadInput from "@/components/KeyPad";
 import { router } from "expo-router";
+import NotificationModal from "@/components/NotificationModal";
 
 const Keypad = () => {
   const [narrattion, setNarration] = useState("");
-  const[amount, setAmount]= useState(0.00);
+  const [amount, setAmount] = useState(0.0);
   const [editable, setEditable] = useState(false);
   const [inputBorderColor, setInputBorderColor] = useState(Colors.main.border);
-  console.log(editable);
   const textInputRef = useRef(null); // Create a ref for the TextInput
 
-    // Function to handle number press
-    const handleNumberPress = (number: number) => {
-      if(amount.toLocaleString().length < 9 ){
-         setAmount(prevAmount => parseFloat(prevAmount.toString() + number.toString()));
-      }
-     
-    };
-  
-    // Function to handle "del" (del) press
-    const handleDelPress = () => {
-      setAmount((prevAmount) => {
-        // Convert the current amount to a string and remove the last character
-        const updatedAmount = prevAmount.toString().slice(0, -1);
-        
-        // If the updated amount is empty, set it to 0, otherwise parse the remaining string as a float
-        return updatedAmount === '' ? 0 : parseFloat(updatedAmount);
-      });
-    };
-    
-
-      // Function to clear the amount
-  const handleClearPress = () => {
-    setAmount(0.00); // Reset the amount back to 0.00
+  // Function to handle number press
+  const handleNumberPress = (number: number) => {
+    if (amount.toLocaleString().length < 9) {
+      setAmount((prevAmount) =>
+        parseFloat(prevAmount.toString() + number.toString())
+      );
+    }
   };
 
+  // Function to handle "del" (del) press
+  const handleDelPress = () => {
+    setAmount((prevAmount) => {
+      // Convert the current amount to a string and remove the last character
+      const updatedAmount = prevAmount.toString().slice(0, -1);
 
+      // If the updated amount is empty, set it to 0, otherwise parse the remaining string as a float
+      return updatedAmount === "" ? 0 : parseFloat(updatedAmount);
+    });
+  };
+
+  // Function to clear the amount
+  const handleClearPress = () => {
+    setAmount(0.0); // Reset the amount back to 0.00
+  };
 
   // Format the amount with commas and limit to 2 decimal places
   const formattedAmount = amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
-
-
-
 
   // Focus the TextInput when editable is set to true
   useEffect(() => {
@@ -64,8 +59,10 @@ const Keypad = () => {
     }
   }, [editable]);
 
+
   return (
     <>
+    <NotificationModal/>
       {editable ? (
         <ScrollView
           keyboardDismissMode="interactive"
@@ -99,15 +96,33 @@ const Keypad = () => {
             />
             {/* <TouchableOpacity onPress={handleClearSearch} style={{marginRight: 20, backgroundColor: Colors.main.primary, padding:10, borderRadius:100}}><Text style={{fontWeight:'bold', fontSize:10, fontFamily:'Monserrat-Regular'}}>X</Text></TouchableOpacity> */}
           </Pressable>
-          <KeyPadInput handleDelPress={handleDelPress} handleClearPress={handleClearPress} handleNumberPress={handleNumberPress}/>
-          <TouchableOpacity onPress={()=> router.push({
-            pathname: '/(tabs)/nfcPayment',
-            params: {
-              amount,
-              narrattion
+          <KeyPadInput
+            handleDelPress={handleDelPress}
+            handleClearPress={handleClearPress}
+            handleNumberPress={handleNumberPress}
+          />
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: "/(tabs)/nfcPayment",
+                params: {
+                  amount,
+                  narrattion,
+                },
+              })
             }
-          })} disabled={amount<=0} style={[styles.payButton, {backgroundColor: amount<=0? "#3498DB1A": Colors.main.primary}]}>
-            <Text style={styles.payButtonText}>Pay{amount > 0 ? ` ₦${amount}`:null}</Text>
+            disabled={amount <= 0}
+            style={[
+              styles.payButton,
+              {
+                backgroundColor:
+                  amount <= 0 ? "#3498DB1A" : Colors.main.primary,
+              },
+            ]}
+          >
+            <Text style={styles.payButtonText}>
+              Pay{amount > 0 ? ` ₦${amount}` : null}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       ) : (
@@ -129,16 +144,34 @@ const Keypad = () => {
               {narrattion.length > 0 ? narrattion : "+ Add Note"}
             </Text>
           </Pressable>
-          
-          <KeyPadInput handleDelPress={handleDelPress} handleClearPress={handleClearPress} handleNumberPress={handleNumberPress}/>
-          <TouchableOpacity onPress={()=> router.replace({
-            pathname: '/(tabs)/nfcPayment',
-            params: {
-              amount,
-              narrattion
+
+          <KeyPadInput
+            handleDelPress={handleDelPress}
+            handleClearPress={handleClearPress}
+            handleNumberPress={handleNumberPress}
+          />
+          <TouchableOpacity
+            onPress={() =>
+              router.replace({
+                pathname: "/(tabs)/nfcPayment",
+                params: {
+                  amount,
+                  narrattion,
+                },
+              })
             }
-          })} disabled={amount<=0} style={[styles.payButton, {backgroundColor: amount<=0? "#3498DB1A": Colors.main.primary}]}>
-            <Text style={styles.payButtonText}>Pay{amount > 0 ? ` ₦${amount}`:null}</Text>
+            disabled={amount <= 0}
+            style={[
+              styles.payButton,
+              {
+                backgroundColor:
+                  amount <= 0 ? "#3498DB1A" : Colors.main.primary,
+              },
+            ]}
+          >
+            <Text style={styles.payButtonText}>
+              Pay{amount > 0 ? ` ₦${amount}` : null}
+            </Text>
           </TouchableOpacity>
         </View>
       )}
@@ -182,15 +215,15 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-SemiBold",
     fontSize: hp(2.3),
   },
-  payButton:{
-    padding:10,
+  payButton: {
+    padding: 10,
     marginHorizontal: 50,
     borderRadius: 10,
-    alignItems: 'center'
+    alignItems: "center",
   },
-  payButtonText:{
+  payButtonText: {
     fontSize: 22,
-    fontFamily:'Raleway-SemiBold',
-    color: 'white',
-  }
+    fontFamily: "Raleway-SemiBold",
+    color: "white",
+  },
 });

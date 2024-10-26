@@ -8,11 +8,14 @@ import DropLetIc from "@/assets/images/svg/DropLetIc";
 import TaxesIC from "@/assets/images/svg/TaxesIC";
 import InvoiceIc from "@/assets/images/svg/InvoiceIc";
 import { BlurView } from 'expo-blur';
+import NotificationModal from "@/components/NotificationModal";
 
 const Services = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   return (
     <View style={styles.container}>
+      {/* Notification */}
+      <NotificationModal />
          <Modal
         animationType="fade"
         transparent={true}
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 22,
+   // marginTop: 22,
     //backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   modalView: {

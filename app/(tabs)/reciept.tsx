@@ -14,6 +14,7 @@ import CancleIC from "@/assets/images/svg/CancleIC";
 import SuccesIC from "@/assets/images/svg/SuccesIC";
 import ShareIC from "@/assets/images/svg/ShareIC";
 import ShareICWhite from "@/assets/images/svg/ShareICWhite";
+import { hp } from "@/helpers/common";
 
 const Reciept = () => {
   const { top } = useSafeAreaInsets();
@@ -107,11 +108,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     paddingHorizontal: 20,
-    gap: 20,
+    //gap: 20,
   },
   header: {
     //backgroundColor: 'red',
-    gap: 20,
+    gap: hp(1.2),
     //marginTop: 30,
     alignItems: "center",
   },
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     //backgroundColor: 'red',
-    flex: 1,
+    //flex: 1,
     width: "100%",
     padding: 20,
     gap: 4,

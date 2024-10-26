@@ -4,13 +4,16 @@ import MenuIc from "@/assets/images/svg/MenuIC";
 import UserTabIc from "@/assets/images/svg/UserTabIc";
 import CustomHeader from "@/components/CustomHeader";
 import { Colors } from "@/constants/Colors";
+import { NotificationModalContext } from "@/contexts/NotificationModalContext";
 import { hp } from "@/helpers/common";
-import { Tabs } from "expo-router";
-import React from "react";
+import { Stack, Tabs } from "expo-router";
+import React, { useContext, useState } from "react";
 import { StyleSheet, Text } from "react-native";
 
 export default function TabLayout() {
+  const [isModalActive, setModalIsActive] = useState<boolean>(false);
   return (
+  <NotificationModalContext.Provider value={{ isModalActive, setModalIsActive}}>
     <Tabs
       screenOptions={{
         // tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -21,16 +24,24 @@ export default function TabLayout() {
         unmountOnBlur:true,
       }}
     >
+      
       <Tabs.Screen
         name="(top-tabs)"
+        
+        initialParams={
+          {
+            isModalActive,
+          }
+        } 
         options={{
           title: "Home",
           headerShown: true,
           unmountOnBlur: true,
-          header: ({ navigation, route, options }) => {
+          header: ({ navigation, route, options, }) => {
             //
+            const {setModalIsActive, isModalActive} = useContext(NotificationModalContext);
 
-            return <CustomHeader />;
+            return <CustomHeader setModalIsActive={setModalIsActive} isModalActive={isModalActive}/>;
           },
           tabBarIcon: ({ color, focused }) => (
             <HomeIC stroke={color} width={25} height={25} />
@@ -39,6 +50,7 @@ export default function TabLayout() {
             // <UserTabIc width={25} height={25} />
             <Text style={[styles.title, { color: color }]}> Home</Text>
           ),
+          
         }}
       />
       <Tabs.Screen
@@ -55,7 +67,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="more"
+        name="more/index"
         options={{
           title: "More",
           tabBarIcon: ({ color }) => (
@@ -113,6 +125,7 @@ export default function TabLayout() {
         name="payment/index"
         options={{
           href: null,
+          unmountOnBlur:false,
           tabBarStyle: { display: "none" },
         }}
       />
@@ -124,6 +137,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </NotificationModalContext.Provider>
   );
 }
 
