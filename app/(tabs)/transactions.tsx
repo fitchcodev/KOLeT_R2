@@ -189,7 +189,7 @@ const Transactions = () => {
       </View>
 
       {/* Flatlits */}
-      <View style={{ flex: 1, width: wp(100), marginTop: 20 }}>
+      <View style={{ flex: 1, width: wp(100), marginTop: 20 ,     marginBottom:hp(10),}}>
         <FlatList
           data={data}
           renderItem={({ item }) => <Item data={item.data} />}

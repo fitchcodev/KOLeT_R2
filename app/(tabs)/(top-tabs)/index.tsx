@@ -220,6 +220,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 50,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom:hp(10),
   },
   payButtonText: {
     fontSize: 22,

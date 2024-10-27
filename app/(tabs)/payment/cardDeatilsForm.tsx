@@ -202,7 +202,7 @@ export default CardDetailsForm;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.main.inputBg,
+    backgroundColor: Colors.main.background,
     alignItems: "center",
     justifyContent: "flex-start",
   },

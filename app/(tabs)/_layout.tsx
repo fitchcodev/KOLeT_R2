@@ -8,8 +8,7 @@ import { NotificationModalContext } from "@/contexts/NotificationModalContext";
 import { hp } from "@/helpers/common";
 import { Stack, Tabs } from "expo-router";
 import React, { useContext, useState } from "react";
-import { StyleSheet, Text } from "react-native";
-
+import { StyleSheet, Text, View} from "react-native";
 export default function TabLayout() {
   const [isModalActive, setModalIsActive] = useState<boolean>(false);
   return (
@@ -22,6 +21,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.main.primary,
         tabBarInactiveTintColor: Colors.main.text,
         unmountOnBlur:true,
+        
       }}
     >
       
@@ -79,6 +79,88 @@ export default function TabLayout() {
           ),
         }}
       />
+       <Tabs.Screen
+        name="more/settings/index"
+        options={{
+          href: null,
+          //unmountOnBlur:true
+        }}
+      />
+      <Tabs.Screen
+      
+      name="more/settings/changePassword"
+      options={{
+        href: null,
+        //unmountOnBlur:true
+      }}
+    />
+    <Tabs.Screen
+      
+      name="more/cardManagement/index"
+      options={{
+        href: null,
+        //unmountOnBlur:true
+      }}
+    />
+    <Tabs.Screen
+      
+      name="more/cardManagement/addCardForm"
+      options={{
+        href: null,
+        //unmountOnBlur:true
+        tabBarStyle: { display: "none" },
+      }}
+    />
+     <Tabs.Screen
+      
+      name="more/cardManagement/cardDetails"
+      options={{
+        href: null,
+        //unmountOnBlur:true
+        tabBarStyle: { display: "none" },
+      }}
+    />
+      <Tabs.Screen
+      
+      name="more/cardManagement/setDefaultCard"
+      options={{
+        href: null,
+        //unmountOnBlur:true
+        tabBarStyle: { display: "none" },
+      }}
+    />
+     <Tabs.Screen
+      
+      name="more/cardManagement/privacySettings"
+      options={{
+        href: null,
+        //unmountOnBlur:true
+        tabBarStyle: { display: "none" },
+      }}
+    />
+    
+        <Tabs.Screen
+        name="more/notificationSettings"
+        options={{
+          href: null,
+          //unmountOnBlur:true
+        }}
+      />
+      <Tabs.Screen
+        name="more/helpCenter"
+        options={{
+          href: null,
+          //unmountOnBlur:true
+        }}
+      />
+       <Tabs.Screen
+        name="more/refer"
+        options={{
+          href: null,
+          //unmountOnBlur:true
+        }}
+      />
+       
       <Tabs.Screen
         name="profile"
         options={{
@@ -144,6 +226,7 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    position: 'absolute',
     height: hp(10),
     paddingHorizontal: 5,
     paddingVertical: 12,

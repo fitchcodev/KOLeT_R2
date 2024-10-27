@@ -131,7 +131,8 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   block: {
-    flex: 1,
+    flex: .95,
+    marginTop: hp(1.5),
     backgroundColor: "white",
     width: "100%",
     borderRadius: 10,

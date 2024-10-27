@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View, Modal, Alert } from "react-native";
+import { Pressable, StyleSheet, Text, View, Modal } from "react-native";
 import React, { useState } from "react";
 import ArrowVertical from "@/assets/images/svg/ArrowVertical";
 import { Colors } from "@/constants/Colors";
