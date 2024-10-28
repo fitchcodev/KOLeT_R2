@@ -13,13 +13,19 @@ import { Colors } from "@/constants/Colors";
 import KeyPadInput from "@/components/KeyPad";
 import { router } from "expo-router";
 import NotificationModal from "@/components/NotificationModal";
-
+import NfcManager from 'react-native-nfc-manager';
+import Modal from "react-native-modal";
 const Keypad = () => {
   const [narrattion, setNarration] = useState("");
   const [amount, setAmount] = useState(0.0);
   const [editable, setEditable] = useState(false);
   const [inputBorderColor, setInputBorderColor] = useState(Colors.main.border);
   const textInputRef = useRef(null); // Create a ref for the TextInput
+  const [modalNFCVisible, setModalNFCVisible] = useState<boolean>(false);
+  const [nfcSupported, setNFCSupported] = useState<boolean>(false);
+  const [modalNONNFCVisible, setModalNONNFCVisible] = useState<boolean>(false);
+
+
 
   // Function to handle number press
   const handleNumberPress = (number: number) => {
@@ -46,6 +52,31 @@ const Keypad = () => {
     setAmount(0.0); // Reset the amount back to 0.00
   };
 
+  // payment Navigate 
+  const handlePaymentNaviage = ()=>{
+    if (nfcSupported){
+      //setModalNFCVisible(true);
+        router.push({
+      pathname: "/(tabs)/nfcPayment",
+      params: {
+        amount,
+        narrattion,
+      },
+    })
+    }else{
+      //setModalNONNFCVisible(true);
+      router.push({
+        pathname: "/(tabs)/payment",
+        params: {
+          amount,
+          narrattion,
+        },
+      })
+    }
+  
+
+  };
+
   // Format the amount with commas and limit to 2 decimal places
   const formattedAmount = amount.toLocaleString(undefined, {
     minimumFractionDigits: 2,
@@ -59,10 +90,74 @@ const Keypad = () => {
     }
   }, [editable]);
 
+  useEffect(() => {
+    const checkNfcSupport = async () => {
+        const isSupported = await NfcManager.isSupported();
+        if (isSupported) {
+            console.log("NFC is supported on this device.");
+            setNFCSupported(true);
+            setModalNFCVisible(true);            
+            // await NfcManager.start();
+        } else {
+            console.log("NFC is not supported on this device.");
+            setNFCSupported(false);
+            setModalNONNFCVisible(true);            
+            // Show a message to the user, disable NFC functionality, etc.
+        }
+    };
+
+    checkNfcSupport();
+    
+     // Clean up on unmount
+}, []);
+
 
   return (
     <>
     <NotificationModal/>
+    {/* Nfc Modal */}
+    <Modal
+        animationIn={'bounceInUp'}
+        animationOut={'bounceOutDown'}
+        backdropOpacity={0.2}
+        isVisible={modalNFCVisible}
+        style={styles.centeredView}
+        onBackButtonPress={() => {
+          // Alert.alert('Modal has been closed.');
+          setModalNFCVisible(!modalNFCVisible);
+        }}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTextDes}>Great news! Your device supports NFC. Press 'OK' to continue with your secure payment.</Text>
+            <Pressable
+              style={styles.button}
+              onPress={()=> setModalNONNFCVisible(!modalNONNFCVisible)}>
+              <Text style={styles.textStyle}>Ok</Text>
+            </Pressable>
+          </View>
+        </Modal>
+
+          {/* Non Nfc Modal */}
+    <Modal
+        animationIn={'bounceInUp'}
+        animationOut={'bounceOutDown'}
+        backdropOpacity={0.2}
+        isVisible={modalNONNFCVisible}
+        style={styles.centeredView}
+        onBackButtonPress={() => {
+          // Alert.alert('Modal has been closed.');
+          setModalNONNFCVisible(!modalNONNFCVisible);
+        }}>
+          <View style={styles.modalView}>
+            
+            <Text style={styles.modalTextDes}>Oops! Your device doesn't support NFC. Enter card details manually. Press 'OK' to proceed.</Text>
+            <Pressable
+              style={styles.button}
+              onPress={()=> setModalNONNFCVisible(!modalNONNFCVisible)}>
+              <Text style={styles.textStyle}>Ok</Text>
+            </Pressable>
+          </View>
+        </Modal>
+    
       {editable ? (
         <ScrollView
           keyboardDismissMode="interactive"
@@ -102,15 +197,7 @@ const Keypad = () => {
             handleNumberPress={handleNumberPress}
           />
           <TouchableOpacity
-            onPress={() =>
-              router.push({
-                pathname: "/(tabs)/nfcPayment",
-                params: {
-                  amount,
-                  narrattion,
-                },
-              })
-            }
+            onPress={handlePaymentNaviage}
             disabled={amount <= 0}
             style={[
               styles.payButton,
@@ -151,15 +238,7 @@ const Keypad = () => {
             handleNumberPress={handleNumberPress}
           />
           <TouchableOpacity
-            onPress={() =>
-              router.replace({
-                pathname: "/(tabs)/nfcPayment",
-                params: {
-                  amount,
-                  narrattion,
-                },
-              })
-            }
+            onPress={handlePaymentNaviage}
             disabled={amount <= 0}
             style={[
               styles.payButton,
@@ -226,5 +305,58 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontFamily: "Raleway-SemiBold",
     color: "white",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+   // marginTop: 22,
+    //backgroundColor: 'rgba(0, 0, 0, 0.4)',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: Colors.main.background,
+    borderRadius: 20,
+    padding: 40,
+    gap: 10,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 10,
+    paddingHorizontal: 50,
+    paddingVertical: 10,
+    elevation: 2,
+    backgroundColor: Colors.main.primary,
+  },
+  textStyle: {
+    color: 'white',
+    fontFamily: 'Raleway-Regular',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  modalTextTitle: {
+    marginBottom: 15,
+    fontFamily: 'Monserrat-Regular',
+    fontWeight: '600',
+    textAlign: 'center',
+    fontSize: 20,
+    color: Colors.main.text,
+  },
+  modalTextDes: {
+    marginBottom: 15,
+    fontFamily: 'Raleway-Regular',
+    textAlign: 'center',
+    lineHeight: 30,
+    fontSize: 15,
+    color: Colors.main.text,
   },
 });

@@ -8,7 +8,7 @@ import { NotificationModalContext } from "@/contexts/NotificationModalContext";
 import { hp } from "@/helpers/common";
 import { Stack, Tabs } from "expo-router";
 import React, { useContext, useState } from "react";
-import { StyleSheet, Text, View} from "react-native";
+import { Platform, StyleSheet, Text, View} from "react-native";
 export default function TabLayout() {
   const [isModalActive, setModalIsActive] = useState<boolean>(false);
   return (
@@ -21,6 +21,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors.main.primary,
         tabBarInactiveTintColor: Colors.main.text,
         unmountOnBlur:true,
+        //tabBarHideOnKeyboard: true,
         
       }}
     >
@@ -92,6 +93,7 @@ export default function TabLayout() {
       options={{
         href: null,
         //unmountOnBlur:true
+        tabBarStyle: { display: "none" },
       }}
     />
     <Tabs.Screen
@@ -230,7 +232,7 @@ const styles = StyleSheet.create({
     height: hp(10),
     paddingHorizontal: 5,
     paddingVertical: 12,
-    backgroundColor: Colors.main.tab,
+    backgroundColor: Platform.OS === 'android' ? 'rgba(225,225,225,1)' : Colors.main.tab,
     borderTopStartRadius: 60,
     borderTopEndRadius: 60,
     justifyContent: "space-between",

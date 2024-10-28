@@ -176,7 +176,7 @@ const Transactions = () => {
         </View>
         <TextInput
           placeholder="Search"
-          placeholderTextColor={"rgba(0,0,0,0.5)"}
+          placeholderTextColor={"rgba(53, 57, 53, .9)"}
           style={styles.searchInput}
           keyboardAppearance="light"
           enablesReturnKeyAutomatically={true}

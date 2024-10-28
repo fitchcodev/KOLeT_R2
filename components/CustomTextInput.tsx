@@ -99,7 +99,7 @@ const CustomTextInput: FunctionComponent<InputProps> = ({
         onBlur={customOnBlur}
         editable={props?.editable}
         secureTextEntry={props?.secureTextEntry}
-        placeholderTextColor={"rgba(0,0,0,0.5)"}
+        placeholderTextColor={"rgba(53, 57, 53, .9)"}
         onPressIn={props?.onPressIn}
         multiline={props?.multiline || false}
       />

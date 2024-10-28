@@ -21,7 +21,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.akan.kolet"
+      "package": "com.akan.kolet",
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "bundler": "metro",
@@ -40,6 +41,12 @@
             "./assets/fonts/Montserrat-SemiBold.ttf",
             "./assets/fonts/Raleway-SemiBold.ttf"
           ]
+        }
+      ],
+      [
+        "react-native-nfc-manager",
+        {
+          "nfcPermission": "Kolet needs your persimission to access NFC for NFC payments."
         }
       ]
     ],

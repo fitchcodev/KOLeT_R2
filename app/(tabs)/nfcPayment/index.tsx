@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, Text, View , useFocusEffect} from "react-native";
+import { Alert, Modal, Pressable, StyleSheet, Text, View} from "react-native";
 import React, { FC, useEffect, useRef, useState, useCallback } from "react";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,6 +8,10 @@ import { router, useLocalSearchParams } from "expo-router";
 import { hp } from "@/helpers/common";
 import LottieView from "lottie-react-native";
 import { BlurView } from 'expo-blur';
+import NfcManager, {NfcTech} from 'react-native-nfc-manager';
+
+// Pre-step, call this before any NFC operations
+NfcManager.start();
 
 
 const NfcPaymentScreen: FC = () => {
@@ -20,10 +24,33 @@ const NfcPaymentScreen: FC = () => {
   useEffect(
     useCallback(() => {
       // This will run when the screen is focused (i.e. user navigates back)
+    
+      const readNdef = async () => {
+        try {
+          // register for the NFC tag with NDEF in it
+          await NfcManager.requestTechnology(NfcTech.Ndef);
+          // the resolved tag object will contain `ndefMessage` property
+          const tag = await NfcManager.getTag();
+          Alert.alert('Payment sucessful!');
+          router.navigate('/(tabs)/reciept');
+
+          // console.warn('Tag found', tag);
+        } catch (ex) {
+          Alert.alert('Oops!, A Certain Error Occured!');
+          router.back();
+    
+          //console.warn('Oops!', ex);
+        } finally {
+          // stop the nfc scanning
+          NfcManager.cancelTechnologyRequest();
+        }
+      };
+    
       if (amount && Number(amount) > 15000) {
         setModalVisible(true);
-
-      }
+      }else{
+        readNdef();
+      };
   
       // Cleanup if necessary (this runs when the screen is unfocused)
       return () => {
@@ -38,6 +65,8 @@ const handleModalClose: ()=>void = () => {
     router.navigate('/(tabs)/nfcPayment/paymentVerification');
     
 }
+
+
 
   
   return (

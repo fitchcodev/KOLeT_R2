@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Colors } from "@/constants/Colors";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ArrowLftIC from "@/assets/images/svg/ArrowLftIC";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import SuccesIC from "@/assets/images/svg/SuccesIC";
 import { hp } from "@/helpers/common";
 import MasterIC from "@/assets/images/svg/MasterIC";
@@ -14,6 +14,8 @@ const Payment = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
   const [isSelected, setIsSelcted]= useState(false);
+  const { amount, narrattion } = useLocalSearchParams(); 
+
   return (
     <View style={[styles.container, { paddingTop: paddinTop }]}>
       <View
@@ -47,8 +49,8 @@ const Payment = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.total}>Total</Text>
-        <Text style={styles.amount}>₦10000</Text>
-        <Text style={styles.description}>Pay John Shop</Text>
+        <Text style={styles.amount}>₦{amount}</Text>
+        <Text style={styles.description}>{narrattion || ''}</Text>
       </View>
 
       {/* Divder */}
@@ -96,7 +98,7 @@ const Payment = () => {
       </Pressable>
       {/* button */}
       <TouchableOpacity onPress={()=> router.push('/(tabs)/payment/cardDeatilsForm')} disabled={!isSelected} style={[styles.payButton, {backgroundColor: !isSelected? "#3498DB1A": Colors.main.primary}]}>
-            <Text style={styles.payButtonText}>Pay ₦10000</Text>
+            <Text style={styles.payButtonText}>Pay ₦{amount}</Text>
           </TouchableOpacity>
     </View>
   );

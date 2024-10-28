@@ -81,7 +81,7 @@ const CardDetailsForm = () => {
     >
       <View style={{ width: "100%", paddingVertical: 5, paddingHorizontal: 20,flexDirection:'row', justifyContent:'space-between' }}>
         <TouchableOpacity
-        onPress={() => router.navigate('/(tabs)/payment')}
+        onPress={() => router.back()}
         
       >
         <ArrowLftIC width={30} height={30} />
