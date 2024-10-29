@@ -122,6 +122,10 @@ const Keypad = () => {
         backdropOpacity={0.2}
         isVisible={modalNFCVisible}
         style={styles.centeredView}
+        onBackdropPress={() => {
+          // Alert.alert('Modal has been closed.');
+          setModalNFCVisible(!modalNFCVisible);
+        }}
         onBackButtonPress={() => {
           // Alert.alert('Modal has been closed.');
           setModalNFCVisible(!modalNFCVisible);
@@ -130,7 +134,7 @@ const Keypad = () => {
             <Text style={styles.modalTextDes}>Great news! Your device supports NFC. Press 'OK' to continue with your secure payment.</Text>
             <Pressable
               style={styles.button}
-              onPress={()=> setModalNONNFCVisible(!modalNONNFCVisible)}>
+              onPress={()=> setModalNFCVisible(!modalNFCVisible)}>
               <Text style={styles.textStyle}>Ok</Text>
             </Pressable>
           </View>
@@ -143,6 +147,10 @@ const Keypad = () => {
         backdropOpacity={0.2}
         isVisible={modalNONNFCVisible}
         style={styles.centeredView}
+        onBackdropPress={() => {
+          // Alert.alert('Modal has been closed.');
+          setModalNONNFCVisible(!modalNONNFCVisible);
+        }}
         onBackButtonPress={() => {
           // Alert.alert('Modal has been closed.');
           setModalNONNFCVisible(!modalNONNFCVisible);
