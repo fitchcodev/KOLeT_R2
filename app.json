@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "com.limebit.kolet",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -14,15 +14,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.akan.kolet"
+      "bundleIdentifier": "com.limebit.kolet"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.akan.kolet",
-      "softwareKeyboardLayoutMode": "pan"
+      "package": "com.limebit.kolet",
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.NFC"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -48,10 +51,24 @@
         {
           "nfcPermission": "Kolet needs your persimission to access NFC for NFC payments."
         }
+      ],
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5a102ff8-072c-44ef-bf56-0af5fbb9961e"
+      }
     }
   }
 }
