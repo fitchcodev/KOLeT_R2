@@ -8,33 +8,33 @@ import {
   Image,
   KeyboardAvoidingView,
   Platform,
-} from "react-native";
-import React, { useRef, useState } from "react";
-import { Colors } from "@/constants/Colors";
-import { hp, wp } from "@/helpers/common";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import { router } from "expo-router";
-import ArrowLftIC from "@/assets/images/svg/ArrowLftIC";
-import CustomTextInput from "@/components/CustomTextInput";
-import QRIC from "@/assets/images/svg/QRIC";
+} from 'react-native';
+import React, { useRef, useState } from 'react';
+import { Colors } from '@/constants/Colors';
+import { hp, wp } from '@/helpers/common';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { router } from 'expo-router';
+import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
+import CustomTextInput from '@/components/CustomTextInput';
+import QRIC from '@/assets/images/svg/QRIC';
 const CardDetailsForm = () => {
   const handleButton = () => {
-    router.navigate("/(tabs)/reciept");
+    router.navigate('/(tabs)/receipt');
   };
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
-  const [cardName, setCardName] = useState("");
-  const [cardNumebr, setCardNumber] = useState("");
-  const [cardExpDate, setExpDate] = useState("");
-  const [cardCVV, setCardCVV] = useState("");
+  const [cardName, setCardName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpDate, setExpDate] = useState('');
+  const [cardCVV, setCardCVV] = useState('');
 
   const checkButtonDisabled = () => {
     return cardName.length < 4;
   };
   const formatDate = (value: string) => {
     // Remove any non-numeric characters
-    const cleaned = value.replace(/[^\d]/g, "");
+    const cleaned = value.replace(/[^\d]/g, '');
 
     // Format as dd/mm
     const match = cleaned.match(/^(\d{0,2})(\d{0,2})/);
@@ -48,27 +48,27 @@ const CardDetailsForm = () => {
     } else if (day) {
       return day;
     } else {
-      return "";
+      return '';
     }
   };
 
   const formatCardNumber = (value: string) => {
     // Remove any non-numeric characters
-    const cleaned = value.replace(/[^\d]/g, "");
+    const cleaned = value.replace(/[^\d]/g, '');
 
     // Group digits in sets of 4
-    const formatted = cleaned.match(/.{1,4}/g)?.join(" ") || cleaned;
+    const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
 
     // Limit to 16 digits (for Mastercard)
     return formatted.substring(0, 19); // 16 digits + 3 spaces between groups
   };
 
-  const onChangeCardNumber = (value) => {
+  const onChangeCardNumber = value => {
     const formattedValue = formatCardNumber(value);
     setCardNumber(formattedValue); // Set the formatted card number
   };
 
-  const onChangeExpDate = (value) => {
+  const onChangeExpDate = value => {
     const formattedValue = formatDate(value);
     setExpDate(formattedValue); // Set the formatted date
   };
@@ -76,24 +76,24 @@ const CardDetailsForm = () => {
   //console.log(checkButtonDisabled());
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={[styles.container, { paddingTop: paddinTop }]}
-    >
-      <View style={{ width: "100%", paddingVertical: 5, paddingHorizontal: 20,flexDirection:'row', justifyContent:'space-between' }}>
-        <TouchableOpacity
-        onPress={() => router.back()}
-        
-      >
-        <ArrowLftIC width={30} height={30} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={() => router.back()}
-        
-      >
-        <QRIC width={30} height={30} />
-      </TouchableOpacity>
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container, { paddingTop: paddinTop }]}>
+      <View
+        style={{
+          width: '100%',
+          paddingVertical: 5,
+          paddingHorizontal: 20,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+        }}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <ArrowLftIC width={30} height={30} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => router.back()}>
+          <QRIC width={30} height={30} />
+        </TouchableOpacity>
       </View>
-      
+
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -103,18 +103,16 @@ const CardDetailsForm = () => {
         }}
         keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
-        horizontal={false}
-      >
+        horizontal={false}>
         {/* Heading */}
 
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}
-        >
+          style={styles.heading}>
           <View style={styles.headerImg}>
             <Image
-              source={require("@/assets/images/cards.png")}
-              style={{ width: "100%", height: "100%" }}
+              source={require('@/assets/images/cards.png')}
+              style={{ width: '100%', height: '100%' }}
             />
           </View>
           <Text style={styles.headingTextTitle}>Enter Card Details</Text>
@@ -128,10 +126,9 @@ const CardDetailsForm = () => {
           <View
             style={{
               flex: 1,
-              justifyContent: "space-between",
+              justifyContent: 'space-between',
               gap: 20,
-            }}
-          >
+            }}>
             <CustomTextInput
               value={cardName}
               inputMode="text"
@@ -141,12 +138,12 @@ const CardDetailsForm = () => {
               onChange={setCardName}
             />
             <CustomTextInput
-              value={cardNumebr}
+              value={cardNumber}
               inputMode="numeric"
               keyboardType="phone-pad"
               maxLength={19} // Limit the length to 19 characters (16 digits + 3 spaces)
               placeholder="Card Number (Required)"
-             onChange={onChangeCardNumber}
+              onChange={onChangeCardNumber}
               iconName="card"
               iconHieght={15}
               iconWidth={15}
@@ -176,8 +173,7 @@ const CardDetailsForm = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}
-        >
+          style={styles.footer}>
           <TouchableOpacity
             disabled={checkButtonDisabled()}
             onPress={handleButton}
@@ -187,8 +183,7 @@ const CardDetailsForm = () => {
                 backgroundColor: Colors.main.primary,
                 opacity: !checkButtonDisabled() ? 1 : 0.5,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.footerBtnText}>Proceed to Payment</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -203,85 +198,85 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.main.background,
-    alignItems: "center",
-    justifyContent: "flex-start",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   heading: {
     //backgroundColor:'red',
-    alignItems: "center",
+    alignItems: 'center',
     gap: hp(2.5),
     height: hp(30),
   },
   headerImg: {
     //backgroundColor: 'red',
-    width: "60%",
+    width: '60%',
 
-    height: "50%",
-    alignItems: "center",
+    height: '50%',
+    alignItems: 'center',
   },
   headingTextTitle: {
     fontSize: 28,
-    fontWeight: "600",
-    fontFamily: "Raleway-SemiBold",
+    fontWeight: '600',
+    fontFamily: 'Raleway-SemiBold',
     color: Colors.main.text,
-    textAlign: "center",
+    textAlign: 'center',
   },
   headingTextDescript: {
-    fontFamily: "Montserrat-Regular",
+    fontFamily: 'Montserrat-Regular',
     color: Colors.main.description,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 15,
   },
   formContainer: {
-    width: "100%",
+    width: '100%',
     marginTop: hp(2),
     gap: 20,
     //backgroundColor: 'red'
   },
   otpField: {
-    fontFamily: "Montserrat-SemiBold",
-    width: "100%",
-    height: "100%",
-    color: "#333",
+    fontFamily: 'Montserrat-SemiBold',
+    width: '100%',
+    height: '100%',
+    color: '#333',
     fontSize: hp(4),
-    textAlign: "center",
+    textAlign: 'center',
   },
   otpFieldContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
-    width: "22%",
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '22%',
     height: 70,
     borderWidth: 0.7,
     borderRadius: 4,
   },
   timerCon: {
     //backgroundColor: 'red',
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 70,
   },
   timerText: {
-    fontFamily: "Montserrat-Regular",
+    fontFamily: 'Montserrat-Regular',
   },
 
   footer: {
     //backgroundColor: "red",
     marginVertical: hp(2.5),
     //flex: 1,
-    width: "100%",
+    width: '100%',
     //gap: hp(3.5),
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerBtn: {
     padding: 15,
-    width: "80%",
+    width: '80%',
     borderRadius: 4,
   },
   footerBtnText: {
-    fontWeight: "600",
-    fontFamily: "Raleway-SemiBold",
-    color: "#fff",
-    textAlign: "center",
+    fontWeight: '600',
+    fontFamily: 'Raleway-SemiBold',
+    color: '#fff',
+    textAlign: 'center',
     fontSize: 18,
   },
 });

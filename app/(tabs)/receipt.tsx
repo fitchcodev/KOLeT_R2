@@ -4,47 +4,45 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import React from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ArrowLftIC from "@/assets/images/svg/ArrowLftIC";
-import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
-import CancleIC from "@/assets/images/svg/CancleIC";
-import SuccesIC from "@/assets/images/svg/SuccesIC";
-import ShareIC from "@/assets/images/svg/ShareIC";
-import ShareICWhite from "@/assets/images/svg/ShareICWhite";
-import { hp } from "@/helpers/common";
+} from 'react-native';
+import React from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
+import { router } from 'expo-router';
+import { Colors } from '@/constants/Colors';
+import CancleIC from '@/assets/images/svg/CancleIC';
+import SuccesIC from '@/assets/images/svg/SuccesIC';
+import ShareIC from '@/assets/images/svg/ShareIC';
+import ShareICWhite from '@/assets/images/svg/ShareICWhite';
+import { hp } from '@/helpers/common';
 
-const Reciept = () => {
+const Receipt = () => {
   const { top } = useSafeAreaInsets();
-  const paddinTop = top > 0 ? top + 10 : 30;
+  const paddingTop = top > 0 ? top + 10 : 30;
   return (
-    <View style={[styles.container, { paddingTop: paddinTop }]}>
+    <View style={[styles.container, { paddingTop: paddingTop }]}>
       <View
         style={{
-          width: "100%",
+          width: '100%',
           paddingTop: 5,
           paddingBottom: 30,
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+        }}>
         <TouchableOpacity style={{ flex: 1 }} onPress={() => router.back()}>
           <ArrowLftIC width={30} height={30} />
         </TouchableOpacity>
         <Text
           style={{
             fontSize: 15,
-            fontWeight: "500",
-            fontFamily: "Montserrat-Regular",
+            fontWeight: '500',
+            fontFamily: 'Montserrat-Regular',
             color: Colors.main.primary,
             flex: 1,
-            textAlign: "center",
-          }}
-        >
-          Reciept
+            textAlign: 'center',
+          }}>
+          Receipt
         </Text>
         <View style={{ flex: 1 }}></View>
       </View>
@@ -91,7 +89,9 @@ const Reciept = () => {
           <ShareICWhite width={20} height={20} />
           <Text style={styles.footerBtn1Text}>Share</Text>
         </Pressable>
-        <Pressable onPress={()=>router.push('/(tabs)/(top-tabs)')} style={styles.footerBtn2}>
+        <Pressable
+          onPress={() => router.push('/(tabs)/(top-tabs)')}
+          style={styles.footerBtn2}>
           <Text style={styles.footerBtn2Text}>Home Page</Text>
         </Pressable>
       </View>
@@ -99,14 +99,14 @@ const Reciept = () => {
   );
 };
 
-export default Reciept;
+export default Receipt;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.main.background,
-    alignItems: "center",
-    justifyContent: "flex-start",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     paddingHorizontal: 20,
     //gap: 20,
   },
@@ -114,85 +114,85 @@ const styles = StyleSheet.create({
     //backgroundColor: 'red',
     gap: hp(1.2),
     //marginTop: 30,
-    alignItems: "center",
+    alignItems: 'center',
   },
   total: {
     fontSize: 15,
-    fontWeight: "600",
-    fontFamily: "Montserrat-SemiBold",
+    fontWeight: '600',
+    fontFamily: 'Montserrat-SemiBold',
     color: Colors.main.description,
-    textAlign: "left",
+    textAlign: 'left',
   },
   amount: {
     fontSize: 48,
-    fontWeight: "600",
-    fontFamily: "Montserrat-SemiBold",
+    fontWeight: '600',
+    fontFamily: 'Montserrat-SemiBold',
     color: Colors.main.text,
-    textAlign: "left",
+    textAlign: 'left',
   },
   block: {
-    flex: .95,
+    flex: 0.95,
     marginTop: hp(1.5),
-    backgroundColor: "white",
-    width: "100%",
+    backgroundColor: 'white',
+    width: '100%',
     borderRadius: 10,
     paddingHorizontal: 40,
-    gap:15,
+    gap: 15,
     paddingVertical: 20,
   },
   blockItem: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
     //backgroundColor: 'red',
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   blockItemDes: {
-    fontFamily: "Monserrat-Regular",
+    fontFamily: 'Monserrat-Regular',
     color: Colors.main.description,
     fontSize: 15,
   },
   blockItemText: {
-    fontFamily: "Monserrat-SemiBold",
-    fontWeight: "600",
+    fontFamily: 'Monserrat-SemiBold',
+    fontWeight: '600',
     color: Colors.main.text,
     fontSize: 15,
   },
   footer: {
     //backgroundColor: 'red',
     //flex: 1,
-    width: "100%",
+    width: '100%',
     padding: 20,
     gap: 4,
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerBtn1: {
-    width: "80%",
+    width: '80%',
     padding: 14,
     backgroundColor: Colors.main.primary,
     borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 10,
   },
   footerBtn1Text: {
-    fontFamily: "Raleway-SemiBold",
-    color: "#fff",
+    fontFamily: 'Raleway-SemiBold',
+    color: '#fff',
     fontSize: 18,
   },
   footerBtn2: {
-    width: "80%",
+    width: '80%',
     padding: 14,
     borderColor: Colors.main.primary,
     borderWidth: 1,
     borderRadius: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 10,
   },
   footerBtn2Text: {
-    fontFamily: "Raleway-SemiBold",
+    fontFamily: 'Raleway-SemiBold',
     color: Colors.main.text,
     fontSize: 18,
   },
