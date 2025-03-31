@@ -48,6 +48,12 @@
         {
           "nfcPermission": "Kolet needs your persimission to access NFC for NFC payments."
         }
+      ],
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
       ]
     ],
     "experiments": {
