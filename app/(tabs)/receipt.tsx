@@ -18,9 +18,9 @@ import { hp } from '@/helpers/common';
 
 const Receipt = () => {
   const { top } = useSafeAreaInsets();
-  const paddinTop = top > 0 ? top + 10 : 30;
+  const paddingTop = top > 0 ? top + 10 : 30;
   return (
-    <View style={[styles.container, { paddingTop: paddinTop }]}>
+    <View style={[styles.container, { paddingTop: paddingTop }]}>
       <View
         style={{
           width: '100%',

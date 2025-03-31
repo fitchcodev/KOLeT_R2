@@ -25,7 +25,7 @@ const CardDetailsForm = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
   const [cardName, setCardName] = useState('');
-  const [cardNumebr, setCardNumber] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
   const [cardExpDate, setExpDate] = useState('');
   const [cardCVV, setCardCVV] = useState('');
 
@@ -138,7 +138,7 @@ const CardDetailsForm = () => {
               onChange={setCardName}
             />
             <CustomTextInput
-              value={cardNumebr}
+              value={cardNumber}
               inputMode="numeric"
               keyboardType="phone-pad"
               maxLength={19} // Limit the length to 19 characters (16 digits + 3 spaces)
