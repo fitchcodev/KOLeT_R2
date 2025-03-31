@@ -22,7 +22,10 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.limebit.kolet",
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.NFC"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -58,6 +61,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "5a102ff8-072c-44ef-bf56-0af5fbb9961e"
+      }
     }
   }
 }
