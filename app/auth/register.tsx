@@ -9,7 +9,7 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   createUsername,
@@ -28,6 +28,7 @@ import DatePicker from 'react-native-date-picker';
 import { StatusBar } from 'expo-status-bar';
 import CustomTextInput from '@/components/CustomTextInput';
 import { useSignupMutation } from '@/api/auth';
+import {RegisterAccount}
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
@@ -39,6 +40,7 @@ const Register = () => {
   const [open, setOpen] = useState(false);
   const { mutate, isPending, error } = useSignupMutation();
 
+  const {user, updateUser} = useContext(RegisterAccountContext)
   const onSubmit = () => {
     const payload = {
       firstName,
@@ -52,7 +54,7 @@ const Register = () => {
       { ...payload },
       {
         onSuccess: () => {
-          router.push('/auth/otpScreen');
+          router.push('/auth/createPassword');
         },
         onError: error => {
           Alert.alert('Oops!', 'There was an error signing you up');

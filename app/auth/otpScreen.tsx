@@ -33,12 +33,16 @@ const OtpScreen = () => {
     mutate(
       { ...payload },
       {
-        onSuccess: () => {
+        onSuccess: data => {
           // Remove after verification
           console.warn('OTP verified successfully');
           Alert.alert(
             'Success',
-            'Your OTP has been verified successfully',
+            `Your OTP has been verified successfully \n\n${JSON.stringify(
+              data,
+              null,
+              2
+            )}`,
             [
               {
                 text: 'OK',
@@ -48,7 +52,7 @@ const OtpScreen = () => {
             { cancelable: false }
           );
 
-          router.navigate('/auth/createPassword');
+          // router.navigate('/auth/createPassword');
         },
         onError: error => {
           Alert.alert('Oops!', 'There was an error verifying your OTP');

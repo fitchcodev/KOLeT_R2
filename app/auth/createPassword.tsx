@@ -59,7 +59,7 @@ const CreatePassword = () => {
             { cancelable: false }
           );
 
-          router.navigate('/auth/login');
+          // router.navigate('/auth/login');
         },
         onError: error => {
           Alert.alert('Oops!', 'There was an error setting your password');

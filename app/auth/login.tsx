@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert
 } from 'react-native';
 import React, { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -39,11 +40,29 @@ const Login = () => {
     mutate(
       { ...payload },
       {
-        onSuccess: () => {
-          router.navigate('/(tabs)/(top-tabs)');
+        onSuccess: (data) => {
+          // Remove after verification
+          console.warn('Login successfully!');
+          Alert.alert(
+            'Success',
+            `Login successfully \n\n${JSON.stringify(
+              data,
+              null,
+              2
+            )}`,
+            [
+              {
+                text: 'OK',
+                onPress: () => router.push('/(tabs)/(top-tabs)'),
+              },
+            ],
+            { cancelable: false }
+          );
+
+          // router.navigate('/(tabs)/(top-tabs)');
         },
         onError: error => {
-          console.log(error);
+          console.warn(error);
         },
       }
     );
@@ -140,7 +159,7 @@ const Login = () => {
           </TouchableOpacity>
           {error && (
             <Text style={{ color: 'red', fontSize: 12 }}>
-              There was am error logging you in. Please try again later
+              There was am error logging you in. Please try again later {error.message}
             </Text>
           )}
           <Text
