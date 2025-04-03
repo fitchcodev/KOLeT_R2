@@ -21,6 +21,7 @@ import GoogleIc from "@/assets/images/svg/GoogleIc";
 import AppleIC from "@/assets/images/svg/AppleIC";
 import { StatusBar } from "expo-status-bar";
 import CustomTextInput from "@/components/CustomTextInput";
+import { useLoginMutation } from "@/api/auth";
 
 const Login = () => {
   const { top } = useSafeAreaInsets();
@@ -28,7 +29,22 @@ const Login = () => {
   const [phone_number, setPhone_number] = useState("");
   const [showPassword, setShowPassword] = useState(true);
   const [password, setPassword] = useState("");
-
+  const {mutate, isPending, error} = useLoginMutation()
+   const onSubmit = () => {
+      const payload = {
+        email: "KKk@mmm.com1",
+        username: password,
+    }
+    mutate(
+      {...payload},
+      {onSuccess: () => {
+        router.navigate('/(tabs)')
+      }, onError: (error) => {
+        console.log(error)
+      }}
+    )
+  
+    }
   const checkButtonDisabled = () => {
     return !(validateNigerianPhoneNumber(phone_number) || (password.length < 4));
   };
@@ -97,7 +113,7 @@ color: Colors.main.primary,}}>Forgot Password?</Text>
         >
           <TouchableOpacity
             disabled={checkButtonDisabled()}
-            onPress={()=> router.navigate('/(tabs)')}
+            onPress={() => onSubmit()}
             style={[
               styles.footerBtn,
               {
@@ -106,8 +122,9 @@ color: Colors.main.primary,}}>Forgot Password?</Text>
               },
             ]}
           >
-            <Text style={styles.footerBtnText}>Sign In</Text>
+            <Text style={styles.footerBtnText}>{!isPending ? "Sign In" : "Loading..."}</Text>
           </TouchableOpacity>
+          {error && <Text style={{color: "red", fontSize: 12}}>There was am error logging you in. Please try again later</Text>}
           <Text
             onPress={() => router.navigate("/auth/register")}
             style={styles.footerText}

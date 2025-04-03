@@ -54,7 +54,7 @@ export const useSignupMutation = () => {
 };
 
 export const useLoginMutation = () => {
-  const loginUser = async (credentials: LoginParams): Promise<AuthResponse> => {
+  const loginUser = async (credentials: any): Promise<AuthResponse> => {
     const response = await fetch(`${API_URL}/login.php`, {
       method: 'POST',
       headers: {
