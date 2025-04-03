@@ -26,6 +26,7 @@ import Animated, {
 import DatePicker from "react-native-date-picker";
 import { StatusBar } from "expo-status-bar";
 import CustomTextInput from "@/components/CustomTextInput";
+import { useSignupMutation } from "@/api/auth";
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
@@ -35,7 +36,30 @@ const Register = () => {
   const [phone_number, setPhone_number] = useState("");
   const [date_of_birth, setDate_of_birth] = useState("");
   const [open, setOpen] = useState(false);
+  const {mutate, isPending, error} = useSignupMutation();
 
+
+  const onSubmit = () => {
+    const payload = {
+      FIRST_NAME: first_name,
+      LAST_NAME: last_name,
+      email: email,
+      PHONE_NUMBER: phone_number,
+      username: first_name + last_name,
+      model: "users",
+      last_login: "2025-04-01 12:45:05",
+      jwt: "1234"
+  }
+  mutate(
+    {...payload},
+    {onSuccess: () => {
+      router.push("/auth/otpScreen")
+    }, onError: (error) => {
+      console.log(error)
+    }}
+  )
+
+  }
   const handleButton = () => {
     router.navigate("/auth/otpScreen");
   };
@@ -45,12 +69,10 @@ const Register = () => {
   const checkButtonDisabled = () => {
     return (
       !first_name ||
-      (!last_name && !validateNigerianPhoneNumber(phone_number)) ||
-      !date_of_birth
+      (!last_name && !validateNigerianPhoneNumber(phone_number))
     );
   };
 
-  console.log(checkButtonDisabled());
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -189,7 +211,7 @@ const Register = () => {
           </Text>
           <TouchableOpacity
             disabled={checkButtonDisabled()}
-            onPress={handleButton}
+            onPress={()=> onSubmit()}
             style={[
               styles.footerBtn,
               {
@@ -198,8 +220,9 @@ const Register = () => {
               },
             ]}
           >
-            <Text style={styles.footerBtnText}>Next</Text>
+            <Text style={styles.footerBtnText}>{!isPending ? "Next" : "Loading..."}</Text>
           </TouchableOpacity>
+          {error && <Text style={{color: "red", fontSize: 10}}>There was an error entering your details : {error.message}</Text>}
           <Text
             onPress={() => router.navigate("/auth/login")}
             style={styles.footerText}
