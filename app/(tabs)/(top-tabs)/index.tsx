@@ -15,6 +15,7 @@ import { router } from "expo-router";
 import NotificationModal from "@/components/NotificationModal";
 import NfcManager from 'react-native-nfc-manager';
 import Modal from "react-native-modal";
+import { useTransaction } from "@/contexts/ReceiptContext";
 const Keypad = () => {
   const [narrattion, setNarration] = useState("");
   const [amount, setAmount] = useState(0.0);
@@ -24,7 +25,7 @@ const Keypad = () => {
   const [modalNFCVisible, setModalNFCVisible] = useState<boolean>(false);
   const [nfcSupported, setNFCSupported] = useState<boolean>(false);
   const [modalNONNFCVisible, setModalNONNFCVisible] = useState<boolean>(false);
-
+  const {saveTransactionAmount} = useTransaction()
 
 
   // Function to handle number press
@@ -54,6 +55,7 @@ const Keypad = () => {
 
   // payment Navigate 
   const handlePaymentNaviage = ()=>{
+    saveTransactionAmount(amount as unknown as string)
     if (nfcSupported){
       //setModalNFCVisible(true);
         router.push({

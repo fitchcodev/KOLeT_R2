@@ -149,13 +149,13 @@ const More = () => {
       </View>
       {/* More iTems */}
       <View style={styles.itemsContainer}>
-        <Pressable
+        {/* <Pressable
           onPress={() => router.navigate("/(tabs)/more/cardManagement")}
           style={styles.item}
         >
           <SmartCardIC stroke={Colors.main.text} width={20} height={20} />
           <Text style={styles.itemText}>Card Management</Text>
-        </Pressable>
+        </Pressable> */}
         <Pressable
           onPress={() => router.navigate("/(tabs)/more/notificationSettings")}
           style={styles.item}

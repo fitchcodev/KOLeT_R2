@@ -1,32 +1,38 @@
-import ArrowLefRightIC from '@/assets/images/svg/ArrowLefRightIC';
-import HomeIC from '@/assets/images/svg/HomeIC';
-import MenuIc from '@/assets/images/svg/MenuIC';
-import UserTabIc from '@/assets/images/svg/UserTabIc';
-import CustomHeader from '@/components/CustomHeader';
-import { Colors } from '@/constants/Colors';
-import { NotificationModalContext } from '@/contexts/NotificationModalContext';
-import { hp } from '@/helpers/common';
-import { Stack, Tabs } from 'expo-router';
-import React, { useContext, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import ArrowLefRightIC from "@/assets/images/svg/ArrowLefRightIC";
+import HomeIC from "@/assets/images/svg/HomeIC";
+import MenuIc from "@/assets/images/svg/MenuIC";
+import UserTabIc from "@/assets/images/svg/UserTabIc";
+import CustomHeader from "@/components/CustomHeader";
+import { Colors } from "@/constants/Colors";
+import { NotificationModalContext } from "@/contexts/NotificationModalContext";
+import { TransactionProvider } from "@/contexts/ReceiptContext";
+import { hp } from "@/helpers/common";
+import { Stack, Tabs } from "expo-router";
+import React, { useContext, useState } from "react";
+import { Platform, StyleSheet, Text, View} from "react-native";
 export default function TabLayout() {
   const [isModalActive, setModalIsActive] = useState<boolean>(false);
   return (
-    <NotificationModalContext.Provider
-      value={{ isModalActive, setModalIsActive }}>
-      <Tabs
-        screenOptions={{
-          // tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-          headerShown: false,
-          tabBarStyle: styles.container,
-          tabBarActiveTintColor: Colors.main.primary,
-          tabBarInactiveTintColor: Colors.main.text,
-          unmountOnBlur: true,
-          //tabBarHideOnKeyboard: true,
-        }}>
-        <Tabs.Screen
-          name="(top-tabs)"
-          initialParams={{
+  <NotificationModalContext.Provider value={{ isModalActive, setModalIsActive}}>
+    <TransactionProvider>
+    <Tabs
+      screenOptions={{
+        // tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        headerShown: false,
+        tabBarStyle: styles.container,
+        tabBarActiveTintColor: Colors.main.primary,
+        tabBarInactiveTintColor: Colors.main.text,
+        unmountOnBlur:true,
+        //tabBarHideOnKeyboard: true,
+        
+      }}
+    >
+      
+      <Tabs.Screen
+        name="(top-tabs)"
+        
+        initialParams={
+          {
             isModalActive,
           }}
           options={{
@@ -203,22 +209,23 @@ export default function TabLayout() {
           }}
         />
 
-        <Tabs.Screen
-          name="payment/index"
-          options={{
-            href: null,
-            unmountOnBlur: false,
-            tabBarStyle: { display: 'none' },
-          }}
-        />
-        <Tabs.Screen
-          name="payment/cardDeatilsForm"
-          options={{
-            href: null,
-            tabBarStyle: { display: 'none' },
-          }}
-        />
-      </Tabs>
+      <Tabs.Screen
+        name="payment/index"
+        options={{
+          href: null,
+          unmountOnBlur:false,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+      <Tabs.Screen
+        name="payment/cardDeatilsForm"
+        options={{
+          href: null,
+          tabBarStyle: { display: "none" },
+        }}
+      />
+    </Tabs>
+    </TransactionProvider>
     </NotificationModalContext.Provider>
   );
 }
