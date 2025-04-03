@@ -7,77 +7,81 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-} from "react-native";
-import React, { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+  Alert,
+} from 'react-native';
+import React, { useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
+  createUsername,
+  dateToString,
   formatDate,
   hp,
+  validateDate,
   validateEmail,
   validateNigerianPhoneNumber,
   wp,
-} from "@/helpers/common";
-import { Colors } from "@/constants/Colors";
-import { router } from "expo-router";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-} from "react-native-reanimated";
-import DatePicker from "react-native-date-picker";
-import { StatusBar } from "expo-status-bar";
-import CustomTextInput from "@/components/CustomTextInput";
-import { useSignupMutation } from "@/api/auth";
+} from '@/helpers/common';
+import { Colors } from '@/constants/Colors';
+import { router } from 'expo-router';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import DatePicker from 'react-native-date-picker';
+import { StatusBar } from 'expo-status-bar';
+import CustomTextInput from '@/components/CustomTextInput';
+import { useSignupMutation } from '@/api/auth';
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
-  const [first_name, setFirst_name] = useState("");
-  const [last_name, setLast_name] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone_number, setPhone_number] = useState("");
-  const [date_of_birth, setDate_of_birth] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState<Date>(new Date());
   const [open, setOpen] = useState(false);
-  const {mutate, isPending, error} = useSignupMutation();
-
+  const { mutate, isPending, error } = useSignupMutation();
 
   const onSubmit = () => {
     const payload = {
-      FIRST_NAME: first_name,
-      LAST_NAME: last_name,
-      email: email,
-      PHONE_NUMBER: phone_number,
-      username: first_name + last_name,
-      model: "users",
-      last_login: "2025-04-01 12:45:05",
-      jwt: "1234"
-  }
-  mutate(
-    {...payload},
-    {onSuccess: () => {
-      router.push("/auth/otpScreen")
-    }, onError: (error) => {
-      console.log(error)
-    }}
-  )
-
-  }
-  const handleButton = () => {
-    router.navigate("/auth/otpScreen");
+      firstName,
+      lastName,
+      email,
+      phone,
+      dateOfBirth: dateToString(dateOfBirth),
+      username: createUsername(firstName, lastName),
+    };
+    mutate(
+      { ...payload },
+      {
+        onSuccess: () => {
+          router.push('/auth/otpScreen');
+        },
+        onError: error => {
+          Alert.alert('Oops!', 'There was an error signing you up');
+          console.warn(error);
+        },
+      }
+    );
   };
-  const handleDateChange = (date) => {
-    setDate_of_birth(date);
+
+  const handleDateChange = (date: Date) => {
+    setDateOfBirth(date);
   };
   const checkButtonDisabled = () => {
-    return (
-      !first_name ||
-      (!last_name && !validateNigerianPhoneNumber(phone_number))
+    return !(
+      (
+        firstName &&
+        lastName &&
+        validateNigerianPhoneNumber(phone) &&
+        (email ? validateEmail(email) : true) &&
+        dateOfBirth
+      ) //&&
+      // validateDate(dateOfBirth)
     );
   };
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={[styles.container, { paddingTop: paddinTop }]}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container, { paddingTop: paddinTop }]}>
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={{
@@ -88,16 +92,14 @@ const Register = () => {
         }}
         keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
-        horizontal={false}
-      >
+        horizontal={false}>
         {/* Heading */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}
-        >
+          style={styles.heading}>
           <Text style={styles.headingTextTitle}>
-            Sign Up for{" "}
-            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{" "}
+            Sign Up for{' '}
+            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{' '}
           </Text>
           <Text style={styles.headingTextDescript}>
             Unlock the future of convenient transactions with Kolet. Sign up
@@ -105,15 +107,15 @@ const Register = () => {
           </Text>
         </Animated.View>
 
-        {/* Haeding End */}
+        {/* Heading End */}
 
         {/* form */}
         <View style={styles.formContainer}>
           <CustomTextInput
             inputMode="text"
             maxLength={200}
-            value={first_name}
-            onChange={setFirst_name}
+            value={firstName}
+            onChange={setFirstName}
             placeholder="First Name"
             iconName="user"
             iconHieght={15}
@@ -123,8 +125,8 @@ const Register = () => {
           <CustomTextInput
             inputMode="text"
             maxLength={200}
-            value={last_name}
-            onChange={setLast_name}
+            value={lastName}
+            onChange={setLastName}
             placeholder="Last Name"
             iconName="user"
             iconHieght={15}
@@ -134,8 +136,8 @@ const Register = () => {
           <CustomTextInput
             inputMode="numeric"
             maxLength={11}
-            value={phone_number}
-            onChange={setPhone_number}
+            value={phone}
+            onChange={setPhone}
             placeholder="Phone Number"
             keyboardType="phone-pad"
             iconName="phone"
@@ -143,7 +145,7 @@ const Register = () => {
             iconWidth={16}
           />
           <CustomTextInput
-            inputMode={"email"}
+            inputMode={'email'}
             value={email}
             onChange={setEmail}
             iconName="mail"
@@ -153,13 +155,11 @@ const Register = () => {
             maxLength={50}
             placeholder="Email (Optional)"
           />
-          <Pressable
-           
-          >
+          <Pressable>
             <CustomTextInput
-              inputMode={"text"}
+              inputMode={'text'}
               maxLength={200}
-              value={formatDate(date_of_birth)}
+              value={formatDate(dateOfBirth!)}
               placeholder="Date of Birth"
               editable={false}
               iconName="calendar"
@@ -175,7 +175,7 @@ const Register = () => {
               date={new Date()}
               mode="date"
               maximumDate={new Date()}
-              onConfirm={(date) => {
+              onConfirm={date => {
                 setOpen(false);
                 handleDateChange(date);
               }}
@@ -201,33 +201,37 @@ const Register = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}
-        >
+          style={styles.footer}>
           <Text style={styles.footerTextTiltle}>
-            By signing up, you agree to our{" "}
-            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{" "}
-            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{" "}
+            By signing up, you agree to our{' '}
+            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{' '}
+            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{' '}
             <Text style={{ color: Colors.main.primary }}>Privacy Policy</Text>
           </Text>
           <TouchableOpacity
             disabled={checkButtonDisabled()}
-            onPress={()=> onSubmit()}
+            onPress={onSubmit}
             style={[
               styles.footerBtn,
               {
                 backgroundColor: Colors.main.primary,
                 opacity: !checkButtonDisabled() ? 1 : 0.5,
               },
-            ]}
-          >
-            <Text style={styles.footerBtnText}>{!isPending ? "Next" : "Loading..."}</Text>
+            ]}>
+            <Text style={styles.footerBtnText}>
+              {!isPending ? 'Next' : 'Loading...'}
+            </Text>
           </TouchableOpacity>
-          {error && <Text style={{color: "red", fontSize: 10}}>There was an error entering your details : {error.message}</Text>}
+          {error && (
+            <Text style={{ color: 'red', fontSize: 10 }}>
+              There was an error entering your details : {error.message} :{' '}
+              {error.stack}
+            </Text>
+          )}
           <Text
-            onPress={() => router.navigate("/auth/login")}
-            style={styles.footerText}
-          >
-            Already a member?{" "}
+            onPress={() => router.navigate('/auth/login')}
+            style={styles.footerText}>
+            Already a member?{' '}
             <Text style={{ color: Colors.main.primary }}>Login</Text>
           </Text>
         </Animated.View>
@@ -242,33 +246,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.main.inputBg,
-    alignItems: "center",
-    justifyContent: "flex-start",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   heading: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: 20,
   },
   headingTextTitle: {
     fontSize: 30,
-    fontWeight: "600",
-    fontFamily: "Raleway-SemiBold",
+    fontWeight: '600',
+    fontFamily: 'Raleway-SemiBold',
     color: Colors.main.text,
   },
   headingTextDescript: {
-    fontFamily: "Montserrat-Regular",
+    fontFamily: 'Montserrat-Regular',
     color: Colors.main.description,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 15,
   },
   formContainer: {
-    width: "100%",
+    width: '100%',
     gap: 16,
   },
   inputFieldContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
     height: hp(6.2),
     borderWidth: 0.7,
     borderRadius: 4,
@@ -277,62 +281,62 @@ const styles = StyleSheet.create({
   },
 
   inputField: {
-    fontFamily: "Montserrat-Regular",
-    width: "100%",
-    height: "100%",
+    fontFamily: 'Montserrat-Regular',
+    width: '100%',
+    height: '100%',
     color: Colors.main.text,
   },
 
   progressBar: {
-    width: "100%",
-    flexDirection: "row",
+    width: '100%',
+    flexDirection: 'row',
     paddingHorizontal: 50,
     gap: 10,
     marginVertical: 35,
   },
   progressBarItemActive: {
     height: hp(1),
-    width: "30%",
+    width: '30%',
     borderRadius: 20,
     backgroundColor: Colors.main.primary,
   },
   progressBarItemInactive: {
     height: hp(1),
-    width: "30%",
+    width: '30%',
     borderRadius: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   footer: {
     // backgroundColor: "red",
     flex: 1,
-    width: "100%",
+    width: '100%',
     gap: 15,
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerTextTiltle: {
-    fontWeight: "300",
-    fontFamily: "Raleway-RegularS",
-    textAlign: "center",
+    fontWeight: '300',
+    fontFamily: 'Raleway-RegularS',
+    textAlign: 'center',
     fontSize: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerBtn: {
     backgroundColor: Colors.main.primary,
     padding: 15,
-    width: "80%",
+    width: '80%',
     borderRadius: 4,
   },
   footerBtnText: {
-    fontWeight: "600",
-    fontFamily: "Raleway-SemiBold",
-    color: "#fff",
-    textAlign: "center",
+    fontWeight: '600',
+    fontFamily: 'Raleway-SemiBold',
+    color: '#fff',
+    textAlign: 'center',
     fontSize: 20,
   },
   footerText: {
-    fontWeight: "600",
-    fontFamily: "Raleway-Regular",
-    textAlign: "center",
+    fontWeight: '600',
+    fontFamily: 'Raleway-Regular',
+    textAlign: 'center',
     color: Colors.main.text,
     fontSize: 16,
   },
