@@ -8,33 +8,35 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import React, { useState } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors } from '@/constants/Colors';
-import { hp, validatePassword, wp } from '@/helpers/common';
+} from "react-native";
+import React, { useContext, useState } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Colors } from "@/constants/Colors";
+import { hp, validatePassword, wp } from "@/helpers/common";
 import Animated, {
   FadeIn,
   FadeInDown,
   FadeInRight,
   FadeInUp,
-} from 'react-native-reanimated';
-import ViewOff from '@/assets/images/svg/ViewOff';
-import ViewOn from '@/assets/images/svg/ViewOn';
-import { StatusBar } from 'expo-status-bar';
-import CustomTextInput from '@/components/CustomTextInput';
-import { router } from 'expo-router';
-import { useSetPasswordMutation } from '@/api/auth';
+} from "react-native-reanimated";
+import ViewOff from "@/assets/images/svg/ViewOff";
+import ViewOn from "@/assets/images/svg/ViewOn";
+import { StatusBar } from "expo-status-bar";
+import CustomTextInput from "@/components/CustomTextInput";
+import { router } from "expo-router";
+import { useSetPasswordMutation, useSignupMutation } from "@/api/auth";
+import { RegisterAccountContext } from "@/contexts/RegisterAccountContext";
 
 const CreatePassword = () => {
-  const { mutate, isPending, error } = useSetPasswordMutation();
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
   const [showPassword, setShowPassword] = useState(true);
   const [showconfirmPassword, setShowconfirmPassword] = useState(true);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [phone, setPhone] = useState('07066300068');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [phone, setPhone] = useState("07066300068");
+  const { mutate } = useSignupMutation();
+  const { user } = useContext(RegisterAccountContext);
 
   const onSubmit = () => {
     const payload = {
@@ -42,18 +44,17 @@ const CreatePassword = () => {
       password,
     };
     mutate(
-      { ...payload },
+      { ...user, password },
       {
         onSuccess: () => {
-          // Remove after verification
-          console.warn('Password set successfully');
+          console.warn("Account Created successfully");
           Alert.alert(
-            'Success',
-            'Your password has been set successfully',
+            "Success",
+            "Your have successfully created an account",
             [
               {
-                text: 'OK',
-                onPress: () => router.push('/auth/login'),
+                text: "OK",
+                onPress: () => router.push("/auth/login"),
               },
             ],
             { cancelable: false }
@@ -61,8 +62,8 @@ const CreatePassword = () => {
 
           // router.navigate('/auth/login');
         },
-        onError: error => {
-          Alert.alert('Oops!', 'There was an error setting your password');
+        onError: (error) => {
+          Alert.alert("Oops!", "There was an error creating your account");
           console.warn(error);
         },
       }
@@ -75,8 +76,9 @@ const CreatePassword = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { paddingTop: paddinTop }]}>
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={[styles.container, { paddingTop: paddinTop }]}
+    >
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={{
@@ -86,14 +88,16 @@ const CreatePassword = () => {
         }}
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
-        horizontal={false}>
+        horizontal={false}
+      >
         {/* Heading */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}>
+          style={styles.heading}
+        >
           <Text style={styles.headingTextTitle}>Create Password</Text>
           <Text style={styles.headingTextDescript}>
-            Secure your account with a{'\n'} strong password
+            Secure your account with a{"\n"} strong password
           </Text>
         </Animated.View>
 
@@ -107,7 +111,7 @@ const CreatePassword = () => {
             value={password}
             onChange={setPassword}
             placeholder="Create Password"
-            iconName={showPassword ? 'viewOn' : 'viewOff'}
+            iconName={showPassword ? "viewOn" : "viewOff"}
             iconWidth={20}
             iconHieght={20}
           />
@@ -115,10 +119,11 @@ const CreatePassword = () => {
             <Animated.View entering={FadeInRight.delay(300).springify()}>
               <Text
                 style={{
-                  fontFamily: 'Montserrat-Regular',
+                  fontFamily: "Montserrat-Regular",
                   fontSize: 12,
                   color: Colors.main.success,
-                }}>
+                }}
+              >
                 Strong Password
               </Text>
             </Animated.View>
@@ -127,10 +132,11 @@ const CreatePassword = () => {
             <Animated.View entering={FadeInRight.delay(300).springify()}>
               <Text
                 style={{
-                  fontFamily: 'Montserrat-Regular',
+                  fontFamily: "Montserrat-Regular",
                   fontSize: 12,
                   color: Colors.main.error,
-                }}>
+                }}
+              >
                 Weak Password
               </Text>
             </Animated.View>
@@ -139,10 +145,11 @@ const CreatePassword = () => {
           <Animated.View entering={FadeInUp.delay(700).springify()}>
             <Text
               style={{
-                fontFamily: 'Montserrat-Regular',
+                fontFamily: "Montserrat-Regular",
                 fontSize: 12,
                 color: Colors.main.description,
-              }}>
+              }}
+            >
               Password should be at least 8 characters long and include a mix of
               letters, numbers, and symbols.
             </Text>
@@ -154,7 +161,7 @@ const CreatePassword = () => {
             value={confirmPassword}
             onChange={setConfirmPassword}
             placeholder="Confrim Password"
-            iconName={showconfirmPassword ? 'viewOn' : 'viewOff'}
+            iconName={showconfirmPassword ? "viewOn" : "viewOff"}
             iconWidth={20}
             iconHieght={20}
           />
@@ -162,10 +169,11 @@ const CreatePassword = () => {
             <Animated.View entering={FadeInRight.delay(300).springify()}>
               <Text
                 style={{
-                  fontFamily: 'Montserrat-Regular',
+                  fontFamily: "Montserrat-Regular",
                   fontSize: 12,
                   color: Colors.main.error,
-                }}>
+                }}
+              >
                 Password does not match
               </Text>
             </Animated.View>
@@ -187,11 +195,12 @@ const CreatePassword = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}>
+          style={styles.footer}
+        >
           <Text style={styles.footerTextTiltle}>
-            By signing up, you agree to our{' '}
-            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{' '}
-            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{' '}
+            By signing up, you agree to our{" "}
+            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{" "}
+            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{" "}
             <Text style={{ color: Colors.main.primary }}>Privacy Policy</Text>
           </Text>
           <TouchableOpacity
@@ -199,7 +208,8 @@ const CreatePassword = () => {
             style={[
               styles.footerBtn,
               { opacity: checkButtonIsDisabled() ? 0.5 : 1 },
-            ]}>
+            ]}
+          >
             <Text style={styles.footerBtnText}>Create Account</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -214,74 +224,74 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.main.inputBg,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   heading: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 20,
   },
   headingTextTitle: {
     fontSize: 30,
-    fontWeight: '600',
-    fontFamily: 'Raleway-SemiBold',
+    fontWeight: "600",
+    fontFamily: "Raleway-SemiBold",
     color: Colors.main.text,
   },
   headingTextDescript: {
-    fontFamily: 'Montserrat-Semibold',
+    fontFamily: "Montserrat-Semibold",
     color: Colors.main.description,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
   },
   formContainer: {
     marginTop: 50,
-    width: '100%',
+    width: "100%",
     gap: 10,
   },
   progressBar: {
-    width: '100%',
-    flexDirection: 'row',
+    width: "100%",
+    flexDirection: "row",
     paddingHorizontal: 50,
     gap: 10,
     marginVertical: hp(6),
   },
   progressBarItemActive: {
     height: hp(1),
-    width: '30%',
+    width: "30%",
     borderRadius: 20,
     backgroundColor: Colors.main.primary,
   },
   progressBarItemInactive: {
     height: hp(1),
-    width: '30%',
+    width: "30%",
     borderRadius: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   footer: {
     // backgroundColor: "red",
     flex: 1,
-    width: '100%',
+    width: "100%",
     gap: hp(3.5),
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerTextTiltle: {
-    fontWeight: '300',
-    fontFamily: 'Raleway-RegularS',
-    textAlign: 'center',
+    fontWeight: "300",
+    fontFamily: "Raleway-RegularS",
+    textAlign: "center",
     fontSize: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerBtn: {
     backgroundColor: Colors.main.primary,
     padding: 15,
-    width: '80%',
+    width: "80%",
     borderRadius: 4,
   },
   footerBtnText: {
-    fontWeight: '600',
-    fontFamily: 'Raleway-SemiBold',
-    color: '#fff',
-    textAlign: 'center',
+    fontWeight: "600",
+    fontFamily: "Raleway-SemiBold",
+    color: "#fff",
+    textAlign: "center",
     fontSize: 18,
   },
 });

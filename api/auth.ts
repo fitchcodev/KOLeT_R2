@@ -1,6 +1,6 @@
-import { dateToString } from '@/helpers/common';
-import { useMutation } from '@tanstack/react-query';
-import { Alert } from 'react-native';
+import { dateToString } from "@/helpers/common";
+import { useMutation } from "@tanstack/react-query";
+import { Alert } from "react-native";
 
 interface SignupParams {
   firstName: string;
@@ -9,6 +9,7 @@ interface SignupParams {
   email: string;
   dateOfBirth: string;
   username: string;
+  password: string;
 }
 
 interface LoginParams {
@@ -39,22 +40,22 @@ interface AuthResponse {
 const API_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
 const catchError = (error: Error) => {
-  console.error('API error:', error);
+  console.error("API error:", error);
   return error;
 };
 
 export const useSignupMutation = () => {
   const signupUser = async (userData: SignupParams): Promise<AuthResponse> => {
     const response = await fetch(`${API_URL}/add.php`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         ...userData,
-        model: 'users',
+        model: "users",
         last_login: dateToString(new Date()),
-        jwt: '1234',
+        jwt: "1234",
       }),
     });
 
@@ -62,11 +63,11 @@ export const useSignupMutation = () => {
       const errorData = await response.json().catch(catchError);
       console.warn(errorData);
       Alert.alert(
-        'Error',
-        errorData.message || 'An error occurred during signup',
-        [{ text: 'OK' }]
+        "Error",
+        errorData.message || "An error occurred during signup",
+        [{ text: "OK" }]
       );
-      throw new Error(errorData.message || 'Signup failed');
+      throw new Error(errorData.message || "Signup failed");
     }
 
     return response.json();
@@ -74,8 +75,8 @@ export const useSignupMutation = () => {
 
   const mutation = useMutation({
     mutationFn: signupUser,
-    onSuccess: data => {
-      console.log('Signup successful', data);
+    onSuccess: (data) => {
+      console.log("Signup successful", data);
     },
   });
   return mutation;
@@ -86,26 +87,26 @@ export const useConfirmOTPMutation = () => {
     params: ConfirmOTPSignupParams
   ): Promise<AuthResponse> => {
     const response = await fetch(`${API_URL}/confirm_account.php`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         ...params,
-        model: 'users',
-        jwt: '1234',
+        model: "users",
+        jwt: "1234",
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(catchError);
-      console.error('OTP confirmation error:', errorData);
+      console.error("OTP confirmation error:", errorData);
       Alert.alert(
-        'Error',
-        errorData.message || 'An error occurred during OTP confirmation',
-        [{ text: 'OK' }]
+        "Error",
+        errorData.message || "An error occurred during OTP confirmation",
+        [{ text: "OK" }]
       );
-      throw new Error(errorData.message || 'OTP confirmation failed');
+      throw new Error(errorData.message || "OTP confirmation failed");
     }
 
     return response.json();
@@ -113,8 +114,8 @@ export const useConfirmOTPMutation = () => {
 
   const mutation = useMutation({
     mutationFn: confirmOTPSignup,
-    onSuccess: data => {
-      console.log('OTP confirmation successful', data);
+    onSuccess: (data) => {
+      console.log("OTP confirmation successful", data);
     },
   });
   return mutation;
@@ -125,30 +126,30 @@ export const useSetPasswordMutation = () => {
     params: SetPasswordParams
   ): Promise<AuthResponse> => {
     const response = await fetch(`${API_URL}/confirm_password.php`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(params),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(catchError);
-      console.error('Set password error:', errorData);
+      console.error("Set password error:", errorData);
       Alert.alert(
-        'Error',
-        errorData.message || 'An error occurred during password setting',
-        [{ text: 'OK' }]
+        "Error",
+        errorData.message || "An error occurred during password setting",
+        [{ text: "OK" }]
       );
-      throw new Error(errorData.message || 'Set password failed');
+      throw new Error(errorData.message || "Set password failed");
     }
     return response.json();
   };
 
   const mutation = useMutation({
     mutationFn: setPassword,
-    onSuccess: data => {
-      console.log('Set password successful', data);
+    onSuccess: (data) => {
+      console.log("Set password successful", data);
     },
   });
   return mutation;
@@ -157,16 +158,16 @@ export const useSetPasswordMutation = () => {
 export const useLoginMutation = () => {
   const loginUser = async (credentials: LoginParams): Promise<AuthResponse> => {
     const response = await fetch(`${API_URL}/login.php`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify(credentials),
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(catchError);
-      throw new Error(errorData.message || 'Login failed');
+      throw new Error(errorData.message || "Login failed");
     }
 
     return response.json();
@@ -174,8 +175,8 @@ export const useLoginMutation = () => {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: data => {
-      console.log('Login successful', data);
+    onSuccess: (data) => {
+      console.log("Login successful", data);
     },
   });
   return mutation;
