@@ -7,9 +7,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Alert
+  Alert,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '@/constants/Colors';
 import { hp, validateNigerianPhoneNumber, wp } from '@/helpers/common';
@@ -27,6 +27,7 @@ import AppleIC from '@/assets/images/svg/AppleIC';
 import { StatusBar } from 'expo-status-bar';
 import CustomTextInput from '@/components/CustomTextInput';
 import { useLoginMutation } from '@/api/auth';
+import { UserContext } from '@/contexts/UserContext';
 
 const Login = () => {
   const { top } = useSafeAreaInsets();
@@ -35,31 +36,16 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [password, setPassword] = useState('');
   const { mutate, isPending, error } = useLoginMutation();
+  const { updateUser } = useContext(UserContext);
   const onSubmit = () => {
     const payload = { phone, password };
     mutate(
       { ...payload },
       {
-        onSuccess: (data) => {
-          // Remove after verification
-          console.warn('Login successfully!');
-          Alert.alert(
-            'Success',
-            `Login successfully \n\n${JSON.stringify(
-              data,
-              null,
-              2
-            )}`,
-            [
-              {
-                text: 'OK',
-                onPress: () => router.push('/(tabs)/(top-tabs)'),
-              },
-            ],
-            { cancelable: false }
-          );
+        onSuccess: data => {
+          updateUser(data.data);
 
-          // router.navigate('/(tabs)/(top-tabs)');
+          router.navigate('/(tabs)/(top-tabs)');
         },
         onError: error => {
           console.warn(error);
@@ -159,7 +145,8 @@ const Login = () => {
           </TouchableOpacity>
           {error && (
             <Text style={{ color: 'red', fontSize: 12 }}>
-              There was am error logging you in. Please try again later {error.message}
+              There was am error logging you in. Please try again later{' '}
+              {error.message}
             </Text>
           )}
           <Text
