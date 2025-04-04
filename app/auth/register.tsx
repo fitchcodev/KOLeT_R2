@@ -67,13 +67,7 @@ const Register = () => {
   };
 
   const checkButtonDisabled = () => {
-    return !(
-      firstName &&
-      lastName &&
-      validateNigerianPhoneNumber(phone) &&
-      (email ? validateEmail(email) : true) &&
-      dateOfBirth
-    );
+    return !(firstName && lastName && validateNigerianPhoneNumber(phone));
   };
 
   return (
@@ -156,7 +150,7 @@ const Register = () => {
             maxLength={50}
             placeholder="Email (Optional)"
           />
-          <Pressable>
+          <Pressable onPress={() => setOpen(true)}>
             <CustomTextInput
               inputMode={"text"}
               maxLength={200}
@@ -166,9 +160,7 @@ const Register = () => {
               iconName="calendar"
               iconHieght={15}
               iconWidth={15}
-              onPressIn={() => {
-                setOpen(true);
-              }}
+              keyboardType={""}
             />
             <DatePicker
               modal

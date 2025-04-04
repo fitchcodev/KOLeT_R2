@@ -1,15 +1,15 @@
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import React, { FunctionComponent, useState } from 'react';
-import { hp } from '@/helpers/common';
-import Animated, { FadeInRight } from 'react-native-reanimated';
-import PhoneIC from '@/assets/images/svg/PhoneIC';
-import MailIc from '@/assets/images/svg/MailIc';
-import { Colors } from '@/constants/Colors';
-import ViewOn from '@/assets/images/svg/ViewOn';
-import ViewOff from '@/assets/images/svg/ViewOff';
-import UserIC from '@/assets/images/svg/UserIC';
-import CalenderIC from '@/assets/images/svg/CalenderIC';
-import SmartCardIC from '@/assets/images/svg/SmartCardIC';
+import { StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import React, { FunctionComponent, useState } from "react";
+import { hp } from "@/helpers/common";
+import Animated, { FadeInRight } from "react-native-reanimated";
+import PhoneIC from "@/assets/images/svg/PhoneIC";
+import MailIc from "@/assets/images/svg/MailIc";
+import { Colors } from "@/constants/Colors";
+import ViewOn from "@/assets/images/svg/ViewOn";
+import ViewOff from "@/assets/images/svg/ViewOff";
+import UserIC from "@/assets/images/svg/UserIC";
+import CalenderIC from "@/assets/images/svg/CalenderIC";
+import SmartCardIC from "@/assets/images/svg/SmartCardIC";
 
 interface IconProps {
   width: number;
@@ -19,9 +19,9 @@ interface InputProps {
   inputMode: string;
   maxLength: number;
   value: any;
-  onChange: Function;
+  onChange?: Function;
   placeholder: string;
-  keyboardType: string;
+  keyboardType?: string;
   iconName: string;
   iconWidth: number;
   iconHieght: number;
@@ -85,21 +85,22 @@ const CustomTextInput: FunctionComponent<InputProps> = ({
           borderColor: inputBorderColor,
           height: props?.height || hp(6.2),
         },
-      ]}>
+      ]}
+    >
       <TextInput
         inputMode={inputMode}
         keyboardAppearance="light"
         maxLength={maxLength}
         value={value}
-        onChangeText={text => onChange(text)}
+        onChangeText={(text) => onChange(text)}
         placeholder={placeholder}
-        keyboardType={keyboardType || 'default'}
+        keyboardType={keyboardType || "default"}
         style={styles.inputField}
         onFocus={customOnFocus}
         onBlur={customOnBlur}
         editable={props?.editable}
         secureTextEntry={props?.secureTextEntry}
-        placeholderTextColor={'rgba(53, 57, 53, .9)'}
+        placeholderTextColor={"rgba(53, 57, 53, .9)"}
         onPressIn={props?.onPressIn}
         multiline={props?.multiline || false}
       />
@@ -114,9 +115,9 @@ export default CustomTextInput;
 
 const styles = StyleSheet.create({
   inputFieldContainer: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1.2,
     borderRadius: 4,
     paddingLeft: 20,
@@ -125,9 +126,9 @@ const styles = StyleSheet.create({
   },
 
   inputField: {
-    fontFamily: 'Montserrat-Regular',
-    width: '100%',
-    height: '100%',
+    fontFamily: "Montserrat-Regular",
+    width: "100%",
+    height: "100%",
     color: Colors.main.text,
   },
 });
