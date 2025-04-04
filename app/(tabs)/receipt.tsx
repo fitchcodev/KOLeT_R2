@@ -4,29 +4,29 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from "react-native";
-import React, { useEffect, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ArrowLftIC from "@/assets/images/svg/ArrowLftIC";
-import { router } from "expo-router";
-import { Colors } from "@/constants/Colors";
-import CancleIC from "@/assets/images/svg/CancleIC";
-import SuccesIC from "@/assets/images/svg/SuccesIC";
-import ShareIC from "@/assets/images/svg/ShareIC";
-import ShareICWhite from "@/assets/images/svg/ShareICWhite";
-import { hp } from "@/helpers/common";
-import { useTransaction } from "@/contexts/ReceiptContext";
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
+import { router } from 'expo-router';
+import { Colors } from '@/constants/Colors';
+import CancleIC from '@/assets/images/svg/CancleIC';
+import SuccesIC from '@/assets/images/svg/SuccesIC';
+import ShareIC from '@/assets/images/svg/ShareIC';
+import ShareICWhite from '@/assets/images/svg/ShareICWhite';
+import { hp } from '@/helpers/common';
+import { useTransaction } from '@/contexts/ReceiptContext';
 
 const Receipt = () => {
   const { top } = useSafeAreaInsets();
-  const {getTransactionAmount} = useTransaction();
-  const [amount, setAmount] = useState<string | null>("");
+  const { getTransactionAmount } = useTransaction();
+  const [amount, setAmount] = useState<string | null>('');
   useEffect(() => {
-    setAmount(() => getTransactionAmount())
-  }, [])
-  const paddinTop = top > 0 ? top + 10 : 30;
+    setAmount(() => getTransactionAmount());
+  }, []);
+  const paddingTop = top > 0 ? top + 10 : 30;
   return (
-    <View style={[styles.container, { paddingTop: paddingTop }]}>
+    <View style={[styles.container, { paddingTop }]}>
       <View
         style={{
           width: '100%',
