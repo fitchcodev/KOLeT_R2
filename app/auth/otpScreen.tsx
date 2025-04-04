@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { hp, wp } from '@/helpers/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,11 +19,14 @@ import Animated, {
 import { router } from 'expo-router';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
 import { useConfirmOTPMutation } from '@/api/auth';
+import { UserContext } from '@/contexts/UserContext';
 
 const OtpScreen = () => {
   const { mutate, isPending, error } = useConfirmOTPMutation();
-  const [phone, setPhone] = useState('07066300068');
   const [otp, setOtp] = useState(['', '', '', '']);
+  const {
+    user: { phone },
+  } = useContext(UserContext);
 
   const onSubmit = () => {
     const payload = {
@@ -34,25 +37,7 @@ const OtpScreen = () => {
       { ...payload },
       {
         onSuccess: data => {
-          // Remove after verification
-          console.warn('OTP verified successfully');
-          Alert.alert(
-            'Success',
-            `Your OTP has been verified successfully \n\n${JSON.stringify(
-              data,
-              null,
-              2
-            )}`,
-            [
-              {
-                text: 'OK',
-                onPress: () => router.push('/auth/createPassword'),
-              },
-            ],
-            { cancelable: false }
-          );
-
-          // router.navigate('/auth/createPassword');
+          router.push('/auth/login');
         },
         onError: error => {
           Alert.alert('Oops!', 'There was an error verifying your OTP');
@@ -154,6 +139,7 @@ const OtpScreen = () => {
         </View>
         {/* progressBar */}
         <Animated.View entering={FadeIn.delay(800)} style={styles.progressBar}>
+          <View style={styles.progressBarItemActive} />
           <View style={styles.progressBarItemActive} />
           <View
             style={
