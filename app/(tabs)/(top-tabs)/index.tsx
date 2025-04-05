@@ -6,17 +6,18 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-} from "react-native";
-import React, {  useEffect, useRef, useState } from "react";
-import { hp } from "@/helpers/common";
-import { Colors } from "@/constants/Colors";
-import KeyPadInput from "@/components/KeyPad";
-import { router } from "expo-router";
-import NotificationModal from "@/components/NotificationModal";
+} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { hp } from '@/helpers/common';
+import { Colors } from '@/constants/Colors';
+import KeyPadInput from '@/components/KeyPad';
+import { router } from 'expo-router';
+import NotificationModal from '@/components/NotificationModal';
 import NfcManager from 'react-native-nfc-manager';
-import Modal from "react-native-modal";
+import Modal from 'react-native-modal';
+import { useTransaction } from '@/contexts/ReceiptContext';
 const Keypad = () => {
-  const [narrattion, setNarration] = useState("");
+  const [narrattion, setNarration] = useState('');
   const [amount, setAmount] = useState(0.0);
   const [editable, setEditable] = useState(false);
   const [inputBorderColor, setInputBorderColor] = useState(Colors.main.border);
@@ -24,13 +25,12 @@ const Keypad = () => {
   const [modalNFCVisible, setModalNFCVisible] = useState<boolean>(false);
   const [nfcSupported, setNFCSupported] = useState<boolean>(false);
   const [modalNONNFCVisible, setModalNONNFCVisible] = useState<boolean>(false);
-
-
+  const { saveTransactionAmount } = useTransaction();
 
   // Function to handle number press
   const handleNumberPress = (number: number) => {
     if (amount.toLocaleString().length < 9) {
-      setAmount((prevAmount) =>
+      setAmount(prevAmount =>
         parseFloat(prevAmount.toString() + number.toString())
       );
     }
@@ -38,12 +38,12 @@ const Keypad = () => {
 
   // Function to handle "del" (del) press
   const handleDelPress = () => {
-    setAmount((prevAmount) => {
+    setAmount(prevAmount => {
       // Convert the current amount to a string and remove the last character
       const updatedAmount = prevAmount.toString().slice(0, -1);
 
       // If the updated amount is empty, set it to 0, otherwise parse the remaining string as a float
-      return updatedAmount === "" ? 0 : parseFloat(updatedAmount);
+      return updatedAmount === '' ? 0 : parseFloat(updatedAmount);
     });
   };
 
@@ -52,29 +52,28 @@ const Keypad = () => {
     setAmount(0.0); // Reset the amount back to 0.00
   };
 
-  // payment Navigate 
-  const handlePaymentNaviage = ()=>{
-    if (nfcSupported){
+  // payment Navigate
+  const handlePaymentNaviage = () => {
+    saveTransactionAmount(amount as unknown as string);
+    if (nfcSupported) {
       //setModalNFCVisible(true);
-        router.push({
-      pathname: "/(tabs)/nfcPayment",
-      params: {
-        amount,
-        narrattion,
-      },
-    })
-    }else{
-      //setModalNONNFCVisible(true);
       router.push({
-        pathname: "/(tabs)/payment",
+        pathname: '/(tabs)/nfcPayment',
         params: {
           amount,
           narrattion,
         },
-      })
+      });
+    } else {
+      //setModalNONNFCVisible(true);
+      router.push({
+        pathname: '/(tabs)/payment',
+        params: {
+          amount,
+          narrattion,
+        },
+      });
     }
-  
-
   };
 
   // Format the amount with commas and limit to 2 decimal places
@@ -92,31 +91,30 @@ const Keypad = () => {
 
   useEffect(() => {
     const checkNfcSupport = async () => {
-        const isSupported = await NfcManager.isSupported();
-        if (isSupported) {
-            console.log("NFC is supported on this device.");
-            setNFCSupported(true);
-            setModalNFCVisible(true);            
-            // await NfcManager.start();
-        } else {
-            console.log("NFC is not supported on this device.");
-            setNFCSupported(false);
-            setModalNONNFCVisible(true);            
-            // Show a message to the user, disable NFC functionality, etc.
-        }
+      const isSupported = await NfcManager.isSupported();
+      if (isSupported) {
+        console.log('NFC is supported on this device.');
+        setNFCSupported(true);
+        setModalNFCVisible(true);
+        // await NfcManager.start();
+      } else {
+        console.log('NFC is not supported on this device.');
+        setNFCSupported(false);
+        setModalNONNFCVisible(true);
+        // Show a message to the user, disable NFC functionality, etc.
+      }
     };
 
     checkNfcSupport();
-    
-     // Clean up on unmount
-}, []);
 
+    // Clean up on unmount
+  }, []);
 
   return (
     <>
-    <NotificationModal/>
-    {/* Nfc Modal */}
-    <Modal
+      <NotificationModal />
+      {/* Nfc Modal */}
+      <Modal
         animationIn={'bounceInUp'}
         animationOut={'bounceOutDown'}
         backdropOpacity={0.2}
@@ -130,18 +128,21 @@ const Keypad = () => {
           // Alert.alert('Modal has been closed.');
           setModalNFCVisible(!modalNFCVisible);
         }}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTextDes}>Great news! Your device supports NFC. Press 'OK' to continue with your secure payment.</Text>
-            <Pressable
-              style={styles.button}
-              onPress={()=> setModalNFCVisible(!modalNFCVisible)}>
-              <Text style={styles.textStyle}>Ok</Text>
-            </Pressable>
-          </View>
-        </Modal>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTextDes}>
+            Great news! Your device supports NFC. Press 'OK' to continue with
+            your secure payment.
+          </Text>
+          <Pressable
+            style={styles.button}
+            onPress={() => setModalNFCVisible(!modalNFCVisible)}>
+            <Text style={styles.textStyle}>Ok</Text>
+          </Pressable>
+        </View>
+      </Modal>
 
-          {/* Non Nfc Modal */}
-    <Modal
+      {/* Non Nfc Modal */}
+      <Modal
         animationIn={'bounceInUp'}
         animationOut={'bounceOutDown'}
         backdropOpacity={0.2}
@@ -155,22 +156,23 @@ const Keypad = () => {
           // Alert.alert('Modal has been closed.');
           setModalNONNFCVisible(!modalNONNFCVisible);
         }}>
-          <View style={styles.modalView}>
-            
-            <Text style={styles.modalTextDes}>Oops! Your device doesn't support NFC. Enter card details manually. Press 'OK' to proceed.</Text>
-            <Pressable
-              style={styles.button}
-              onPress={()=> setModalNONNFCVisible(!modalNONNFCVisible)}>
-              <Text style={styles.textStyle}>Ok</Text>
-            </Pressable>
-          </View>
-        </Modal>
-    
+        <View style={styles.modalView}>
+          <Text style={styles.modalTextDes}>
+            Oops! Your device doesn't support NFC. Enter card details manually.
+            Press 'OK' to proceed.
+          </Text>
+          <Pressable
+            style={styles.button}
+            onPress={() => setModalNONNFCVisible(!modalNONNFCVisible)}>
+            <Text style={styles.textStyle}>Ok</Text>
+          </Pressable>
+        </View>
+      </Modal>
+
       {editable ? (
         <ScrollView
           keyboardDismissMode="interactive"
-          contentContainerStyle={styles.container}
-        >
+          contentContainerStyle={styles.container}>
           {/* Your scrollable content goes here */}
           <Text style={styles.amount}>₦{formattedAmount}</Text>
           <Pressable
@@ -180,8 +182,7 @@ const Keypad = () => {
               {
                 borderColor: inputBorderColor,
               },
-            ]}
-          >
+            ]}>
             <TextInput
               inputMode="text"
               ref={textInputRef}
@@ -211,10 +212,9 @@ const Keypad = () => {
               styles.payButton,
               {
                 backgroundColor:
-                  amount <= 0 ? "#3498DB1A" : Colors.main.primary,
+                  amount <= 0 ? '#3498DB1A' : Colors.main.primary,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.payButtonText}>
               Pay{amount > 0 ? ` ₦${amount}` : null}
             </Text>
@@ -230,13 +230,12 @@ const Keypad = () => {
               styles.inputContainer,
               {
                 borderColor: inputBorderColor,
-                justifyContent: narrattion.length > 0 ? "flex-start" : "center",
+                justifyContent: narrattion.length > 0 ? 'flex-start' : 'center',
                 paddingHorizontal: 20,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.inputContainerText}>
-              {narrattion.length > 0 ? narrattion : "+ Add Note"}
+              {narrattion.length > 0 ? narrattion : '+ Add Note'}
             </Text>
           </Pressable>
 
@@ -252,10 +251,9 @@ const Keypad = () => {
               styles.payButton,
               {
                 backgroundColor:
-                  amount <= 0 ? "#3498DB1A" : Colors.main.primary,
+                  amount <= 0 ? '#3498DB1A' : Colors.main.primary,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.payButtonText}>
               Pay{amount > 0 ? ` ₦${amount}` : null}
             </Text>
@@ -278,12 +276,12 @@ const styles = StyleSheet.create({
   },
   amount: {
     fontSize: hp(5),
-    fontFamily: "Montserrat-SemiBold",
+    fontFamily: 'Montserrat-SemiBold',
   },
   inputContainer: {
     backgroundColor: Colors.main.background,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     //paddingRight: 30,
     height: hp(6.2),
     borderWidth: 1.2,
@@ -291,34 +289,34 @@ const styles = StyleSheet.create({
     borderColor: Colors.main.border,
   },
   inputField: {
-    fontFamily: "Montserrat-SemiBold",
-    width: "100%",
-    height: "100%",
+    fontFamily: 'Montserrat-SemiBold',
+    width: '100%',
+    height: '100%',
     paddingHorizontal: 20,
     fontSize: hp(2.3),
     color: Colors.main.text,
   },
   inputContainerText: {
-    fontFamily: "Montserrat-SemiBold",
+    fontFamily: 'Montserrat-SemiBold',
     fontSize: hp(2.3),
   },
   payButton: {
     padding: 10,
     marginHorizontal: 50,
     borderRadius: 10,
-    alignItems: "center",
-    marginBottom:hp(10),
+    alignItems: 'center',
+    marginBottom: hp(10),
   },
   payButtonText: {
     fontSize: 22,
-    fontFamily: "Raleway-SemiBold",
-    color: "white",
+    fontFamily: 'Raleway-SemiBold',
+    color: 'white',
   },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-   // marginTop: 22,
+    // marginTop: 22,
     //backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   modalView: {

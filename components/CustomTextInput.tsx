@@ -19,12 +19,13 @@ interface InputProps {
   inputMode: string;
   maxLength: number;
   value: any;
-  onChange: Function;
+  onChange?: Function;
   placeholder: string;
-  keyboardType: string;
+  keyboardType?: string;
   iconName: string;
   iconWidth: number;
   iconHieght: number;
+  editable?: boolean;
   props: {};
 }
 
@@ -93,7 +94,7 @@ const CustomTextInput: FunctionComponent<InputProps> = ({
         value={value}
         onChangeText={(text) => onChange(text)}
         placeholder={placeholder}
-        keyboardType={keyboardType || 'default'}
+        keyboardType={keyboardType || "default"}
         style={styles.inputField}
         onFocus={customOnFocus}
         onBlur={customOnBlur}
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingLeft: 20,
     paddingRight: 30,
-    paddingVertical:10
+    paddingVertical: 10,
   },
 
   inputField: {

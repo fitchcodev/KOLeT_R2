@@ -23,9 +23,7 @@
       },
       "package": "com.limebit.kolet",
       "softwareKeyboardLayoutMode": "pan",
-      "permissions": [
-        "android.permission.NFC"
-      ]
+      "permissions": ["android.permission.NFC"]
     },
     "web": {
       "bundler": "metro",
@@ -69,6 +67,7 @@
       "eas": {
         "projectId": "5a102ff8-072c-44ef-bf56-0af5fbb9961e"
       }
-    }
+    },
+    "newArchEnabled": true
   }
 }

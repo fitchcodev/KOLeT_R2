@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
 import { router } from 'expo-router';
@@ -15,12 +15,18 @@ import SuccesIC from '@/assets/images/svg/SuccesIC';
 import ShareIC from '@/assets/images/svg/ShareIC';
 import ShareICWhite from '@/assets/images/svg/ShareICWhite';
 import { hp } from '@/helpers/common';
+import { useTransaction } from '@/contexts/ReceiptContext';
 
 const Receipt = () => {
   const { top } = useSafeAreaInsets();
+  const { getTransactionAmount } = useTransaction();
+  const [amount, setAmount] = useState<string | null>('');
+  useEffect(() => {
+    setAmount(() => getTransactionAmount());
+  }, []);
   const paddingTop = top > 0 ? top + 10 : 30;
   return (
-    <View style={[styles.container, { paddingTop: paddingTop }]}>
+    <View style={[styles.container, { paddingTop }]}>
       <View
         style={{
           width: '100%',
@@ -50,7 +56,7 @@ const Receipt = () => {
       <View style={styles.header}>
         <SuccesIC width={70} height={70} />
         <Text style={styles.total}>Total</Text>
-        <Text style={styles.amount}>₦10000</Text>
+        <Text style={styles.amount}>₦{amount}</Text>
       </View>
 
       {/* Block */}
@@ -66,7 +72,7 @@ const Receipt = () => {
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Amount</Text>
 
-          <Text style={styles.blockItemText}>₦1000</Text>
+          <Text style={styles.blockItemText}>₦{amount}</Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Method</Text>

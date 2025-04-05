@@ -7,55 +7,75 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-} from "react-native";
-import React, { useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from 'react-native';
+import React, { useContext, useState, useEffect } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
+  createUsername,
+  dateToString,
   formatDate,
   hp,
   validateEmail,
   validateNigerianPhoneNumber,
   wp,
-} from "@/helpers/common";
-import { Colors } from "@/constants/Colors";
-import { router } from "expo-router";
-import Animated, {
-  FadeIn,
-  FadeInDown,
-} from "react-native-reanimated";
-import DatePicker from "react-native-date-picker";
-import { StatusBar } from "expo-status-bar";
-import CustomTextInput from "@/components/CustomTextInput";
+} from '@/helpers/common';
+import { Colors } from '@/constants/Colors';
+import { router } from 'expo-router';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import DatePicker from 'react-native-date-picker';
+import { StatusBar } from 'expo-status-bar';
+import CustomTextInput from '@/components/CustomTextInput';
+import { UserContext } from '@/contexts/UserContext';
+
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
-  const [first_name, setFirst_name] = useState("");
-  const [last_name, setLast_name] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone_number, setPhone_number] = useState("");
-  const [date_of_birth, setDate_of_birth] = useState("");
+  const { user, updateUser } = useContext(UserContext);
+  const [firstName, setFirstName] = useState(user.firstName || '');
+  const [lastName, setLastName] = useState(user.lastName || '');
+  const [email, setEmail] = useState(user.email || '');
+  const [phone, setPhone] = useState(user.phone || '');
+  const [dateOfBirth, setDateOfBirth] = useState<Date>(
+    user.dateOfBirth || new Date()
+  );
+  const [formattedDate, setFormattedDate] = useState('');
   const [open, setOpen] = useState(false);
 
-  const handleButton = () => {
-    router.navigate("/auth/otpScreen");
+  useEffect(() => {
+    if (dateOfBirth) {
+      setFormattedDate(formatDate(dateOfBirth));
+    }
+  }, [dateOfBirth]);
+
+  const handleSubmit = () => {
+    updateUser({
+      firstName,
+      lastName,
+      email,
+      phone,
+      dateOfBirth: dateToString(dateOfBirth),
+      username: createUsername(firstName, lastName),
+    });
+
+    router.push('/auth/createPassword');
   };
-  const handleDateChange = (date) => {
-    setDate_of_birth(date);
+
+  const handleDateChange = (date: Date) => {
+    setDateOfBirth(date);
   };
+
   const checkButtonDisabled = () => {
     return (
-      !first_name ||
-      (!last_name && !validateNigerianPhoneNumber(phone_number)) ||
-      !date_of_birth
+      !(firstName && lastName && validateNigerianPhoneNumber(phone)) ||
+      (email && !validateEmail(email)) ||
+      !dateOfBirth
     );
   };
 
-  console.log(checkButtonDisabled());
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={[styles.container, { paddingTop: paddinTop }]}
-    >
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={[styles.container, { paddingTop: paddinTop }]}>
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={{
@@ -66,16 +86,14 @@ const Register = () => {
         }}
         keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
-        horizontal={false}
-      >
+        horizontal={false}>
         {/* Heading */}
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}
-        >
+          style={styles.heading}>
           <Text style={styles.headingTextTitle}>
-            Sign Up for{" "}
-            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{" "}
+            Sign Up for{' '}
+            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{' '}
           </Text>
           <Text style={styles.headingTextDescript}>
             Unlock the future of convenient transactions with Kolet. Sign up
@@ -83,15 +101,15 @@ const Register = () => {
           </Text>
         </Animated.View>
 
-        {/* Haeding End */}
+        {/* Heading End */}
 
         {/* form */}
         <View style={styles.formContainer}>
           <CustomTextInput
             inputMode="text"
             maxLength={200}
-            value={first_name}
-            onChange={setFirst_name}
+            value={firstName}
+            onChange={setFirstName}
             placeholder="First Name"
             iconName="user"
             iconHieght={15}
@@ -101,8 +119,8 @@ const Register = () => {
           <CustomTextInput
             inputMode="text"
             maxLength={200}
-            value={last_name}
-            onChange={setLast_name}
+            value={lastName}
+            onChange={setLastName}
             placeholder="Last Name"
             iconName="user"
             iconHieght={15}
@@ -112,8 +130,8 @@ const Register = () => {
           <CustomTextInput
             inputMode="numeric"
             maxLength={11}
-            value={phone_number}
-            onChange={setPhone_number}
+            value={phone}
+            onChange={setPhone}
             placeholder="Phone Number"
             keyboardType="phone-pad"
             iconName="phone"
@@ -121,7 +139,7 @@ const Register = () => {
             iconWidth={16}
           />
           <CustomTextInput
-            inputMode={"email"}
+            inputMode={'email'}
             value={email}
             onChange={setEmail}
             iconName="mail"
@@ -131,29 +149,25 @@ const Register = () => {
             maxLength={50}
             placeholder="Email (Optional)"
           />
-          <Pressable
-           
-          >
+          <Pressable onPress={() => setOpen(true)}>
             <CustomTextInput
-              inputMode={"text"}
+              inputMode={'text'}
               maxLength={200}
-              value={formatDate(date_of_birth)}
+              value={formattedDate}
               placeholder="Date of Birth"
               editable={false}
               iconName="calendar"
               iconHieght={15}
               iconWidth={15}
-              onPressIn={() => {
-                setOpen(true);
-              }}
+              keyboardType={''}
             />
             <DatePicker
               modal
               open={open}
-              date={new Date()}
+              date={dateOfBirth || new Date()}
               mode="date"
               maximumDate={new Date()}
-              onConfirm={(date) => {
+              onConfirm={date => {
                 setOpen(false);
                 handleDateChange(date);
               }}
@@ -179,32 +193,30 @@ const Register = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}
-        >
+          style={styles.footer}>
           <Text style={styles.footerTextTiltle}>
-            By signing up, you agree to our{" "}
-            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{" "}
-            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{" "}
+            By signing up, you agree to our{' '}
+            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{' '}
+            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{' '}
             <Text style={{ color: Colors.main.primary }}>Privacy Policy</Text>
           </Text>
           <TouchableOpacity
             disabled={checkButtonDisabled()}
-            onPress={handleButton}
+            onPress={handleSubmit}
             style={[
               styles.footerBtn,
               {
                 backgroundColor: Colors.main.primary,
                 opacity: !checkButtonDisabled() ? 1 : 0.5,
               },
-            ]}
-          >
+            ]}>
             <Text style={styles.footerBtnText}>Next</Text>
           </TouchableOpacity>
+
           <Text
-            onPress={() => router.navigate("/auth/login")}
-            style={styles.footerText}
-          >
-            Already a member?{" "}
+            onPress={() => router.navigate('/auth/login')}
+            style={styles.footerText}>
+            Already a member?{' '}
             <Text style={{ color: Colors.main.primary }}>Login</Text>
           </Text>
         </Animated.View>
@@ -219,33 +231,33 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.main.inputBg,
-    alignItems: "center",
-    justifyContent: "flex-start",
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   heading: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: 20,
   },
   headingTextTitle: {
     fontSize: 30,
-    fontWeight: "600",
-    fontFamily: "Raleway-SemiBold",
+    fontWeight: '600',
+    fontFamily: 'Raleway-SemiBold',
     color: Colors.main.text,
   },
   headingTextDescript: {
-    fontFamily: "Montserrat-Regular",
+    fontFamily: 'Montserrat-Regular',
     color: Colors.main.description,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 15,
   },
   formContainer: {
-    width: "100%",
+    width: '100%',
     gap: 16,
   },
   inputFieldContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
     height: hp(6.2),
     borderWidth: 0.7,
     borderRadius: 4,
@@ -254,62 +266,61 @@ const styles = StyleSheet.create({
   },
 
   inputField: {
-    fontFamily: "Montserrat-Regular",
-    width: "100%",
-    height: "100%",
+    fontFamily: 'Montserrat-Regular',
+    width: '100%',
+    height: '100%',
     color: Colors.main.text,
   },
 
   progressBar: {
-    width: "100%",
-    flexDirection: "row",
+    width: '100%',
+    flexDirection: 'row',
     paddingHorizontal: 50,
     gap: 10,
     marginVertical: 35,
   },
   progressBarItemActive: {
     height: hp(1),
-    width: "30%",
+    width: '30%',
     borderRadius: 20,
     backgroundColor: Colors.main.primary,
   },
   progressBarItemInactive: {
     height: hp(1),
-    width: "30%",
+    width: '30%',
     borderRadius: 20,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   footer: {
-    // backgroundColor: "red",
     flex: 1,
-    width: "100%",
+    width: '100%',
     gap: 15,
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerTextTiltle: {
-    fontWeight: "300",
-    fontFamily: "Raleway-RegularS",
-    textAlign: "center",
+    fontWeight: '300',
+    fontFamily: 'Raleway-RegularS',
+    textAlign: 'center',
     fontSize: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerBtn: {
     backgroundColor: Colors.main.primary,
     padding: 15,
-    width: "80%",
+    width: '80%',
     borderRadius: 4,
   },
   footerBtnText: {
-    fontWeight: "600",
-    fontFamily: "Raleway-SemiBold",
-    color: "#fff",
-    textAlign: "center",
+    fontWeight: '600',
+    fontFamily: 'Raleway-SemiBold',
+    color: '#fff',
+    textAlign: 'center',
     fontSize: 20,
   },
   footerText: {
-    fontWeight: "600",
-    fontFamily: "Raleway-Regular",
-    textAlign: "center",
+    fontWeight: '600',
+    fontFamily: 'Raleway-Regular',
+    textAlign: 'center',
     color: Colors.main.text,
     fontSize: 16,
   },
