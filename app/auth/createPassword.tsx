@@ -142,7 +142,7 @@ const CreatePassword = () => {
             setShowconfirmPassword={setShowconfirmPassword}
             value={confirmPassword}
             onChange={setConfirmPassword}
-            placeholder="Confrim Password"
+            placeholder="Confirm Password"
             iconName={showconfirmPassword ? 'viewOn' : 'viewOff'}
             iconWidth={20}
             iconHieght={20}

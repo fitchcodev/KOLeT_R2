@@ -145,7 +145,7 @@ const Login = () => {
           </TouchableOpacity>
           {error && (
             <Text style={{ color: 'red', fontSize: 12 }}>
-              There was am error logging you in. Please try again later{' '}
+              There was an error logging you in. Please try again later{' '}
               {error.message}
             </Text>
           )}

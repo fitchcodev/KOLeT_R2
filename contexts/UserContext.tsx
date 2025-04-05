@@ -11,7 +11,7 @@ export type User = {
   username: string;
 };
 
-export const UserProvier = ({ children }) => {
+export const UserProvider = ({ children }) => {
   const [user, setUser] = useState<User>({
     firstName: '',
     lastName: '',
