@@ -34,7 +34,7 @@ const CreatePassword = () => {
   const [showconfirmPassword, setShowconfirmPassword] = useState(true);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { mutate } = useSignupMutation();
+  const { mutate, isPending } = useSignupMutation();
   const { user } = useContext(UserContext);
 
   const onSubmit = () => {
@@ -57,7 +57,9 @@ const CreatePassword = () => {
   };
 
   const checkButtonIsDisabled = () => {
-    return !validatePassword(password) || !(confirmPassword == password);
+    return (
+      !validatePassword(password) || !(confirmPassword == password) || isPending
+    );
   };
 
   return (
@@ -186,7 +188,9 @@ const CreatePassword = () => {
               styles.footerBtn,
               { opacity: checkButtonIsDisabled() ? 0.5 : 1 },
             ]}>
-            <Text style={styles.footerBtnText}>Create Account</Text>
+            <Text style={styles.footerBtnText}>
+              {!isPending ? 'Create Account' : 'Loading...'}
+            </Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>

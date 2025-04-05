@@ -130,8 +130,8 @@ const Login = () => {
           entering={FadeInDown.delay(700).springify()}
           style={styles.footer}>
           <TouchableOpacity
-            disabled={checkButtonDisabled()}
-            onPress={() => onSubmit()}
+            disabled={checkButtonDisabled() || isPending}
+            onPress={onSubmit}
             style={[
               styles.footerBtn,
               {

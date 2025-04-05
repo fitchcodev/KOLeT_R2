@@ -22,7 +22,7 @@ import { useConfirmOTPMutation } from '@/api/auth';
 import { UserContext } from '@/contexts/UserContext';
 
 const OtpScreen = () => {
-  const { mutate, isPending, error } = useConfirmOTPMutation();
+  const { mutate, isPending } = useConfirmOTPMutation();
   const [otp, setOtp] = useState(['', '', '', '']);
   const {
     user: { phone },
@@ -64,7 +64,7 @@ const OtpScreen = () => {
   };
   const checkButtonDisabled = () => {
     const value = otp.join('');
-    return value.length < 4;
+    return value.length < 4 || isPending;
   };
   //console.log(checkButtonDisabled());
   return (
@@ -169,7 +169,9 @@ const OtpScreen = () => {
                 opacity: !checkButtonDisabled() ? 1 : 0.5,
               },
             ]}>
-            <Text style={styles.footerBtnText}>Next</Text>
+            <Text style={styles.footerBtnText}>
+              {!isPending ? 'Activate Account' : 'Loading...'}
+            </Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>
