@@ -1,24 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 
 const API_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
+// Create axios instance with common configuration
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
 export const useAddAccount = (onSuccess, onError) => {
   const requestFn = async (data) => {
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    };
-
-    const response = await fetch(`${API_URL}/add.php`, options);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    try {
+      const response = await api.post("/add.php", data);
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      throw new Error(
+        error.response?.data?.message ||
+          `Error: ${error.message || "Unknown error occurred"}`
+      );
     }
-    return response.json();
   };
 
   const mutation = useMutation({
@@ -39,13 +44,16 @@ export const useGetBankList = (options = {}) => {
   const queryKey = ["bankList"];
 
   const fetchBankList = async () => {
-    const response = await fetch(`${API_URL}/get_bank_list_paystack.php`);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    try {
+      const response = await api.get("/get_bank_list_paystack.php");
+      return response.data;
+    } catch (error) {
+      console.error("API Error:", error);
+      throw new Error(
+        error.response?.data?.message ||
+          `Error: ${error.message || "Failed to fetch bank list"}`
+      );
     }
-
-    return response.json();
   };
 
   const query = useQuery({
@@ -53,6 +61,7 @@ export const useGetBankList = (options = {}) => {
     queryFn: fetchBankList,
     staleTime: 1000 * 60 * 60,
     refetchOnWindowFocus: false,
+    ...options,
   });
   return query;
 };

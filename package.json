@@ -20,6 +20,7 @@
     "@react-navigation/material-top-tabs": "^7.2.3",
     "@react-navigation/native": "^7.0.14",
     "@tanstack/react-query": "^5.71.1",
+    "axios": "^1.8.4",
     "expo": "^52.0.41",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.8",
