@@ -1,12 +1,4 @@
-import {
-  Alert,
-  Modal,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  Platform,
-} from 'react-native';
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -110,7 +102,12 @@ const NfcPaymentScreen: FC = () => {
         // Different event registration for Samsung vs other devices
         if (isSamsungDevice) {
           console.log('Using Samsung-specific NFC handling');
-          // For Samsung, we'll use a different approach in scanNfc function
+          // For Samsung, we'll only initialize NFC but not set up event handlers
+          // This is intentional - Samsung devices work better with direct technology requests
+          // Event listeners will be set up in the scanNfc function
+
+          // Optionally: We'll Pre-cancel any existing requests to ensure clean state
+          await NfcManager.cancelTechnologyRequest().catch(() => {});
         } else {
           await NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
             if (!hasProcessedTag) {

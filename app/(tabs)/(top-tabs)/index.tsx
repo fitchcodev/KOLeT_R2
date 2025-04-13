@@ -69,7 +69,7 @@ const Keypad = () => {
   };
 
   // payment Navigate
-  const handlePaymentNaviage = () => {
+  const handlePaymentNavigate = () => {
     saveTransaction({
       id: generateQRId(),
       amount,
@@ -83,6 +83,10 @@ const Keypad = () => {
         id: user?.id,
       },
     });
+
+    // Clear the amount and narration after saving
+    setAmount(0.0);
+    setNarration('');
 
     if (amount > 15000) {
       setModalVisible(true);
@@ -239,7 +243,7 @@ const Keypad = () => {
             handleNumberPress={handleNumberPress}
           />
           <TouchableOpacity
-            onPress={handlePaymentNaviage}
+            onPress={handlePaymentNavigate}
             disabled={amount <= 0}
             style={[
               styles.payButton,
@@ -278,7 +282,7 @@ const Keypad = () => {
             handleNumberPress={handleNumberPress}
           />
           <TouchableOpacity
-            onPress={handlePaymentNaviage}
+            onPress={handlePaymentNavigate}
             disabled={amount <= 0}
             style={[
               styles.payButton,
