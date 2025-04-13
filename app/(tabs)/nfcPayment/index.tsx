@@ -1,14 +1,14 @@
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native";
-import React, { FC, useEffect, useRef, useState } from "react";
-import { Colors } from "@/constants/Colors";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ArrowLftIC from "@/assets/images/svg/ArrowLftIC";
-import ShareIC from "@/assets/images/svg/ShareIC";
-import { router } from "expo-router";
-import { hp } from "@/helpers/common";
-import LottieView from "lottie-react-native";
-import NfcManager, { NfcTech } from "react-native-nfc-manager";
-import { useTransaction } from "@/contexts/ReceiptContext";
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { FC, useEffect, useRef, useState } from 'react';
+import { Colors } from '@/constants/Colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
+import ShareIC from '@/assets/images/svg/ShareIC';
+import { router } from 'expo-router';
+import { hp } from '@/helpers/common';
+import LottieView from 'lottie-react-native';
+import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import { useTransaction } from '@/contexts/ReceiptContext';
 
 const NfcPaymentScreen: FC = () => {
   const { top } = useSafeAreaInsets();
@@ -23,7 +23,7 @@ const NfcPaymentScreen: FC = () => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    : "0.00";
+    : '0.00';
 
   useEffect(() => {
     const initNfc = async () => {
@@ -33,8 +33,7 @@ const NfcPaymentScreen: FC = () => {
     initNfc();
 
     return () => {
-      NfcManager.cancelTechnologyRequest().catch(() => {
-      });
+      NfcManager.cancelTechnologyRequest().catch(() => {});
     };
   }, []);
 
@@ -45,11 +44,14 @@ const NfcPaymentScreen: FC = () => {
         await NfcManager.requestTechnology(NfcTech.Ndef);
         // the resolved tag object will contain `ndefMessage` property
         const tag = await NfcManager.getTag();
-        Alert.alert("Payment successful!");
-        router.navigate("/(tabs)/receipt");
+        Alert.alert(
+          'Payment successful!',
+          `Payment of ₦${formattedAmount} was successful!`
+        );
+        router.navigate('/(tabs)/receipt');
         // console.warn('Tag found', tag);
       } catch (ex) {
-        Alert.alert("Oops!, A Certain Error Occurred!");
+        Alert.alert('Oops!, A Certain Error Occurred!');
         router.back();
         //console.warn('Oops!', ex);
       } finally {
@@ -81,7 +83,7 @@ const NfcPaymentScreen: FC = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Total</Text>
         <Text style={styles.amount}>₦{formattedAmount}</Text>
-        <Text style={styles.description}>{transaction?.narration || ""}</Text>
+        <Text style={styles.description}>{transaction?.narration || ''}</Text>
       </View>
 
       {/* animation */}
@@ -90,10 +92,10 @@ const NfcPaymentScreen: FC = () => {
           autoPlay
           ref={animation}
           style={{
-            width: "100%",
-            height: "100%",
+            width: '100%',
+            height: '100%',
           }}
-          source={require("@/assets/nfcTap.json")}
+          source={require('@/assets/nfcTap.json')}
         />
       </View>
 
@@ -115,66 +117,66 @@ const styles = StyleSheet.create({
     gap: hp(4),
   },
   topBtn: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   header: {
     gap: 30,
-    alignItems: "center",
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: 'Montserrat-Regular',
     color: Colors.main.description,
   },
   amount: {
     fontSize: 48,
-    fontWeight: "600",
-    fontFamily: "Montserrat-SemiBold",
+    fontWeight: '600',
+    fontFamily: 'Montserrat-SemiBold',
     color: Colors.main.text,
-    textAlign: "left",
+    textAlign: 'left',
   },
   description: {
     fontSize: 18,
-    fontFamily: "Montserrat-Regular",
+    fontFamily: 'Montserrat-Regular',
     color: Colors.main.description,
   },
   animationContainer: {
     flex: 0.6,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   footer: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerText: {
-    alignItems: "center",
+    alignItems: 'center',
     fontSize: 20,
-    fontWeight: "500",
-    fontFamily: "Montserrat-Regular",
+    fontWeight: '500',
+    fontFamily: 'Montserrat-Regular',
     color: Colors.main.text,
   },
   modalTextTitle: {
     marginBottom: 15,
-    fontFamily: "Monserrat-Regular",
-    fontWeight: "600",
-    textAlign: "center",
+    fontFamily: 'Monserrat-Regular',
+    fontWeight: '600',
+    textAlign: 'center',
     fontSize: 20,
     color: Colors.main.text,
   },
   modalTextDes: {
     marginBottom: 15,
-    fontFamily: "Raleway-Regular",
-    textAlign: "center",
+    fontFamily: 'Raleway-Regular',
+    textAlign: 'center',
     lineHeight: 30,
     fontSize: 15,
     color: Colors.main.text,
   },
   centeredView: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalView: {
     margin: 20,
@@ -182,8 +184,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 40,
     gap: 10,
-    alignItems: "center",
-    shadowColor: "#000",
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -200,10 +202,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.main.primary,
   },
   textStyle: {
-    color: "white",
-    fontFamily: "Raleway-Regular",
+    color: 'white',
+    fontFamily: 'Raleway-Regular',
     fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
