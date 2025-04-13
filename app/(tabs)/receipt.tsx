@@ -15,7 +15,7 @@ import SuccesIC from '@/assets/images/svg/SuccesIC';
 import ShareIC from '@/assets/images/svg/ShareIC';
 import ShareICWhite from '@/assets/images/svg/ShareICWhite';
 import { hp, toTransactionDate } from '@/helpers/common';
-import { TransactionData, useTransaction } from '@/contexts/ReceiptContext';
+import { TransactionData, useTransaction } from '@/contexts/TransactionContext';
 
 const Receipt = () => {
   const { top } = useSafeAreaInsets();

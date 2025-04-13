@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 import { hp } from '@/helpers/common';
 import LottieView from 'lottie-react-native';
 import NfcManager, { NfcTech, NfcEvents } from 'react-native-nfc-manager';
-import { useTransaction } from '@/contexts/ReceiptContext';
+import { useTransaction } from '@/contexts/TransactionContext';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Device from 'expo-device';
 

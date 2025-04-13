@@ -16,7 +16,7 @@ import NotificationModal from '@/components/NotificationModal';
 import NfcManager from 'react-native-nfc-manager';
 import Modal from 'react-native-modal';
 import { Modal as RnModal } from 'react-native';
-import { PaymentMethod, useTransaction } from '@/contexts/ReceiptContext';
+import { PaymentMethod, useTransaction } from '@/contexts/TransactionContext';
 import { BlurView } from 'expo-blur';
 import { UserContext } from '@/contexts/UserContext';
 
