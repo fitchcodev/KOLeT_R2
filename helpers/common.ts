@@ -76,3 +76,30 @@ export const createUsername = (firstName: string, lastName: string) => {
   // Create a username by concatenating the first letter of the first name and the last name
   return `${firstName.charAt(0).toLowerCase()}${lastName.toLowerCase()}`;
 };
+
+/**
+ * Generates a unique ID in the format QR followed by 6 digits and a letter
+ * Example: QR165789D
+ */
+export const generateQRId = (): string => {
+  // Generate random 6-digit number
+  const digits = Math.floor(100000 + Math.random() * 900000);
+
+  // Generate random uppercase letter (A-Z)
+  const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+
+  // Combine in the required format
+  return `QR${digits}${letter}`;
+};
+
+// Dec 27th 2023 2:25
+export const toTransactionDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  };
+  return date.toLocaleDateString('en-US', options);
+};

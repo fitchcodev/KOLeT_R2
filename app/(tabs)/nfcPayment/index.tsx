@@ -1,98 +1,73 @@
 import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { FC, useEffect, useRef, useState, useCallback } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
 import ShareIC from '@/assets/images/svg/ShareIC';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { hp } from '@/helpers/common';
 import LottieView from 'lottie-react-native';
-import { BlurView } from 'expo-blur';
 import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import { useTransaction } from '@/contexts/ReceiptContext';
 
 const NfcPaymentScreen: FC = () => {
   const { top } = useSafeAreaInsets();
-  const paddinTop = top > 0 ? top + 10 : 30;
+  const paddingTop = top > 0 ? top + 10 : 30;
   const animation = useRef<LottieView>(null);
-  const { amount, narrattion } = useLocalSearchParams();
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const { getTransaction } = useTransaction();
+  const [transaction, _] = useState(getTransaction);
+
+  // Format the amount with commas and 2 decimal places if available
+  const formattedAmount = transaction?.amount
+    ? transaction.amount.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    : '0.00';
 
   useEffect(() => {
-    // Pre-step, call this before any NFC operations
-    NfcManager.start();
+    const initNfc = async () => {
+      await NfcManager.start();
+    };
+
+    initNfc();
+
+    return () => {
+      NfcManager.cancelTechnologyRequest().catch(() => {});
+    };
   }, []);
 
-  useEffect(
-    useCallback(() => {
-      // This will run when the screen is focused (i.e. user navigates back)
-
-      const readNdef = async () => {
-        try {
-          // register for the NFC tag with NDEF in it
-          await NfcManager.requestTechnology(NfcTech.Ndef);
-          // the resolved tag object will contain `ndefMessage` property
-          const tag = await NfcManager.getTag();
-          Alert.alert('Payment successful!');
-          router.navigate('/(tabs)/receipt');
-
-          // console.warn('Tag found', tag);
-        } catch (ex) {
-          Alert.alert('Oops!, A Certain Error Occurred!');
-          router.back();
-
-          //console.warn('Oops!', ex);
-        } finally {
-          // stop the nfc scanning
-          NfcManager.cancelTechnologyRequest();
-        }
-      };
-
-      if (amount && Number(amount) > 15000) {
-        setModalVisible(true);
-      } else {
-        readNdef();
+  useEffect(() => {
+    const readNdef = async () => {
+      try {
+        // register for the NFC tag with NDEF in it
+        await NfcManager.requestTechnology(NfcTech.Ndef);
+        // the resolved tag object will contain `ndefMessage` property
+        const tag = await NfcManager.getTag();
+        Alert.alert(
+          'Payment successful!',
+          `Payment of ₦${formattedAmount} was successful!`
+        );
+        router.navigate('/(tabs)/receipt');
+        // console.warn('Tag found', tag);
+      } catch (ex) {
+        Alert.alert('Oops!, A Certain Error Occurred!');
+        router.back();
+        //console.warn('Oops!', ex);
+      } finally {
+        // stop the nfc scanning
+        NfcManager.cancelTechnologyRequest().catch(() => {
+          // Ignore errors during cleanup
+        });
       }
+    };
 
-      // Cleanup if necessary (this runs when the screen is unfocused)
-      return () => {
-        // Any cleanup logic, if needed
-        setModalVisible(false);
-      };
-    }, [amount])
-  ),
-    [amount];
-
-  const handleModalClose: () => void = () => {
-    setModalVisible(!modalVisible);
-    router.navigate('/(tabs)/nfcPayment/paymentVerification');
-  };
+    // Start reading NFC when component mounts
+    readNdef();
+  }, []);
 
   return (
-    <View style={[styles.container, { paddingTop: paddinTop }]}>
-      {/* Modal */}
-
-      <Modal
-        animationType="fade"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalVisible(!modalVisible);
-        }}>
-        <BlurView intensity={30} tint="dark" style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalTextTitle}>Payment Limit Reached</Text>
-            <Text style={styles.modalTextDes}>
-              Oops! Looks like you've hit the payment limit. For transactions
-              above ₦15,000, please proceed by entering your ATM{'\n'} card PIN
-              in the designated area.
-            </Text>
-            <Pressable style={styles.button} onPress={handleModalClose}>
-              <Text style={styles.textStyle}>Proceed</Text>
-            </Pressable>
-          </View>
-        </BlurView>
-      </Modal>
+    <View style={[styles.container, { paddingTop }]}>
       {/* Buttons */}
       <View style={styles.topBtn}>
         <Pressable onPress={() => router.back()}>
@@ -107,8 +82,8 @@ const NfcPaymentScreen: FC = () => {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Total</Text>
-        <Text style={styles.amount}>₦{amount}</Text>
-        <Text style={styles.description}>{narrattion}</Text>
+        <Text style={styles.amount}>₦{formattedAmount}</Text>
+        <Text style={styles.description}>{transaction?.narration || ''}</Text>
       </View>
 
       {/* animation */}
@@ -119,12 +94,11 @@ const NfcPaymentScreen: FC = () => {
           style={{
             width: '100%',
             height: '100%',
-            //backgroundColor: '#eee',
           }}
-          // Find more Lottie files at https://lottiefiles.com/featured
           source={require('@/assets/nfcTap.json')}
         />
       </View>
+
       {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>Tap Card</Text>
@@ -143,13 +117,11 @@ const styles = StyleSheet.create({
     gap: hp(4),
   },
   topBtn: {
-    //backgroundColor: Colors.main.error,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   header: {
-    //backgroundColor: "red",
     gap: 30,
     alignItems: 'center',
   },
@@ -171,18 +143,14 @@ const styles = StyleSheet.create({
     color: Colors.main.description,
   },
   animationContainer: {
-    //backgroundColor: 'red',
     flex: 0.6,
     alignItems: 'center',
     justifyContent: 'center',
-    //width: '100%',
-    //height: '100%'
   },
   footer: {
     alignItems: 'center',
   },
   footerText: {
-    //backgroundColor:'red',
     alignItems: 'center',
     fontSize: 20,
     fontWeight: '500',
@@ -209,8 +177,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    //marginTop: 22,
-    //backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   modalView: {
     margin: 20,

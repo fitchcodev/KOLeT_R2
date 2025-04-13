@@ -7,71 +7,92 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
-import { hp } from '@/helpers/common';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { generateQRId, hp } from '@/helpers/common';
 import { Colors } from '@/constants/Colors';
 import KeyPadInput from '@/components/KeyPad';
 import { router } from 'expo-router';
 import NotificationModal from '@/components/NotificationModal';
 import NfcManager from 'react-native-nfc-manager';
 import Modal from 'react-native-modal';
-import { useTransaction } from '@/contexts/ReceiptContext';
+import { Modal as RnModal } from 'react-native';
+import { PaymentMethod, useTransaction } from '@/contexts/ReceiptContext';
+import { BlurView } from 'expo-blur';
+import { UserContext } from '@/contexts/UserContext';
+
 const Keypad = () => {
-  const [narrattion, setNarration] = useState('');
+  const [narration, setNarration] = useState('');
   const [amount, setAmount] = useState(0.0);
   const [editable, setEditable] = useState(false);
   const [inputBorderColor, setInputBorderColor] = useState(Colors.main.border);
-  const textInputRef = useRef(null); // Create a ref for the TextInput
+  const textInputRef = useRef(null);
   const [modalNFCVisible, setModalNFCVisible] = useState<boolean>(false);
   const [nfcSupported, setNFCSupported] = useState<boolean>(false);
   const [modalNONNFCVisible, setModalNONNFCVisible] = useState<boolean>(false);
-  const { saveTransactionAmount } = useTransaction();
+  const { saveTransaction } = useTransaction();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
+  const { user } = useContext(UserContext);
 
   // Function to handle number press
   const handleNumberPress = (number: number) => {
-    if (amount.toLocaleString().length < 9) {
-      setAmount(prevAmount =>
-        parseFloat(prevAmount.toString() + number.toString())
-      );
+    if (amount.toString().replace('.', '').length < 9) {
+      setAmount(prevAmount => {
+        const prevStr = prevAmount.toString();
+        const newStr = prevStr + number.toString();
+        return parseFloat(newStr);
+      });
     }
   };
+
+  useEffect(() => {
+    // Set Payment Method
+    if (nfcSupported) {
+      setPaymentMethod(PaymentMethod.NFC);
+    } else {
+      setPaymentMethod(PaymentMethod.CARD);
+    }
+  }, [nfcSupported]);
 
   // Function to handle "del" (del) press
   const handleDelPress = () => {
     setAmount(prevAmount => {
       // Convert the current amount to a string and remove the last character
       const updatedAmount = prevAmount.toString().slice(0, -1);
-
-      // If the updated amount is empty, set it to 0, otherwise parse the remaining string as a float
       return updatedAmount === '' ? 0 : parseFloat(updatedAmount);
     });
   };
 
   // Function to clear the amount
   const handleClearPress = () => {
-    setAmount(0.0); // Reset the amount back to 0.00
+    setAmount(0.0);
   };
 
   // payment Navigate
   const handlePaymentNaviage = () => {
-    saveTransactionAmount(amount as unknown as string);
-    if (nfcSupported) {
-      //setModalNFCVisible(true);
+    saveTransaction({
+      id: generateQRId(),
+      amount,
+      narration,
+      paymentMethod,
+      status: 'Pending',
+      date: new Date(),
+      user: {
+        name: `${user?.firstName} ${user?.lastName}`,
+        phone: user?.phone,
+        id: user?.id,
+      },
+    });
+
+    if (amount > 15000) {
+      setModalVisible(true);
+    } else if (nfcSupported) {
       router.push({
         pathname: '/(tabs)/nfcPayment',
-        params: {
-          amount,
-          narrattion,
-        },
       });
     } else {
-      //setModalNONNFCVisible(true);
       router.push({
-        pathname: '/(tabs)/payment',
-        params: {
-          amount,
-          narrattion,
-        },
+        pathname: '/(tabs)/payment/cardDetailsForm',
       });
     }
   };
@@ -91,24 +112,31 @@ const Keypad = () => {
 
   useEffect(() => {
     const checkNfcSupport = async () => {
-      const isSupported = await NfcManager.isSupported();
-      if (isSupported) {
-        console.log('NFC is supported on this device.');
-        setNFCSupported(true);
-        setModalNFCVisible(true);
-        // await NfcManager.start();
-      } else {
-        console.log('NFC is not supported on this device.');
+      try {
+        const isSupported = await NfcManager.isSupported();
+        if (isSupported) {
+          console.log('NFC is supported on this device.');
+          setNFCSupported(true);
+          setModalNFCVisible(true);
+        } else {
+          console.log('NFC is not supported on this device.');
+          setNFCSupported(false);
+          setModalNONNFCVisible(true);
+        }
+      } catch (error) {
+        console.error('Error checking NFC support:', error);
         setNFCSupported(false);
         setModalNONNFCVisible(true);
-        // Show a message to the user, disable NFC functionality, etc.
       }
     };
 
     checkNfcSupport();
-
-    // Clean up on unmount
   }, []);
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    router.navigate('/(tabs)/payment/cardDetailsForm');
+  };
 
   return (
     <>
@@ -120,14 +148,8 @@ const Keypad = () => {
         backdropOpacity={0.2}
         isVisible={modalNFCVisible}
         style={styles.centeredView}
-        onBackdropPress={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalNFCVisible(!modalNFCVisible);
-        }}
-        onBackButtonPress={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalNFCVisible(!modalNFCVisible);
-        }}>
+        onBackdropPress={() => setModalNFCVisible(false)}
+        onBackButtonPress={() => setModalNFCVisible(false)}>
         <View style={styles.modalView}>
           <Text style={styles.modalTextDes}>
             Great news! Your device supports NFC. Press 'OK' to continue with
@@ -135,12 +157,31 @@ const Keypad = () => {
           </Text>
           <Pressable
             style={styles.button}
-            onPress={() => setModalNFCVisible(!modalNFCVisible)}>
+            onPress={() => setModalNFCVisible(false)}>
             <Text style={styles.textStyle}>Ok</Text>
           </Pressable>
         </View>
       </Modal>
-
+      {/* Price check modal */}
+      <RnModal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <BlurView intensity={30} tint="dark" style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalTextTitle}>Payment Limit Reached</Text>
+            <Text style={styles.modalTextDes}>
+              Oops! Looks like you've hit the payment limit. For NFC
+              transactions above ₦15,000, please proceed by entering your ATM
+              {'\n'} card PIN in the designated area.
+            </Text>
+            <Pressable style={styles.button} onPress={handleModalClose}>
+              <Text style={styles.textStyle}>Proceed</Text>
+            </Pressable>
+          </View>
+        </BlurView>
+      </RnModal>
       {/* Non Nfc Modal */}
       <Modal
         animationIn={'bounceInUp'}
@@ -148,14 +189,8 @@ const Keypad = () => {
         backdropOpacity={0.2}
         isVisible={modalNONNFCVisible}
         style={styles.centeredView}
-        onBackdropPress={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalNONNFCVisible(!modalNONNFCVisible);
-        }}
-        onBackButtonPress={() => {
-          // Alert.alert('Modal has been closed.');
-          setModalNONNFCVisible(!modalNONNFCVisible);
-        }}>
+        onBackdropPress={() => setModalNONNFCVisible(false)}
+        onBackButtonPress={() => setModalNONNFCVisible(false)}>
         <View style={styles.modalView}>
           <Text style={styles.modalTextDes}>
             Oops! Your device doesn't support NFC. Enter card details manually.
@@ -163,12 +198,11 @@ const Keypad = () => {
           </Text>
           <Pressable
             style={styles.button}
-            onPress={() => setModalNONNFCVisible(!modalNONNFCVisible)}>
+            onPress={() => setModalNONNFCVisible(false)}>
             <Text style={styles.textStyle}>Ok</Text>
           </Pressable>
         </View>
       </Modal>
-
       {editable ? (
         <ScrollView
           keyboardDismissMode="interactive"
@@ -176,7 +210,7 @@ const Keypad = () => {
           {/* Your scrollable content goes here */}
           <Text style={styles.amount}>₦{formattedAmount}</Text>
           <Pressable
-            onPress={() => setEditable(!editable)}
+            onPress={() => {}} // Removed toggle since we're already in edit mode
             style={[
               styles.inputContainer,
               {
@@ -187,18 +221,17 @@ const Keypad = () => {
               inputMode="text"
               ref={textInputRef}
               maxLength={30}
-              value={narrattion}
+              value={narration}
               onChangeText={setNarration}
               style={styles.inputField}
               onFocus={() => setInputBorderColor(Colors.main.primary)}
               onBlur={() => {
                 setInputBorderColor(Colors.main.border);
-                setEditable(!editable);
+                setEditable(false);
               }}
               clearButtonMode="while-editing"
-              editable={editable}
+              editable={true}
             />
-            {/* <TouchableOpacity onPress={handleClearSearch} style={{marginRight: 20, backgroundColor: Colors.main.primary, padding:10, borderRadius:100}}><Text style={{fontWeight:'bold', fontSize:10, fontFamily:'Monserrat-Regular'}}>X</Text></TouchableOpacity> */}
           </Pressable>
           <KeyPadInput
             handleDelPress={handleDelPress}
@@ -216,7 +249,7 @@ const Keypad = () => {
               },
             ]}>
             <Text style={styles.payButtonText}>
-              Pay{amount > 0 ? ` ₦${amount}` : null}
+              Pay{amount > 0 ? ` ₦${formattedAmount}` : ''}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -225,17 +258,17 @@ const Keypad = () => {
           {/* Your non-scrollable content goes here */}
           <Text style={styles.amount}>₦{formattedAmount}</Text>
           <Pressable
-            onPress={() => setEditable(!editable)}
+            onPress={() => setEditable(true)}
             style={[
               styles.inputContainer,
               {
                 borderColor: inputBorderColor,
-                justifyContent: narrattion.length > 0 ? 'flex-start' : 'center',
+                justifyContent: narration.length > 0 ? 'flex-start' : 'center',
                 paddingHorizontal: 20,
               },
             ]}>
             <Text style={styles.inputContainerText}>
-              {narrattion.length > 0 ? narrattion : '+ Add Note'}
+              {narration.length > 0 ? narration : '+ Add Note'}
             </Text>
           </Pressable>
 
@@ -255,7 +288,7 @@ const Keypad = () => {
               },
             ]}>
             <Text style={styles.payButtonText}>
-              Pay{amount > 0 ? ` ₦${amount}` : null}
+              Pay{amount > 0 ? ` ₦${formattedAmount}` : ''}
             </Text>
           </TouchableOpacity>
         </View>

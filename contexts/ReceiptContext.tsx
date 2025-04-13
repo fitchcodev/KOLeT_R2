@@ -1,12 +1,34 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-interface TransactionContextType {
-  saveTransactionAmount: (amount: string) => void;
-  getTransactionAmount: () => string | null;
-  clearTransactionAmount: () => void;
+export enum PaymentMethod {
+  NFC = 'Tap to Pay',
+  CARD = 'Card',
+  ACCOUNT = 'Account',
 }
 
-const TransactionContext = createContext<TransactionContextType | undefined>(undefined);
+export interface TransactionData {
+  id: string;
+  date: Date;
+  amount: number;
+  narration: string;
+  paymentMethod: PaymentMethod;
+  status: 'Pending' | 'Successful' | 'Failed';
+  user: {
+    name: string;
+    phone: string;
+    id: string;
+  };
+}
+
+interface TransactionContextType {
+  saveTransaction: (data: Partial<TransactionData>) => void;
+  getTransaction: () => TransactionData | null;
+  clearTransaction: () => void;
+}
+
+const TransactionContext = createContext<TransactionContextType | undefined>(
+  undefined
+);
 
 export const useTransaction = (): TransactionContextType => {
   const context = useContext(TransactionContext);
@@ -20,23 +42,32 @@ interface TransactionProviderProps {
   children: ReactNode;
 }
 
-export const TransactionProvider: React.FC<TransactionProviderProps> = ({ children }) => {
-  const [transactionAmount, setTransactionAmount] = useState<string | null>(null);
+export const TransactionProvider: React.FC<TransactionProviderProps> = ({
+  children,
+}) => {
+  const [transaction, setTransaction] = useState<TransactionData | null>(null);
 
-  const saveTransactionAmount = (amount: string) => {
-    setTransactionAmount(amount);
+  const saveTransaction = (data: Partial<TransactionData>) => {
+    setTransaction(
+      prevTransaction =>
+        ({
+          ...prevTransaction,
+          ...data,
+        } as TransactionData)
+    );
   };
 
-  const getTransactionAmount = (): string | null => {
-    return transactionAmount;
+  const getTransaction = (): TransactionData | null => {
+    return transaction;
   };
 
-  const clearTransactionAmount = () => {
-    setTransactionAmount(null);
+  const clearTransaction = () => {
+    setTransaction(null);
   };
 
   return (
-    <TransactionContext.Provider value={{ saveTransactionAmount, getTransactionAmount, clearTransactionAmount }}>
+    <TransactionContext.Provider
+      value={{ saveTransaction, getTransaction, clearTransaction }}>
       {children}
     </TransactionContext.Provider>
   );

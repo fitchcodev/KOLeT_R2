@@ -20,6 +20,7 @@ import { router } from 'expo-router';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
 import { useConfirmOTPMutation } from '@/api/auth';
 import { UserContext } from '@/contexts/UserContext';
+import { useCountdown } from '@/hooks/useCountdown';
 
 const OtpScreen = () => {
   const { mutate, isPending } = useConfirmOTPMutation();
@@ -27,6 +28,14 @@ const OtpScreen = () => {
   const {
     user: { phone },
   } = useContext(UserContext);
+  const { seconds, formattedTime, isActive, restart } = useCountdown({
+    initialSeconds: 60, // Different initial value
+    autoStart: false, // Don't start automatically
+  });
+
+  const handleStartTimer = () => {
+    restart();
+  };
 
   const onSubmit = () => {
     const payload = {
@@ -66,7 +75,7 @@ const OtpScreen = () => {
     const value = otp.join('');
     return value.length < 4 || isPending;
   };
-  //console.log(checkButtonDisabled());
+
   return (
     <View style={[styles.container, { paddingTop: paddinTop }]}>
       <TouchableOpacity
@@ -134,7 +143,20 @@ const OtpScreen = () => {
             ))}
           </View>
           <View style={styles.timerCon}>
-            <Text style={styles.timerText}>Remaining 00:30 Sec</Text>
+            <Text style={styles.timerText}>
+              Time remaining: {formattedTime()} Sec
+            </Text>
+            <TouchableOpacity
+              onPress={handleStartTimer}
+              disabled={isActive}
+              style={{
+                marginTop: 10,
+                opacity: isActive ? 0.5 : 1,
+              }}>
+              <Text style={[styles.timerText, { color: Colors.main.primary }]}>
+                Resend OTP
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
         {/* progressBar */}

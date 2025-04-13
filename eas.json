@@ -4,13 +4,23 @@
   },
   "build": {
     "development": {
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://fitchcong.com/wbe/api"
+      },
       "developmentClient": true,
       "distribution": "internal"
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://fitchcong.com/wbe/api"
+      }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_BASE_URL": "https://fitchcong.com/wbe/api"
+      }
+    }
   },
   "submit": {
     "production": {}
