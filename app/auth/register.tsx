@@ -35,7 +35,7 @@ const Register = () => {
   const [lastName, setLastName] = useState(user.lastName || '');
   const [email, setEmail] = useState(user.email || '');
   const [phone, setPhone] = useState(user.phone || '');
-  const [dateOfBirth, setDateOfBirth] = useState<Date>();
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
   const [formattedDate, setFormattedDate] = useState('');
   const [open, setOpen] = useState(false);
 

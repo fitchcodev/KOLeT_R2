@@ -50,7 +50,7 @@ const CreatePassword = () => {
         },
         onError: error => {
           console.warn(error);
-          Alert.alert('Oops!', `${error}`);
+          Alert.alert('Oops!', 'There was an error creating your account');
         },
       }
     );
