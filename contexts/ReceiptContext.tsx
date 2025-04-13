@@ -1,12 +1,27 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, { createContext, useState, useContext, ReactNode } from 'react';
 
-interface TransactionData {
+export enum PaymentMethod {
+  NFC = 'Tap to Pay',
+  CARD = 'Card',
+  ACCOUNT = 'Account',
+}
+
+export interface TransactionData {
+  id: string;
+  date: Date;
   amount: number;
   narration: string;
+  paymentMethod: PaymentMethod;
+  status: 'Pending' | 'Successful' | 'Failed';
+  user: {
+    name: string;
+    phone: string;
+    id: string;
+  };
 }
 
 interface TransactionContextType {
-  saveTransaction: (amount: number, narration: string) => void;
+  saveTransaction: (data: Partial<TransactionData>) => void;
   getTransaction: () => TransactionData | null;
   clearTransaction: () => void;
 }
@@ -18,7 +33,7 @@ const TransactionContext = createContext<TransactionContextType | undefined>(
 export const useTransaction = (): TransactionContextType => {
   const context = useContext(TransactionContext);
   if (!context) {
-    throw new Error("useTransaction must be used within a TransactionProvider");
+    throw new Error('useTransaction must be used within a TransactionProvider');
   }
   return context;
 };
@@ -32,8 +47,14 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({
 }) => {
   const [transaction, setTransaction] = useState<TransactionData | null>(null);
 
-  const saveTransaction = (amount: number, narration: string) => {
-    setTransaction({ amount, narration });
+  const saveTransaction = (data: Partial<TransactionData>) => {
+    setTransaction(
+      prevTransaction =>
+        ({
+          ...prevTransaction,
+          ...data,
+        } as TransactionData)
+    );
   };
 
   const getTransaction = (): TransactionData | null => {
@@ -46,8 +67,7 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({
 
   return (
     <TransactionContext.Provider
-      value={{ saveTransaction, getTransaction, clearTransaction }}
-    >
+      value={{ saveTransaction, getTransaction, clearTransaction }}>
       {children}
     </TransactionContext.Provider>
   );

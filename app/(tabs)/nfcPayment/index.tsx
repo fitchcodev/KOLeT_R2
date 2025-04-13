@@ -15,7 +15,7 @@ const NfcPaymentScreen: FC = () => {
   const paddingTop = top > 0 ? top + 10 : 30;
   const animation = useRef<LottieView>(null);
   const { getTransaction } = useTransaction();
-  const [transaction, setTransaction] = useState(getTransaction);
+  const [transaction, _] = useState(getTransaction);
 
   // Format the amount with commas and 2 decimal places if available
   const formattedAmount = transaction?.amount

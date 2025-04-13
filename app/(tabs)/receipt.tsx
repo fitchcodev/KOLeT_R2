@@ -14,16 +14,35 @@ import CancleIC from '@/assets/images/svg/CancleIC';
 import SuccesIC from '@/assets/images/svg/SuccesIC';
 import ShareIC from '@/assets/images/svg/ShareIC';
 import ShareICWhite from '@/assets/images/svg/ShareICWhite';
-import { hp } from '@/helpers/common';
-import { useTransaction } from '@/contexts/ReceiptContext';
+import { hp, toTransactionDate } from '@/helpers/common';
+import { TransactionData, useTransaction } from '@/contexts/ReceiptContext';
+import { Alert } from 'react-native';
 
 const Receipt = () => {
   const { top } = useSafeAreaInsets();
-  const { getTransactionAmount } = useTransaction();
-  const [amount, setAmount] = useState<string | null>('');
+  const { getTransaction, saveTransaction, clearTransaction } =
+    useTransaction();
+  const [transaction, setTransaction] = useState<TransactionData>();
+
+  // Mark local transaction as completed
+  // and save it to the context
   useEffect(() => {
-    setAmount(() => getTransactionAmount());
+    const transactionData = getTransaction();
+    if (transactionData) {
+      const updatedTransaction = {
+        ...transactionData,
+        status: 'Successful' as const,
+      };
+      saveTransaction(updatedTransaction);
+      setTransaction(updatedTransaction);
+    }
+
+    // Clear transaction data after use
+    return () => {
+      clearTransaction();
+    };
   }, []);
+
   const paddingTop = top > 0 ? top + 10 : 30;
   return (
     <View style={[styles.container, { paddingTop }]}>
@@ -56,37 +75,39 @@ const Receipt = () => {
       <View style={styles.header}>
         <SuccesIC width={70} height={70} />
         <Text style={styles.total}>Total</Text>
-        <Text style={styles.amount}>₦{amount}</Text>
+        <Text style={styles.amount}>₦{transaction?.amount}</Text>
       </View>
 
       {/* Block */}
       <View style={styles.block}>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Name</Text>
-          <Text style={styles.blockItemText}>John Shop</Text>
+          <Text style={styles.blockItemText}>{transaction?.user.name}</Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Date</Text>
-          <Text style={styles.blockItemText}>Dec 27th 2023 2:25</Text>
+          <Text style={styles.blockItemText}>
+            {toTransactionDate(new Date(transaction?.date!))}
+          </Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Amount</Text>
 
-          <Text style={styles.blockItemText}>₦{amount}</Text>
+          <Text style={styles.blockItemText}>₦{transaction?.amount}</Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Method</Text>
-          <Text style={styles.blockItemText}>Tap Card</Text>
+          <Text style={styles.blockItemText}>{transaction?.paymentMethod}</Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Transaction ID</Text>
 
-          <Text style={styles.blockItemText}>QR165789D</Text>
+          <Text style={styles.blockItemText}>{transaction?.id}</Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Status</Text>
 
-          <Text style={styles.blockItemText}>Successful</Text>
+          <Text style={styles.blockItemText}>{transaction?.status}</Text>
         </View>
       </View>
       {/* Footer */}
