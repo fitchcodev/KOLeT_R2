@@ -46,10 +46,21 @@ const OtpScreen = () => {
       { ...payload },
       {
         onSuccess: data => {
-          router.push('/auth/login');
+          Alert.alert(
+            'Success!',
+            'Your account has been successfully verified',
+            [
+              {
+                text: "Let's Go",
+                onPress: () => {
+                  router.push('/auth/login');
+                },
+              },
+            ]
+          );
         },
         onError: error => {
-          Alert.alert('Oops!', 'There was an error verifying your OTP');
+          Alert.alert('Oops!', 'There was an error verifying your account');
           console.warn(error);
         },
       }
@@ -57,7 +68,7 @@ const OtpScreen = () => {
   };
 
   const { top } = useSafeAreaInsets();
-  const paddinTop = top > 0 ? top + 10 : 30;
+  const paddingTop = top > 0 ? top + 10 : 30;
 
   const otpInputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const handleOTPEnter = (value: string, index: number) => {
@@ -77,7 +88,7 @@ const OtpScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: paddinTop }]}>
+    <View style={[styles.container, { paddingTop }]}>
       <TouchableOpacity
         onPress={() => router.back()}
         style={{ width: '100%', paddingVertical: 5, paddingHorizontal: 20 }}>
