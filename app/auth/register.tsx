@@ -15,6 +15,7 @@ import {
   dateToString,
   formatDate,
   hp,
+  validateDate,
   validateEmail,
   validateNigerianPhoneNumber,
   wp,
@@ -66,7 +67,8 @@ const Register = () => {
     return (
       !(firstName && lastName && validateNigerianPhoneNumber(phone)) ||
       (email && !validateEmail(email)) ||
-      !dateOfBirth
+      !dateOfBirth ||
+      !validateDate(dateOfBirth)
     );
   };
 
@@ -162,9 +164,19 @@ const Register = () => {
             <DatePicker
               modal
               open={open}
-              date={dateOfBirth || new Date()}
+              date={
+                dateOfBirth ||
+                new Date(new Date().setFullYear(new Date().getFullYear() - 16))
+              }
               mode="date"
-              maximumDate={new Date()}
+              // Set maximum date to exactly 16 years ago (youngest allowed)
+              maximumDate={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 16))
+              }
+              // Set a reasonable minimum date (oldest allowed, e.g., 150 years ago)
+              minimumDate={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 150))
+              }
               onConfirm={date => {
                 setOpen(false);
                 handleDateChange(date);
