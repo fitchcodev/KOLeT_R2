@@ -4,7 +4,6 @@ import axios from "axios";
 
 const API_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
-// Create axios instance with common configuration
 const api = axios.create({
   baseURL: API_URL,
   headers: {
