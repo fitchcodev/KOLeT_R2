@@ -60,6 +60,7 @@ const AddAccountForm = () => {
       BANK_NAME_L: selectedBank.name,
       BANK_NAME: selectedBank.code,
       BANK_ACCOUNT_NUMBER: accountNumber,
+      //NOTE: I'm not sure what this value is meant to be
       user_id: 10,
       model: "accounts",
     };
