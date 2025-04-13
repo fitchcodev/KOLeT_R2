@@ -1,5 +1,13 @@
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { FC, useEffect, useRef, useState } from 'react';
+import {
+  Alert,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+  Platform,
+} from 'react-native';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
@@ -7,8 +15,10 @@ import ShareIC from '@/assets/images/svg/ShareIC';
 import { router } from 'expo-router';
 import { hp } from '@/helpers/common';
 import LottieView from 'lottie-react-native';
-import NfcManager, { NfcTech } from 'react-native-nfc-manager';
+import NfcManager, { NfcTech, NfcEvents } from 'react-native-nfc-manager';
 import { useTransaction } from '@/contexts/ReceiptContext';
+import { useFocusEffect } from '@react-navigation/native';
+import * as Device from 'expo-device';
 
 const NfcPaymentScreen: FC = () => {
   const { top } = useSafeAreaInsets();
@@ -16,6 +26,33 @@ const NfcPaymentScreen: FC = () => {
   const animation = useRef<LottieView>(null);
   const { getTransaction } = useTransaction();
   const [transaction, _] = useState(getTransaction);
+  const [isReading, setIsReading] = useState(false);
+  const [nfcReady, setNfcReady] = useState(false);
+  const [hasProcessedTag, setHasProcessedTag] = useState(false);
+  const [isSamsungDevice, setIsSamsungDevice] = useState(false);
+
+  // Check if device is Samsung
+  useEffect(() => {
+    const checkDeviceManufacturer = async () => {
+      try {
+        const manufacturer = await Device.manufacturer;
+        const isSamsung =
+          manufacturer?.toLowerCase().includes('samsung') || false;
+        setIsSamsungDevice(isSamsung);
+        console.log(
+          'Device manufacturer:',
+          manufacturer,
+          'Is Samsung:',
+          isSamsung
+        );
+      } catch (error) {
+        console.log('Error checking device manufacturer:', error);
+        setIsSamsungDevice(false);
+      }
+    };
+
+    checkDeviceManufacturer();
+  }, []);
 
   // Format the amount with commas and 2 decimal places if available
   const formattedAmount = transaction?.amount
@@ -25,46 +62,226 @@ const NfcPaymentScreen: FC = () => {
       })
     : '0.00';
 
+  // Initialize NFC once on mount with Samsung-specific handling
   useEffect(() => {
-    const initNfc = async () => {
-      await NfcManager.start();
-    };
-
-    initNfc();
-
-    return () => {
-      NfcManager.cancelTechnologyRequest().catch(() => {});
-    };
-  }, []);
-
-  useEffect(() => {
-    const readNdef = async () => {
+    const setupNfc = async () => {
       try {
-        // register for the NFC tag with NDEF in it
-        await NfcManager.requestTechnology(NfcTech.Ndef);
-        // the resolved tag object will contain `ndefMessage` property
-        const tag = await NfcManager.getTag();
-        Alert.alert(
-          'Payment successful!',
-          `Payment of ₦${formattedAmount} was successful!`
-        );
-        router.navigate('/(tabs)/receipt');
-        // console.warn('Tag found', tag);
+        // Check if NFC is supported and enabled
+        const isSupported = await NfcManager.isSupported();
+
+        if (!isSupported) {
+          Alert.alert(
+            'NFC Not Supported',
+            "This device doesn't support NFC payments."
+          );
+          router.back();
+          return;
+        }
+
+        const isEnabled = await NfcManager.isEnabled();
+        if (!isEnabled) {
+          Alert.alert(
+            'NFC Disabled',
+            'Please enable NFC in your device settings.',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => router.back(),
+                style: 'cancel',
+              },
+              {
+                text: 'Open Settings',
+                onPress: () => {
+                  // Open NFC settings on Android
+                  try {
+                    NfcManager.goToNfcSetting();
+                  } catch (ex) {
+                    console.log('Cannot open NFC settings', ex);
+                  }
+                },
+              },
+            ]
+          );
+          return;
+        }
+
+        await NfcManager.start();
+
+        // Different event registration for Samsung vs other devices
+        if (isSamsungDevice) {
+          console.log('Using Samsung-specific NFC handling');
+          // For Samsung, we'll use a different approach in scanNfc function
+        } else {
+          await NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
+            if (!hasProcessedTag) {
+              setHasProcessedTag(true);
+
+              // Process successful payment
+              Alert.alert(
+                'Payment successful!',
+                `Payment of ₦${formattedAmount} was successful!`,
+                [
+                  {
+                    text: 'View Receipt',
+                    onPress: () => {
+                      router.navigate('/(tabs)/receipt');
+                    },
+                  },
+                ]
+              );
+
+              NfcManager.unregisterTagEvent().catch(() => {});
+            }
+          });
+        }
+
+        setNfcReady(true);
       } catch (ex) {
-        Alert.alert('Oops!, A Certain Error Occurred!');
-        router.back();
-        //console.warn('Oops!', ex);
-      } finally {
-        // stop the nfc scanning
-        NfcManager.cancelTechnologyRequest().catch(() => {
-          // Ignore errors during cleanup
-        });
+        console.error('Error setting up NFC:', ex);
+        Alert.alert('NFC Error', 'Could not initialize NFC. Please try again.');
       }
     };
 
-    // Start reading NFC when component mounts
-    readNdef();
-  }, []);
+    setupNfc();
+
+    // Cleanup on unmount
+    return () => {
+      NfcManager.setEventListener(NfcEvents.DiscoverTag, null);
+      NfcManager.unregisterTagEvent().catch(() => {});
+    };
+  }, [formattedAmount, isSamsungDevice]);
+
+  // Start and stop scanning when screen is focused/unfocused
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
+
+      const scanNfc = async () => {
+        try {
+          if (!nfcReady) return;
+
+          setIsReading(true);
+          setHasProcessedTag(false);
+
+          // Samsung-specific NFC handling
+          if (isSamsungDevice) {
+            try {
+              // Clean up any existing operations
+              await NfcManager.cancelTechnologyRequest().catch(() => {});
+
+              // Use technology request for Samsung (more reliable on Samsung)
+              await NfcManager.requestTechnology(NfcTech.Ndef);
+
+              // Introduce a slight delay for Samsung devices
+              await new Promise(resolve => setTimeout(resolve, 500));
+
+              const tag = await NfcManager.getTag();
+              console.log('Samsung NFC tag read successful');
+
+              // Mark as processed
+              setHasProcessedTag(true);
+
+              // Process successful payment
+              Alert.alert(
+                'Payment successful!',
+                `Payment of ₦${formattedAmount} was successful!`,
+                [
+                  {
+                    text: 'View Receipt',
+                    onPress: () => {
+                      router.navigate('/(tabs)/receipt');
+                    },
+                  },
+                ]
+              );
+
+              // Cancel the technology request to prevent Samsung login prompts
+              NfcManager.cancelTechnologyRequest().catch(() => {});
+            } catch (ex) {
+              console.log('Samsung NFC error:', ex);
+              if (
+                isMounted &&
+                !ex.toString().includes('cancelled') &&
+                !ex.toString().includes('user_cancel')
+              ) {
+                Alert.alert(
+                  'NFC Error',
+                  'Failed to read NFC card. Please try again.'
+                );
+              }
+            } finally {
+              if (isMounted) {
+                setIsReading(false);
+              }
+            }
+          } else {
+            // Non-Samsung device handling (event-based)
+            // Make sure no other NFC operations are running
+            await NfcManager.unregisterTagEvent().catch(() => {});
+            await NfcManager.cancelTechnologyRequest().catch(() => {});
+
+            // Start listening for NFC tags
+            await NfcManager.registerTagEvent();
+          }
+        } catch (ex) {
+          console.log('Error scanning NFC:', ex);
+          if (isMounted) {
+            setIsReading(false);
+            // Only show error for real failures
+            if (!ex.toString().includes('cancelled')) {
+              Alert.alert(
+                'NFC Error',
+                'Failed to start NFC scanning. Please try again.'
+              );
+            }
+          }
+        }
+      };
+
+      // Delay slightly to ensure component is fully mounted
+      const timer = setTimeout(() => {
+        scanNfc();
+      }, 300);
+
+      return () => {
+        isMounted = false;
+        clearTimeout(timer);
+        NfcManager.unregisterTagEvent().catch(() => {});
+        NfcManager.cancelTechnologyRequest().catch(() => {});
+        setIsReading(false);
+      };
+    }, [nfcReady, formattedAmount, isSamsungDevice])
+  );
+
+  // Function to manually restart NFC scanning
+  const handleRetryNfc = async () => {
+    try {
+      setIsReading(true);
+      setHasProcessedTag(false);
+
+      if (isSamsungDevice) {
+        // Samsung-specific retry logic
+        try {
+          await NfcManager.cancelTechnologyRequest().catch(() => {});
+          await NfcManager.requestTechnology(NfcTech.Ndef);
+        } catch (ex) {
+          console.log('Samsung retry error:', ex);
+          setIsReading(false);
+        }
+      } else {
+        // Standard retry logic
+        // Cancel any existing operations
+        await NfcManager.unregisterTagEvent().catch(() => {});
+        await NfcManager.cancelTechnologyRequest().catch(() => {});
+
+        // Start listening again
+        await NfcManager.registerTagEvent();
+      }
+    } catch (ex) {
+      console.log('Error restarting NFC:', ex);
+      setIsReading(false);
+    }
+  };
 
   return (
     <View style={[styles.container, { paddingTop }]}>
@@ -87,7 +304,9 @@ const NfcPaymentScreen: FC = () => {
       </View>
 
       {/* animation */}
-      <View style={styles.animationContainer}>
+      <Pressable
+        style={styles.animationContainer}
+        onPress={!isReading || hasProcessedTag ? handleRetryNfc : undefined}>
         <LottieView
           autoPlay
           ref={animation}
@@ -97,11 +316,24 @@ const NfcPaymentScreen: FC = () => {
           }}
           source={require('@/assets/nfcTap.json')}
         />
-      </View>
+      </Pressable>
 
       {/* Footer */}
       <View style={styles.footer}>
-        <Text style={styles.footerText}>Tap Card</Text>
+        <Text style={styles.footerText}>
+          {isReading && !hasProcessedTag
+            ? 'Reading...'
+            : hasProcessedTag
+            ? 'Payment Successful'
+            : 'Tap Card'}
+        </Text>
+        {(!isReading || hasProcessedTag) && (
+          <Pressable onPress={handleRetryNfc} style={styles.retryButton}>
+            <Text style={styles.retryText}>
+              {hasProcessedTag ? 'Scan another card' : 'Tap to retry'}
+            </Text>
+          </Pressable>
+        )}
       </View>
     </View>
   );
@@ -207,5 +439,16 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 15,
+    padding: 12,
+    backgroundColor: '#f8f8f8',
+    borderRadius: 8,
+  },
+  retryText: {
+    fontSize: 16,
+    fontFamily: 'Montserrat-SemiBold',
+    color: Colors.main.primary,
   },
 });
