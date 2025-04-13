@@ -11,15 +11,18 @@ export type User = {
   username: string;
 };
 
+// Add a properly typed initial state for reset
+const initialState: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  dateOfBirth: '',
+  username: '',
+};
+
 export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState<User>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    username: '',
-  });
+  const [user, setUser] = useState<User>(initialState);
 
   const updateUser = (newInfo: User) => {
     setUser(prevUser => ({
@@ -30,10 +33,16 @@ export const UserProvider = ({ children }) => {
   const saveUser = () => {
     setUser(prevUser => prevUser);
   };
+
+  const resetUser = () => {
+    setUser(initialState);
+  };
+
   const value = {
     user,
     saveUser,
     updateUser,
+    resetUser,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
