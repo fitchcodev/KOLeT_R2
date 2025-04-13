@@ -26,7 +26,7 @@ const AddAccountForm = () => {
   const [cardName, setCardName] = useState("");
   const [cardNumebr, setCardNumber] = useState("");
   const [cardExpDate, setExpDate] = useState("");
-  const [cardCVV, setCardCVV] = useState("");
+  const [bankName, setBankName] = useState("");
 
   const checkButtonDisabled = () => {
     return cardName.length < 4;
@@ -150,23 +150,13 @@ const AddAccountForm = () => {
               iconHieght={15}
               iconWidth={15}
             />
-
             <CustomTextInput
-              value={cardExpDate}
-              inputMode="numeric"
-              keyboardType="phone-pad"
-              maxLength={5} // Setting maxLength to 5 for "dd/mm" format
-              placeholder="Bank Name"
-              onChange={onChangeExpDate}
-            />
-
-            <CustomTextInput
-              value={cardCVV}
+              value={bankName}
               inputMode="numeric"
               keyboardType="phone-pad"
               maxLength={40}
-              placeholder="CVV (Required)"
-              onChange={setCardCVV}
+              placeholder="Bank Name (Required)"
+              onChange={setBankName}
               secureTextEntry={true}
             />
           </View>

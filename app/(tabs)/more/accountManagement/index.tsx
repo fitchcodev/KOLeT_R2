@@ -96,17 +96,17 @@ const AccountManagement = () => {
         <Pressable
           style={styles.item}
           onPress={() =>
-            router.navigate("/(tabs)/more/AccountManagement/addAccountForm")
+            router.navigate("/(tabs)/more/accountManagement/addAccountForm")
           }
         >
-          <Text style={styles.itemText}>Add New Card</Text>
+          <Text style={styles.itemText}>Add New Account</Text>
           <ArrowRightIC width={20} height={20} />
         </Pressable>
 
         <Pressable
           style={styles.item}
           onPress={() =>
-            router.navigate("/(tabs)/more/AccountManagement/accountDetails")
+            router.navigate("/(tabs)/more/accountManagement/accountDetails")
           }
         >
           <Text style={styles.itemText}>View Account Details</Text>
@@ -122,7 +122,7 @@ const AccountManagement = () => {
         <Pressable
           style={styles.item}
           onPress={() =>
-            router.navigate("/(tabs)/more/AccountManagement/setDefaultAccount")
+            router.navigate("/(tabs)/more/accountManagement/setDefaultAccount")
           }
         >
           <Text style={styles.itemText}>Set Default Account</Text>
@@ -136,7 +136,7 @@ const AccountManagement = () => {
         <Pressable
           style={styles.item}
           onPress={() =>
-            router.navigate("/(tabs)/more/AccountManagement/privacySettings")
+            router.navigate("/(tabs)/more/accountManagement/privacySettings")
           }
         >
           <Text style={styles.itemText}>Privacy Settings</Text>

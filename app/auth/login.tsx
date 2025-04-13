@@ -131,7 +131,7 @@ const Login = () => {
           style={styles.footer}>
           <TouchableOpacity
             disabled={checkButtonDisabled() || isPending}
-            onPress={onSubmit}
+            onPress={() => router.push('/(tabs)/(top-tabs)')}
             style={[
               styles.footerBtn,
               {
