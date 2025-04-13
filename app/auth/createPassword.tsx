@@ -57,9 +57,7 @@ const CreatePassword = () => {
   };
 
   const checkButtonIsDisabled = () => {
-    return (
-      !validatePassword(password) || !(confirmPassword == password) || isPending
-    );
+    return !validatePassword(password) || !(confirmPassword == password);
   };
 
   return (
@@ -184,9 +182,10 @@ const CreatePassword = () => {
           </Text>
           <TouchableOpacity
             onPress={onSubmit}
+            disabled={checkButtonIsDisabled() || isPending}
             style={[
               styles.footerBtn,
-              { opacity: checkButtonIsDisabled() ? 0.5 : 1 },
+              { opacity: checkButtonIsDisabled() || isPending ? 0.5 : 1 },
             ]}>
             <Text style={styles.footerBtnText}>
               {!isPending ? 'Create Account' : 'Loading...'}
