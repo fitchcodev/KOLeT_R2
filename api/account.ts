@@ -46,7 +46,8 @@ export const useGetBankList = (options = {}) => {
   const fetchBankList = async () => {
     try {
       const response = await api.get('/get_bank_list_paystack.php');
-      return response.data;
+
+      return response.data.response.data;
     } catch (err) {
       const error = err as AxiosError | Error | any;
       console.error('API Error:', error);
