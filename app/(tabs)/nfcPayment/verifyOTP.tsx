@@ -18,6 +18,7 @@ import Animated, {
 import { router } from 'expo-router';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
 import CustomTextInput from '@/components/CustomTextInput';
+import { useCountdown } from '@/hooks/useCountdown';
 
 const verifyOTP = () => {
   const handleButton = () => {
@@ -30,7 +31,15 @@ const verifyOTP = () => {
   const checkButtonDisabled = () => {
     return otpValues.length < 4;
   };
-  //console.log(checkButtonDisabled());
+  const { seconds, formattedTime, isActive, restart } = useCountdown({
+    initialSeconds: 60, // Different initial value
+    autoStart: false, // Don't start automatically
+  });
+
+  const handleStartTimer = () => {
+    restart();
+  };
+
   return (
     <View style={[styles.container, { paddingTop: paddinTop }]}>
       <TouchableOpacity
@@ -74,7 +83,20 @@ const verifyOTP = () => {
             value={otpValues}
           />
           <View style={styles.timerCon}>
-            <Text style={styles.timerText}>Remaining 00:30 Sec</Text>
+            <Text style={styles.timerText}>
+              Remaining {formattedTime()} Sec
+            </Text>
+            <TouchableOpacity
+              disabled={isActive}
+              onPress={handleStartTimer}
+              style={{
+                marginTop: 10,
+                backgroundColor: isActive ? 'gray' : Colors.main.primary,
+                padding: 10,
+                borderRadius: 5,
+              }}>
+              <Text style={{ color: 'white' }}>Resend OTP</Text>
+            </TouchableOpacity>
           </View>
         </View>
         {/* Footer */}
