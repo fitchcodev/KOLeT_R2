@@ -25,7 +25,7 @@ const AccountDetails = () => {
         }}
       >
         <TouchableOpacity
-          onPress={() => router.navigate("/(tabs)/more/cardManagement")}
+          onPress={() => router.navigate("/(tabs)/more/accountManagement")}
         >
           <ArrowLftIC width={30} height={30} />
         </TouchableOpacity>
