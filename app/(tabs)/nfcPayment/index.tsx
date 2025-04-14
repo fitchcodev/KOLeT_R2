@@ -1,23 +1,23 @@
-import { Alert, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
-import { Colors } from '@/constants/Colors';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
-import ShareIC from '@/assets/images/svg/ShareIC';
-import { router } from 'expo-router';
-import { hp } from '@/helpers/common';
-import LottieView from 'lottie-react-native';
-import NfcManager, { NfcTech, NfcEvents } from 'react-native-nfc-manager';
-import { useTransaction } from '@/contexts/TransactionContext';
-import { useFocusEffect } from '@react-navigation/native';
-import * as Device from 'expo-device';
+import { Alert, Modal, Pressable, StyleSheet, Text, View } from "react-native";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import { Colors } from "@/constants/Colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ArrowLftIC from "@/assets/images/svg/ArrowLftIC";
+import ShareIC from "@/assets/images/svg/ShareIC";
+import { router } from "expo-router";
+import { hp } from "@/helpers/common";
+import LottieView from "lottie-react-native";
+import NfcManager, { NfcTech, NfcEvents } from "react-native-nfc-manager";
+import { TransactionData, useTransaction } from "@/contexts/TransactionContext";
+import { useFocusEffect } from "@react-navigation/native";
+import * as Device from "expo-device";
 
 const NfcPaymentScreen: FC = () => {
   const { top } = useSafeAreaInsets();
   const paddingTop = top > 0 ? top + 10 : 30;
   const animation = useRef<LottieView>(null);
   const { getTransaction } = useTransaction();
-  const [transaction, _] = useState(getTransaction);
+  const [transaction] = useState<TransactionData | null>(getTransaction());
   const [isReading, setIsReading] = useState(false);
   const [nfcReady, setNfcReady] = useState(false);
   const [hasProcessedTag, setHasProcessedTag] = useState(false);
@@ -29,16 +29,16 @@ const NfcPaymentScreen: FC = () => {
       try {
         const manufacturer = await Device.manufacturer;
         const isSamsung =
-          manufacturer?.toLowerCase().includes('samsung') || false;
+          manufacturer?.toLowerCase().includes("samsung") || false;
         setIsSamsungDevice(isSamsung);
         console.log(
-          'Device manufacturer:',
+          "Device manufacturer:",
           manufacturer,
-          'Is Samsung:',
+          "Is Samsung:",
           isSamsung
         );
       } catch (error) {
-        console.log('Error checking device manufacturer:', error);
+        console.log("Error checking device manufacturer:", error);
         setIsSamsungDevice(false);
       }
     };
@@ -52,7 +52,7 @@ const NfcPaymentScreen: FC = () => {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
       })
-    : '0.00';
+    : "0.00";
 
   // Initialize NFC once on mount with Samsung-specific handling
   useEffect(() => {
@@ -63,7 +63,7 @@ const NfcPaymentScreen: FC = () => {
 
         if (!isSupported) {
           Alert.alert(
-            'NFC Not Supported',
+            "NFC Not Supported",
             "This device doesn't support NFC payments."
           );
           router.back();
@@ -73,22 +73,22 @@ const NfcPaymentScreen: FC = () => {
         const isEnabled = await NfcManager.isEnabled();
         if (!isEnabled) {
           Alert.alert(
-            'NFC Disabled',
-            'Please enable NFC in your device settings.',
+            "NFC Disabled",
+            "Please enable NFC in your device settings.",
             [
               {
-                text: 'Cancel',
+                text: "Cancel",
                 onPress: () => router.back(),
-                style: 'cancel',
+                style: "cancel",
               },
               {
-                text: 'Open Settings',
+                text: "Open Settings",
                 onPress: () => {
                   // Open NFC settings on Android
                   try {
                     NfcManager.goToNfcSetting();
                   } catch (ex) {
-                    console.log('Cannot open NFC settings', ex);
+                    console.log("Cannot open NFC settings", ex);
                   }
                 },
               },
@@ -101,7 +101,7 @@ const NfcPaymentScreen: FC = () => {
 
         // Different event registration for Samsung vs other devices
         if (isSamsungDevice) {
-          console.log('Using Samsung-specific NFC handling');
+          console.log("Using Samsung-specific NFC handling");
           // For Samsung, we'll only initialize NFC but not set up event handlers
           // This is intentional - Samsung devices work better with direct technology requests
           // Event listeners will be set up in the scanNfc function
@@ -109,19 +109,19 @@ const NfcPaymentScreen: FC = () => {
           // Optionally: We'll Pre-cancel any existing requests to ensure clean state
           await NfcManager.cancelTechnologyRequest().catch(() => {});
         } else {
-          await NfcManager.setEventListener(NfcEvents.DiscoverTag, tag => {
+          await NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag) => {
             if (!hasProcessedTag) {
               setHasProcessedTag(true);
 
               // Process successful payment
               Alert.alert(
-                'Payment successful!',
+                "Payment successful!",
                 `Payment of ₦${formattedAmount} was successful!`,
                 [
                   {
-                    text: 'View Receipt',
+                    text: "View Receipt",
                     onPress: () => {
-                      router.navigate('/(tabs)/receipt');
+                      router.navigate("/(tabs)/receipt");
                     },
                   },
                 ]
@@ -134,8 +134,8 @@ const NfcPaymentScreen: FC = () => {
 
         setNfcReady(true);
       } catch (ex) {
-        console.error('Error setting up NFC:', ex);
-        Alert.alert('NFC Error', 'Could not initialize NFC. Please try again.');
+        console.error("Error setting up NFC:", ex);
+        Alert.alert("NFC Error", "Could not initialize NFC. Please try again.");
       }
     };
 
@@ -170,23 +170,23 @@ const NfcPaymentScreen: FC = () => {
               await NfcManager.requestTechnology(NfcTech.Ndef);
 
               // Introduce a slight delay for Samsung devices
-              await new Promise(resolve => setTimeout(resolve, 500));
+              await new Promise((resolve) => setTimeout(resolve, 500));
 
               const tag = await NfcManager.getTag();
-              console.log('Samsung NFC tag read successful');
+              console.log("Samsung NFC tag read successful");
 
               // Mark as processed
               setHasProcessedTag(true);
 
               // Process successful payment
               Alert.alert(
-                'Payment successful!',
+                "Payment successful!",
                 `Payment of ₦${formattedAmount} was successful!`,
                 [
                   {
-                    text: 'View Receipt',
+                    text: "View Receipt",
                     onPress: () => {
-                      router.navigate('/(tabs)/receipt');
+                      router.navigate("/(tabs)/receipt");
                     },
                   },
                 ]
@@ -195,15 +195,15 @@ const NfcPaymentScreen: FC = () => {
               // Cancel the technology request to prevent Samsung login prompts
               NfcManager.cancelTechnologyRequest().catch(() => {});
             } catch (ex) {
-              console.log('Samsung NFC error:', ex);
+              console.log("Samsung NFC error:", ex);
               if (
                 isMounted &&
-                !ex.toString().includes('cancelled') &&
-                !ex.toString().includes('user_cancel')
+                !ex.toString().includes("cancelled") &&
+                !ex.toString().includes("user_cancel")
               ) {
                 Alert.alert(
-                  'NFC Error',
-                  'Failed to read NFC card. Please try again.'
+                  "NFC Error",
+                  "Failed to read NFC card. Please try again."
                 );
               }
             } finally {
@@ -221,14 +221,14 @@ const NfcPaymentScreen: FC = () => {
             await NfcManager.registerTagEvent();
           }
         } catch (ex) {
-          console.log('Error scanning NFC:', ex);
+          console.log("Error scanning NFC:", ex);
           if (isMounted) {
             setIsReading(false);
             // Only show error for real failures
-            if (!ex.toString().includes('cancelled')) {
+            if (!ex.toString().includes("cancelled")) {
               Alert.alert(
-                'NFC Error',
-                'Failed to start NFC scanning. Please try again.'
+                "NFC Error",
+                "Failed to start NFC scanning. Please try again."
               );
             }
           }
@@ -262,7 +262,7 @@ const NfcPaymentScreen: FC = () => {
           await NfcManager.cancelTechnologyRequest().catch(() => {});
           await NfcManager.requestTechnology(NfcTech.Ndef);
         } catch (ex) {
-          console.log('Samsung retry error:', ex);
+          console.log("Samsung retry error:", ex);
           setIsReading(false);
         }
       } else {
@@ -275,7 +275,7 @@ const NfcPaymentScreen: FC = () => {
         await NfcManager.registerTagEvent();
       }
     } catch (ex) {
-      console.log('Error restarting NFC:', ex);
+      console.log("Error restarting NFC:", ex);
       setIsReading(false);
     }
   };
@@ -297,21 +297,22 @@ const NfcPaymentScreen: FC = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Total</Text>
         <Text style={styles.amount}>₦{formattedAmount}</Text>
-        <Text style={styles.description}>{transaction?.narration || ''}</Text>
+        <Text style={styles.description}>{transaction?.narration || ""}</Text>
       </View>
 
       {/* animation */}
       <Pressable
         style={styles.animationContainer}
-        onPress={!isReading || hasProcessedTag ? handleRetryNfc : undefined}>
+        onPress={!isReading || hasProcessedTag ? handleRetryNfc : undefined}
+      >
         <LottieView
           autoPlay
           ref={animation}
           style={{
-            width: '100%',
-            height: '100%',
+            width: "100%",
+            height: "100%",
           }}
-          source={require('@/assets/nfcTap.json')}
+          source={require("@/assets/nfcTap.json")}
         />
       </Pressable>
 
@@ -319,15 +320,15 @@ const NfcPaymentScreen: FC = () => {
       <View style={styles.footer}>
         <Text style={styles.footerText}>
           {isReading && !hasProcessedTag
-            ? 'Reading...'
+            ? "Reading..."
             : hasProcessedTag
-            ? 'Payment Successful'
-            : 'Tap Card'}
+            ? "Payment Successful"
+            : "Tap Card"}
         </Text>
         {(!isReading || hasProcessedTag) && (
           <Pressable onPress={handleRetryNfc} style={styles.retryButton}>
             <Text style={styles.retryText}>
-              {hasProcessedTag ? 'Scan another card' : 'Tap to retry'}
+              {hasProcessedTag ? "Scan another card" : "Tap to retry"}
             </Text>
           </Pressable>
         )}
@@ -346,66 +347,66 @@ const styles = StyleSheet.create({
     gap: hp(4),
   },
   topBtn: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   header: {
     gap: 30,
-    alignItems: 'center',
+    alignItems: "center",
   },
   headerTitle: {
     fontSize: 18,
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: "Montserrat-Regular",
     color: Colors.main.description,
   },
   amount: {
     fontSize: 48,
-    fontWeight: '600',
-    fontFamily: 'Montserrat-SemiBold',
+    fontWeight: "600",
+    fontFamily: "Montserrat-SemiBold",
     color: Colors.main.text,
-    textAlign: 'left',
+    textAlign: "left",
   },
   description: {
     fontSize: 18,
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: "Montserrat-Regular",
     color: Colors.main.description,
   },
   animationContainer: {
     flex: 0.6,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerText: {
-    alignItems: 'center',
+    alignItems: "center",
     fontSize: 20,
-    fontWeight: '500',
-    fontFamily: 'Montserrat-Regular',
+    fontWeight: "500",
+    fontFamily: "Montserrat-Regular",
     color: Colors.main.text,
   },
   modalTextTitle: {
     marginBottom: 15,
-    fontFamily: 'Monserrat-Regular',
-    fontWeight: '600',
-    textAlign: 'center',
+    fontFamily: "Monserrat-Regular",
+    fontWeight: "600",
+    textAlign: "center",
     fontSize: 20,
     color: Colors.main.text,
   },
   modalTextDes: {
     marginBottom: 15,
-    fontFamily: 'Raleway-Regular',
-    textAlign: 'center',
+    fontFamily: "Raleway-Regular",
+    textAlign: "center",
     lineHeight: 30,
     fontSize: 15,
     color: Colors.main.text,
   },
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalView: {
     margin: 20,
@@ -413,8 +414,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 40,
     gap: 10,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -431,21 +432,21 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.main.primary,
   },
   textStyle: {
-    color: 'white',
-    fontFamily: 'Raleway-Regular',
+    color: "white",
+    fontFamily: "Raleway-Regular",
     fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   retryButton: {
     marginTop: 15,
     padding: 12,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: "#f8f8f8",
     borderRadius: 8,
   },
   retryText: {
     fontSize: 16,
-    fontFamily: 'Montserrat-SemiBold',
+    fontFamily: "Montserrat-SemiBold",
     color: Colors.main.primary,
   },
 });
