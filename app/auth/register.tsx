@@ -7,9 +7,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
-} from 'react-native';
-import React, { useContext, useState, useEffect } from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import React, { useContext, useState, useEffect } from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   createUsername,
   dateToString,
@@ -19,26 +19,32 @@ import {
   validateEmail,
   validateNigerianPhoneNumber,
   wp,
-} from '@/helpers/common';
-import { Colors } from '@/constants/Colors';
-import { router } from 'expo-router';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
-import DatePicker from 'react-native-date-picker';
-import { StatusBar } from 'expo-status-bar';
-import CustomTextInput from '@/components/CustomTextInput';
-import { UserContext } from '@/contexts/UserContext';
+} from "@/helpers/common";
+import { Colors } from "@/constants/Colors";
+import { router } from "expo-router";
+import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
+import DatePicker from "react-native-date-picker";
+import { StatusBar } from "expo-status-bar";
+import CustomTextInput from "@/components/CustomTextInput";
+import { UserContext } from "@/contexts/UserContext";
 
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
   const { user, updateUser } = useContext(UserContext);
-  const [firstName, setFirstName] = useState(user.firstName || '');
-  const [lastName, setLastName] = useState(user.lastName || '');
-  const [email, setEmail] = useState(user.email || '');
-  const [phone, setPhone] = useState(user.phone || '');
+  const [firstName, setFirstName] = useState(user.firstName || "");
+  const [lastName, setLastName] = useState(user.lastName || "");
+  const [email, setEmail] = useState(user.email || "");
+  const [phone, setPhone] = useState(user.phone || "");
   const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-  const [formattedDate, setFormattedDate] = useState('');
+  const [formattedDate, setFormattedDate] = useState("");
   const [open, setOpen] = useState(false);
+
+  const [firstNameTouched, setFirstNameTouched] = useState(false);
+  const [lastNameTouched, setLastNameTouched] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [dobTouched, setDobTouched] = useState(false);
 
   useEffect(() => {
     if (dateOfBirth) {
@@ -56,11 +62,12 @@ const Register = () => {
       username: createUsername(firstName, lastName),
     });
 
-    router.push('/auth/createPassword');
+    router.push("/auth/createPassword");
   };
 
   const handleDateChange = (date: Date) => {
     setDateOfBirth(date);
+    setDobTouched(true);
   };
 
   const checkButtonDisabled = () => {
@@ -74,8 +81,9 @@ const Register = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { paddingTop: paddinTop }]}>
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={[styles.container, { paddingTop: paddinTop }]}
+    >
       <StatusBar style="dark" />
       <ScrollView
         contentContainerStyle={{
@@ -86,106 +94,161 @@ const Register = () => {
         }}
         keyboardDismissMode="interactive"
         showsVerticalScrollIndicator={false}
-        horizontal={false}>
-        {/* Heading */}
+        horizontal={false}
+      >
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}>
+          style={styles.heading}
+        >
           <Text style={styles.headingTextTitle}>
-            Sign Up for{' '}
-            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{' '}
+            Sign Up for{" "}
+            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{" "}
           </Text>
           <Text style={styles.headingTextDescript}>
             Unlock the future of convenient transactions with Kolet. Sign up
             now!
           </Text>
         </Animated.View>
-
-        {/* Heading End */}
-
-        {/* form */}
         <View style={styles.formContainer}>
-          <CustomTextInput
-            inputMode="text"
-            maxLength={200}
-            value={firstName}
-            onChange={setFirstName}
-            placeholder="First Name"
-            iconName="user"
-            iconHieght={15}
-            iconWidth={15}
-            keyboardType="default"
-          />
-          <CustomTextInput
-            inputMode="text"
-            maxLength={200}
-            value={lastName}
-            onChange={setLastName}
-            placeholder="Last Name"
-            iconName="user"
-            iconHieght={15}
-            iconWidth={15}
-            keyboardType="default"
-          />
-          <CustomTextInput
-            inputMode="numeric"
-            maxLength={11}
-            value={phone}
-            onChange={setPhone}
-            placeholder="Phone Number"
-            keyboardType="phone-pad"
-            iconName="phone"
-            iconHieght={18}
-            iconWidth={16}
-          />
-          <CustomTextInput
-            inputMode={'email'}
-            value={email}
-            onChange={setEmail}
-            iconName="mail"
-            iconHieght={15}
-            iconWidth={15}
-            keyboardType="email-address"
-            maxLength={50}
-            placeholder="Email (Optional)"
-          />
-          <Pressable onPress={() => setOpen(true)}>
+          <View>
             <CustomTextInput
-              inputMode={'text'}
+              inputMode="text"
               maxLength={200}
-              value={formattedDate}
-              placeholder="Date of Birth"
-              editable={false}
-              iconName="calendar"
+              value={firstName}
+              onChange={(text) => {
+                setFirstName(text);
+                setFirstNameTouched(true);
+              }}
+              placeholder="First Name"
+              iconName="user"
               iconHieght={15}
               iconWidth={15}
-              keyboardType={''}
+              keyboardType="default"
             />
-            <DatePicker
-              modal
-              open={open}
-              date={
-                dateOfBirth ||
-                new Date(new Date().setFullYear(new Date().getFullYear() - 16))
-              }
-              mode="date"
-              // Set maximum date to exactly 16 years ago (youngest allowed)
-              maximumDate={
-                new Date(new Date().setFullYear(new Date().getFullYear() - 16))
-              }
-              // Set a reasonable minimum date (oldest allowed, e.g., 150 years ago)
-              minimumDate={
-                new Date(new Date().setFullYear(new Date().getFullYear() - 150))
-              }
-              onConfirm={date => {
-                setOpen(false);
-                handleDateChange(date);
+            {firstNameTouched && !firstName && (
+              <Text style={styles.validationText}>First name is required</Text>
+            )}
+          </View>
+
+          <View>
+            <CustomTextInput
+              inputMode="text"
+              maxLength={200}
+              value={lastName}
+              onChange={(text) => {
+                setLastName(text);
+                setLastNameTouched(true);
               }}
-              onCancel={() => {
-                setOpen(false);
-              }}
+              placeholder="Last Name"
+              iconName="user"
+              iconHieght={15}
+              iconWidth={15}
+              keyboardType="default"
             />
-          </Pressable>
+            {lastNameTouched && !lastName && (
+              <Text style={styles.validationText}>Last name is required</Text>
+            )}
+          </View>
+
+          <View>
+            <CustomTextInput
+              inputMode="numeric"
+              maxLength={11}
+              value={phone}
+              onChange={(text) => {
+                setPhone(text);
+                setPhoneTouched(true);
+              }}
+              placeholder="Phone Number"
+              keyboardType="phone-pad"
+              iconName="phone"
+              iconHieght={18}
+              iconWidth={16}
+            />
+            {phoneTouched && !validateNigerianPhoneNumber(phone) && (
+              <Text style={styles.validationText}>
+                Please enter a valid Nigerian phone number
+              </Text>
+            )}
+          </View>
+
+          <View>
+            <CustomTextInput
+              inputMode={"email"}
+              value={email}
+              onChange={(text) => {
+                setEmail(text);
+                setEmailTouched(true);
+              }}
+              iconName="mail"
+              iconHieght={15}
+              iconWidth={15}
+              keyboardType="email-address"
+              maxLength={50}
+              placeholder="Email (Optional)"
+            />
+            {emailTouched && email && !validateEmail(email) && (
+              <Text style={styles.validationText}>
+                Please enter a valid email address
+              </Text>
+            )}
+          </View>
+
+          <View>
+            <Pressable
+              onPress={() => {
+                setOpen(true);
+                setDobTouched(true);
+              }}
+            >
+              <CustomTextInput
+                inputMode={"text"}
+                maxLength={200}
+                value={formattedDate}
+                placeholder="Date of Birth"
+                editable={false}
+                iconName="calendar"
+                iconHieght={15}
+                iconWidth={15}
+                keyboardType={""}
+              />
+              <DatePicker
+                modal
+                open={open}
+                date={
+                  dateOfBirth ||
+                  new Date(
+                    new Date().setFullYear(new Date().getFullYear() - 16)
+                  )
+                }
+                mode="date"
+                // Set maximum date to exactly 16 years ago (youngest allowed)
+                maximumDate={
+                  new Date(
+                    new Date().setFullYear(new Date().getFullYear() - 16)
+                  )
+                }
+                // Set a reasonable minimum date (oldest allowed, e.g., 150 years ago)
+                minimumDate={
+                  new Date(
+                    new Date().setFullYear(new Date().getFullYear() - 150)
+                  )
+                }
+                onConfirm={(date) => {
+                  setOpen(false);
+                  handleDateChange(date);
+                }}
+                onCancel={() => {
+                  setOpen(false);
+                }}
+              />
+            </Pressable>
+            {dobTouched && (!dateOfBirth || !validateDate(dateOfBirth)) && (
+              <Text style={styles.validationText}>
+                Please select a valid date of birth (16+ years old)
+              </Text>
+            )}
+          </View>
         </View>
 
         {/* progressBar */}
@@ -203,11 +266,12 @@ const Register = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}>
+          style={styles.footer}
+        >
           <Text style={styles.footerTextTiltle}>
-            By signing up, you agree to our{' '}
-            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{' '}
-            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{' '}
+            By signing up, you agree to our{" "}
+            <Text style={{ color: Colors.main.primary }}>Terms</Text> and{" "}
+            <Text style={{ color: Colors.main.primary }}>Conditions</Text> and{" "}
             <Text style={{ color: Colors.main.primary }}>Privacy Policy</Text>
           </Text>
           <TouchableOpacity
@@ -219,14 +283,16 @@ const Register = () => {
                 backgroundColor: Colors.main.primary,
                 opacity: !checkButtonDisabled() ? 1 : 0.5,
               },
-            ]}>
+            ]}
+          >
             <Text style={styles.footerBtnText}>Next</Text>
           </TouchableOpacity>
 
           <Text
-            onPress={() => router.navigate('/auth/login')}
-            style={styles.footerText}>
-            Already a member?{' '}
+            onPress={() => router.navigate("/auth/login")}
+            style={styles.footerText}
+          >
+            Already a member?{" "}
             <Text style={{ color: Colors.main.primary }}>Login</Text>
           </Text>
         </Animated.View>
@@ -241,96 +307,101 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.main.inputBg,
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   heading: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: 20,
   },
   headingTextTitle: {
     fontSize: 30,
-    fontWeight: '600',
-    fontFamily: 'Raleway-SemiBold',
+    fontWeight: "600",
+    fontFamily: "Raleway-SemiBold",
     color: Colors.main.text,
   },
   headingTextDescript: {
-    fontFamily: 'Montserrat-Regular',
+    fontFamily: "Montserrat-Regular",
     color: Colors.main.description,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 15,
   },
   formContainer: {
-    width: '100%',
+    width: "100%",
     gap: 16,
   },
   inputFieldContainer: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
+    backgroundColor: "white",
+    flexDirection: "row",
+    alignItems: "center",
     height: hp(6.2),
     borderWidth: 0.7,
     borderRadius: 4,
     paddingLeft: 20,
     paddingRight: 30,
   },
-
   inputField: {
-    fontFamily: 'Montserrat-Regular',
-    width: '100%',
-    height: '100%',
+    fontFamily: "Montserrat-Regular",
+    width: "100%",
+    height: "100%",
     color: Colors.main.text,
   },
-
+  validationText: {
+    color: "red",
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+    fontFamily: "Montserrat-Regular",
+  },
   progressBar: {
-    width: '100%',
-    flexDirection: 'row',
+    width: "100%",
+    flexDirection: "row",
     paddingHorizontal: 50,
     gap: 10,
     marginVertical: 35,
   },
   progressBarItemActive: {
     height: hp(1),
-    width: '30%',
+    width: "30%",
     borderRadius: 20,
     backgroundColor: Colors.main.primary,
   },
   progressBarItemInactive: {
     height: hp(1),
-    width: '30%',
+    width: "30%",
     borderRadius: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   footer: {
     flex: 1,
-    width: '100%',
+    width: "100%",
     gap: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerTextTiltle: {
-    fontWeight: '300',
-    fontFamily: 'Raleway-RegularS',
-    textAlign: 'center',
+    fontWeight: "300",
+    fontFamily: "Raleway-RegularS",
+    textAlign: "center",
     fontSize: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerBtn: {
     backgroundColor: Colors.main.primary,
     padding: 15,
-    width: '80%',
+    width: "80%",
     borderRadius: 4,
   },
   footerBtnText: {
-    fontWeight: '600',
-    fontFamily: 'Raleway-SemiBold',
-    color: '#fff',
-    textAlign: 'center',
+    fontWeight: "600",
+    fontFamily: "Raleway-SemiBold",
+    color: "#fff",
+    textAlign: "center",
     fontSize: 20,
   },
   footerText: {
-    fontWeight: '600',
-    fontFamily: 'Raleway-Regular',
-    textAlign: 'center',
+    fontWeight: "600",
+    fontFamily: "Raleway-Regular",
+    textAlign: "center",
     color: Colors.main.text,
     fontSize: 16,
   },
