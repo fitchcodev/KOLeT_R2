@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, ReactNode, useState } from 'react';
 
 export const UserContext = createContext<any>(undefined);
 
@@ -21,7 +21,11 @@ const initialState: User = {
   username: '',
 };
 
-export const UserProvider = ({ children }) => {
+interface UserProviderProps {
+  children: ReactNode;
+}
+
+export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User>(initialState);
 
   const updateUser = (newInfo: User) => {
