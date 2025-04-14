@@ -22,7 +22,7 @@ import { UserContext } from "@/contexts/UserContext";
 
 const Keypad = () => {
   const [narration, setNarration] = useState("");
-  const [amount, setAmount] = useState(0.0);
+  const [amount, setAmount] = useState(0);
   const [editable, setEditable] = useState(false);
   const [inputBorderColor, setInputBorderColor] = useState(Colors.main.border);
   const textInputRef = useRef(null);

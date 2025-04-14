@@ -1,9 +1,9 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode } from "react";
 
 export enum PaymentMethod {
-  NFC = 'Tap to Pay',
-  CARD = 'Card',
-  ACCOUNT = 'Account',
+  NFC = "Tap to Pay",
+  CARD = "Card",
+  ACCOUNT = "Account",
 }
 
 export interface TransactionData {
@@ -12,7 +12,7 @@ export interface TransactionData {
   amount: number;
   narration: string;
   paymentMethod: PaymentMethod;
-  status: 'Pending' | 'Successful' | 'Failed';
+  status: "Pending" | "Successful" | "Failed";
   user: {
     name: string;
     phone: string;
@@ -33,7 +33,7 @@ const TransactionContext = createContext<TransactionContextType | undefined>(
 export const useTransaction = (): TransactionContextType => {
   const context = useContext(TransactionContext);
   if (!context) {
-    throw new Error('useTransaction must be used within a TransactionProvider');
+    throw new Error("useTransaction must be used within a TransactionProvider");
   }
   return context;
 };
@@ -48,12 +48,10 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({
   const [transaction, setTransaction] = useState<TransactionData | null>(null);
 
   const saveTransaction = (data: Partial<TransactionData>) => {
-    setTransaction(
-      prevTransaction =>
-        ({
-          ...prevTransaction,
-          ...data,
-        } as TransactionData)
+    setTransaction((prevTransaction) =>
+      prevTransaction
+        ? ({ ...prevTransaction, ...data } as TransactionData)
+        : ({ ...data } as TransactionData)
     );
   };
 
@@ -67,7 +65,8 @@ export const TransactionProvider: React.FC<TransactionProviderProps> = ({
 
   return (
     <TransactionContext.Provider
-      value={{ saveTransaction, getTransaction, clearTransaction }}>
+      value={{ saveTransaction, getTransaction, clearTransaction }}
+    >
       {children}
     </TransactionContext.Provider>
   );
