@@ -74,6 +74,19 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
+            name="profile"
+            options={{
+              title: 'Profile',
+              tabBarIcon: ({ color, focused }) => (
+                <UserTabIc stroke={color} width={25} height={25} />
+              ),
+              tabBarLabel: ({ color }) => (
+                // <UserIC width={25} height={25} />
+                <Text style={[styles.title, { color: color }]}> Profile</Text>
+              ),
+            }}
+          />
+          <Tabs.Screen
             name="more/index"
             options={{
               title: 'More',
@@ -173,7 +186,7 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
-            name="more/acccountManagement/privacySettings"
+            name="more/accountManagement/privacySettings"
             options={{
               href: null,
               //unmountOnBlur:true
@@ -202,19 +215,6 @@ export default function TabLayout() {
             }}
           />
 
-          <Tabs.Screen
-            name="profile"
-            options={{
-              title: 'Profile',
-              tabBarIcon: ({ color, focused }) => (
-                <UserTabIc stroke={color} width={25} height={25} />
-              ),
-              tabBarLabel: ({ color }) => (
-                // <UserIC width={25} height={25} />
-                <Text style={[styles.title, { color: color }]}> Profile</Text>
-              ),
-            }}
-          />
           <Tabs.Screen
             name="nfcPayment/index"
             options={{
@@ -253,7 +253,7 @@ export default function TabLayout() {
             }}
           />
           <Tabs.Screen
-            name="payment/cardDeatilsForm"
+            name="payment/cardDetailsForm"
             options={{
               href: null,
               tabBarStyle: { display: 'none' },
