@@ -7,10 +7,18 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { wp, hp, validateNigerianPhoneNumber } from '@/helpers/common';
+import DatePicker from 'react-native-date-picker';
+import {
+  wp,
+  hp,
+  validateNigerianPhoneNumber,
+  formatDate,
+  validateEmail,
+} from '@/helpers/common';
 import { Colors } from '@/constants/Colors';
 import { router } from 'expo-router';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
@@ -29,15 +37,24 @@ const Register = () => {
     isPending: isLoadingAccountName,
     data: accountNameData,
     error: accountNameError,
+    reset: resetAccountNameQuery,
   } = useGetAccountName();
 
   const [selectedBank, setSelectedBank] = useState<any>(null);
   const [accountNumber, setAccountNumber] = useState('');
   const [accountName, setAccountName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState(user.email || '');
+  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
+  const [open, setOpen] = useState(false);
+  const [formattedDate, setFormattedDate] = useState('');
+
+  // Track touched states for all fields
   const [phoneNumberTouched, setPhoneNumberTouched] = useState(false);
   const [accountNumberTouched, setAccountNumberTouched] = useState(false);
   const [bankTouched, setBankTouched] = useState(false);
+  const [emailTouched, setEmailTouched] = useState(false);
+  const [dobTouched, setDobTouched] = useState(false);
 
   const {
     data: banks = [],
@@ -48,6 +65,17 @@ const Register = () => {
   } = useGetBankList();
 
   useEffect(() => {
+    if (dateOfBirth) {
+      setFormattedDate(formatDate(dateOfBirth));
+    }
+  }, [dateOfBirth]);
+
+  useEffect(() => {
+    if (accountNumberTouched || bankTouched) {
+      resetAccountNameQuery?.();
+      setAccountName('');
+    }
+
     if (accountNumber.length === 10 && selectedBank) {
       getAccountName(
         {
@@ -55,36 +83,41 @@ const Register = () => {
           BANK_NAME: selectedBank.code,
         },
         {
-          onSuccess: data => {
+          onSuccess: (data) => {
             if (data) {
               setAccountName(data.accountName);
             }
           },
-          onError: error => {
+          onError: (error) => {
             console.log('Error fetching account name:', error);
             setAccountName('');
           },
         }
       );
-    } else {
-      setAccountName('');
     }
   }, [accountNumber, selectedBank]);
+
+  const handleDateChange = (date: Date) => {
+    setDateOfBirth(date);
+    setDobTouched(true);
+  };
 
   const handleSubmit = () => {
     updateUser({
       ...user,
+      email,
       BANK_NAME: selectedBank?.name || '',
       BANK_CODE: selectedBank?.code || '',
       BANK_ACCOUNT_NUMBER: accountNumber,
       BANK_ACCOUNT_NAME: accountName,
       PHONE_NUMBER: phoneNumber,
+      DATE_OF_BIRTH: dateOfBirth ? formatDate(dateOfBirth) : '',
     });
 
     router.push('/auth/createPassword');
   };
 
-  const handleBankSelect = bank => {
+  const handleBankSelect = (bank) => {
     setSelectedBank(bank);
     setBankTouched(true);
   };
@@ -94,15 +127,23 @@ const Register = () => {
       !selectedBank ||
       accountNumber.length < 10 ||
       !validateNigerianPhoneNumber(phoneNumber) ||
+      (email && !validateEmail(email)) ||
+      !dateOfBirth ||
       !accountName
     );
+  };
+
+  const openDatePicker = () => {
+    setOpen(true);
+    setDobTouched(true);
   };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { paddingTop }]}>
-      <StatusBar style="dark" />
+      style={[styles.container, { paddingTop }]}
+    >
+      <StatusBar style='dark' />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -110,12 +151,16 @@ const Register = () => {
           width: wp(100),
           gap: 15,
         }}
-        keyboardDismissMode="interactive"
+        keyboardDismissMode='interactive'
         showsVerticalScrollIndicator={false}
-        horizontal={false}>
+        horizontal={false}
+        accessible={true}
+        accessibilityLabel='Registration form'
+      >
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}>
+          style={styles.heading}
+        >
           <Text style={styles.headingTextTitle}>
             Add Your{' '}
             <Text style={{ color: Colors.main.primary }}>Bank Details</Text>{' '}
@@ -127,16 +172,16 @@ const Register = () => {
         </Animated.View>
         <View>
           <CustomTextInput
-            inputMode="numeric"
+            inputMode='numeric'
             maxLength={10}
             value={accountNumber}
-            onChange={text => {
+            onChange={(text) => {
               setAccountNumber(text);
               setAccountNumberTouched(true);
             }}
-            placeholder="Bank Account Number"
-            keyboardType="number-pad"
-            iconName="credit-card"
+            placeholder='Bank Account Number'
+            keyboardType='number-pad'
+            iconName='credit-card'
             iconHieght={15}
             iconWidth={15}
           />
@@ -146,12 +191,11 @@ const Register = () => {
             </Text>
           )}
 
-          {/* Account Name Display Section */}
           {accountNumber.length === 10 && selectedBank && (
             <View style={styles.accountNameContainer}>
               {isLoadingAccountName ? (
                 <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="small" color={Colors.main.primary} />
+                  <ActivityIndicator size='small' color={Colors.main.primary} />
                   <Text style={styles.loadingText}>
                     Fetching account name...
                   </Text>
@@ -169,30 +213,54 @@ const Register = () => {
           )}
         </View>
         <View style={styles.formContainer}>
-          {/* Bank Selection Dropdown */}
-          <BankInput
-            selectedBank={selectedBank}
-            setSelectedBank={handleBankSelect}
-            banks={banks}
-            isLoadingBanks={isLoadingBanks}
-            bankError={bankError}
-            bankErrorMessage={bankErrorMessage}
-            refetchBanks={refetchBanks}
-            label="Select your bank"
-          />
+          <View>
+            <BankInput
+              selectedBank={selectedBank}
+              setSelectedBank={handleBankSelect}
+              banks={banks}
+              isLoadingBanks={isLoadingBanks}
+              bankError={bankError}
+              bankErrorMessage={bankErrorMessage}
+              refetchBanks={refetchBanks}
+              label='Select your bank'
+            />
+            {bankTouched && !selectedBank && (
+              <Text style={styles.validationText}>Please select your bank</Text>
+            )}
+          </View>
 
           <View>
             <CustomTextInput
-              inputMode="numeric"
+              inputMode={'email'}
+              value={email}
+              onChange={(text) => {
+                setEmail(text);
+                setEmailTouched(true);
+              }}
+              iconName='mail'
+              iconHieght={15}
+              iconWidth={15}
+              keyboardType='email-address'
+              maxLength={50}
+              placeholder='Email (Optional)'
+            />
+            {emailTouched && email && !validateEmail(email) && (
+              <Text style={styles.validationText}>
+                Please enter a valid email address
+              </Text>
+            )}
+
+            <CustomTextInput
+              inputMode='numeric'
               maxLength={15}
               value={phoneNumber}
-              onChange={text => {
+              onChange={(text) => {
                 setPhoneNumber(text);
                 setPhoneNumberTouched(true);
               }}
-              placeholder="Phone Number"
-              keyboardType="number-pad"
-              iconName="phone"
+              placeholder='Phone Number'
+              keyboardType='number-pad'
+              iconName='phone'
               iconHieght={15}
               iconWidth={15}
             />
@@ -202,6 +270,61 @@ const Register = () => {
                   Please enter a valid Nigerian phone number
                 </Text>
               )}
+          </View>
+          <View>
+            <Pressable
+              onPress={openDatePicker}
+              accessible={true}
+              accessibilityRole='button'
+              accessibilityLabel='Date of Birth'
+            >
+              <CustomTextInput
+                inputMode={'text'}
+                maxLength={200}
+                value={formattedDate}
+                placeholder='Date of Birth'
+                editable={false}
+                iconName='calendar'
+                iconHieght={15}
+                iconWidth={15}
+                keyboardType={''}
+              />
+              <DatePicker
+                modal
+                open={open}
+                date={
+                  dateOfBirth ||
+                  new Date(
+                    new Date().setFullYear(new Date().getFullYear() - 16)
+                  )
+                }
+                mode='date'
+                // Set maximum date to exactly 16 years ago (youngest allowed)
+                maximumDate={
+                  new Date(
+                    new Date().setFullYear(new Date().getFullYear() - 16)
+                  )
+                }
+                // Set a reasonable minimum date (oldest allowed, e.g., 150 years ago)
+                minimumDate={
+                  new Date(
+                    new Date().setFullYear(new Date().getFullYear() - 150)
+                  )
+                }
+                onConfirm={(date) => {
+                  setOpen(false);
+                  handleDateChange(date);
+                }}
+                onCancel={() => {
+                  setOpen(false);
+                }}
+              />
+            </Pressable>
+            {dobTouched && !dateOfBirth && (
+              <Text style={styles.validationText}>
+                Please select your date of birth
+              </Text>
+            )}
           </View>
         </View>
 
@@ -220,7 +343,8 @@ const Register = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}>
+          style={styles.footer}
+        >
           <Text style={styles.footerTextTiltle}>
             By signing up, you agree to our{' '}
             <Text style={{ color: Colors.main.primary }}>Terms</Text> and{' '}
@@ -236,16 +360,30 @@ const Register = () => {
                 backgroundColor: Colors.main.primary,
                 opacity: !checkButtonDisabled() ? 1 : 0.5,
               },
-            ]}>
+            ]}
+            accessible={true}
+            accessibilityLabel='Next button'
+            accessibilityHint={
+              checkButtonDisabled()
+                ? 'Complete all required fields to continue'
+                : 'Proceed to next step'
+            }
+            accessibilityRole='button'
+          >
             <Text style={styles.footerBtnText}>Next</Text>
           </TouchableOpacity>
 
-          <Text
+          <TouchableOpacity
             onPress={() => router.navigate('/auth/login')}
-            style={styles.footerText}>
-            Already a member?{' '}
-            <Text style={{ color: Colors.main.primary }}>Login</Text>
-          </Text>
+            accessible={true}
+            accessibilityLabel='Go to login'
+            accessibilityRole='link'
+          >
+            <Text style={styles.footerText}>
+              Already a member?{' '}
+              <Text style={{ color: Colors.main.primary }}>Login</Text>
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </KeyboardAvoidingView>
