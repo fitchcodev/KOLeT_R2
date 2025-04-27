@@ -201,9 +201,7 @@ const Register = () => {
                   </Text>
                 </View>
               ) : accountName ? (
-                <Text style={styles.accountNameText}>
-                  Account Name: {accountName}
-                </Text>
+                <Text style={styles.accountNameText}>{accountName}</Text>
               ) : accountNameError ? (
                 <Text style={styles.validationText}>
                   Could not verify account. Please check details and try again.
