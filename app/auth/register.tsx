@@ -8,6 +8,7 @@ import {
   Platform,
   ActivityIndicator,
   Pressable,
+  Alert
 } from 'react-native';
 import React, { useContext, useState, useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -90,6 +91,10 @@ const Register = () => {
             }
           },
           onError: error => {
+            Alert.alert(
+              'Error',
+              `Error fetching account ${error}`
+            );
             console.log('Error fetching account name:', error);
             setAccountName('');
           },
@@ -160,10 +165,10 @@ const Register = () => {
           style={styles.heading}>
           <Text style={styles.headingTextTitle}>
             Sign Up for{' '}
-            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{' '}
+            <Text style={{ color: Colors.main.primary }}>KOLeT</Text>{' '}
           </Text>
           <Text style={styles.headingTextDescript}>
-            Unlock the future of convenient transactions with Kolet. Sign up
+            Unlock the future of convenient transactions with KOLeT. Sign up
             now!
           </Text>
         </Animated.View>
