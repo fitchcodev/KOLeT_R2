@@ -6,76 +6,60 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
 } from "react-native";
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  createUsername,
-  dateToString,
-  formatDate,
-  hp,
-  validateDate,
-  validateEmail,
-  validateNigerianPhoneNumber,
-  wp,
-} from "@/helpers/common";
+import {  wp, hp, validateNigerianPhoneNumber } from "@/helpers/common";
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import Animated, { FadeIn, FadeInDown } from "react-native-reanimated";
-import DatePicker from "react-native-date-picker";
 import { StatusBar } from "expo-status-bar";
-import CustomTextInput from "@/components/CustomTextInput";
+import CustomTextInput from "@/components/CustomTextInput";\
 import { UserContext } from "@/contexts/UserContext";
+import { useGetBankList } from "@/api/account";
+import BankInput from "@/components/CustomBankInput";
 
 const Register = () => {
   const { top } = useSafeAreaInsets();
   const paddinTop = top > 0 ? top + 10 : 30;
   const { user, updateUser } = useContext(UserContext);
-  const [firstName, setFirstName] = useState(user.firstName || "");
-  const [lastName, setLastName] = useState(user.lastName || "");
-  const [email, setEmail] = useState(user.email || "");
-  const [phone, setPhone] = useState(user.phone || "");
-  const [dateOfBirth, setDateOfBirth] = useState<Date | null>(null);
-  const [formattedDate, setFormattedDate] = useState("");
-  const [open, setOpen] = useState(false);
 
-  const [firstNameTouched, setFirstNameTouched] = useState(false);
-  const [lastNameTouched, setLastNameTouched] = useState(false);
-  const [phoneTouched, setPhoneTouched] = useState(false);
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [dobTouched, setDobTouched] = useState(false);
+  const [selectedBank, setSelectedBank] = useState<any>(null);
+  const [accountNumber, setAccountNumber] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [phoneNumberTouched, setPhoneNumberTouched] = useState("");
+  const [accountNumberTouched, setAccountNumberTouched] = useState(false);
+  const [bankTouched, setBankTouched] = useState(false);
 
-  useEffect(() => {
-    if (dateOfBirth) {
-      setFormattedDate(formatDate(dateOfBirth));
-    }
-  }, [dateOfBirth]);
+  // Fetch bank list
+ const {
+    data: banks = [],
+    isLoading: isLoadingBanks,
+    isError: bankError,
+    error: bankErrorMessage,
+    refetch: refetchBanks
+  } = useGetBankList();
 
   const handleSubmit = () => {
     updateUser({
-      firstName,
-      lastName,
-      email,
-      phone,
-      dateOfBirth: dateToString(dateOfBirth!),
-      username: createUsername(firstName, lastName),
+      ...user,
+      BANK_NAME: selectedBank?.name || "",
+      BANK_CODE: selectedBank?.code || "",
+      BANK_ACCOUNT_NUMBER: accountNumber,
+      PHONE_NUMBER: phoneNumber,
     });
 
     router.push("/auth/createPassword");
   };
 
-  const handleDateChange = (date: Date) => {
-    setDateOfBirth(date);
-    setDobTouched(true);
+  const handleBankSelect = (bank) => {
+    setSelectedBank(bank);
+    setBankTouched(true);
   };
 
   const checkButtonDisabled = () => {
     return (
-      !(firstName && lastName && validateNigerianPhoneNumber(phone)) ||
-      (email && !validateEmail(email)) ||
-      !dateOfBirth ||
-      !validateDate(dateOfBirth)
+      !selectedBank || !(accountNumber.length < 10) || !validateNigerianPhoneNumber(phoneNumber)
     );
   };
 
@@ -101,151 +85,66 @@ const Register = () => {
           style={styles.heading}
         >
           <Text style={styles.headingTextTitle}>
-            Sign Up for{" "}
-            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{" "}
+            Add Your{" "}
+            <Text style={{ color: Colors.main.primary }}>Bank Details</Text>{" "}
           </Text>
           <Text style={styles.headingTextDescript}>
-            Unlock the future of convenient transactions with Kolet. Sign up
-            now!
+            Link your bank account to start using Kolet for seamless
+            transactions
           </Text>
         </Animated.View>
         <View style={styles.formContainer}>
-          <View>
-            <CustomTextInput
-              inputMode="text"
-              maxLength={200}
-              value={firstName}
-              onChange={(text) => {
-                setFirstName(text);
-                setFirstNameTouched(true);
-              }}
-              placeholder="First Name"
-              iconName="user"
-              iconHieght={15}
-              iconWidth={15}
-              keyboardType="default"
-            />
-            {firstNameTouched && !firstName && (
-              <Text style={styles.validationText}>First name is required</Text>
-            )}
-          </View>
-
-          <View>
-            <CustomTextInput
-              inputMode="text"
-              maxLength={200}
-              value={lastName}
-              onChange={(text) => {
-                setLastName(text);
-                setLastNameTouched(true);
-              }}
-              placeholder="Last Name"
-              iconName="user"
-              iconHieght={15}
-              iconWidth={15}
-              keyboardType="default"
-            />
-            {lastNameTouched && !lastName && (
-              <Text style={styles.validationText}>Last name is required</Text>
-            )}
-          </View>
+          {/* Bank Selection Dropdown */}
+        <BankInput
+        selectedBank={selectedBank}
+        setSelectedBank={setSelectedBank}
+        banks={banks}
+        isLoadingBanks={isLoadingBanks}
+        bankError={bankError}
+        bankErrorMessage={bankErrorMessage}
+        refetchBanks={refetchBanks}
+        label="Select your bank" 
+      />
 
           <View>
             <CustomTextInput
               inputMode="numeric"
-              maxLength={11}
-              value={phone}
+              maxLength={10}
+              value={accountNumber}
               onChange={(text) => {
-                setPhone(text);
-                setPhoneTouched(true);
+                setAccountNumber(text);
+                setAccountNumberTouched(true);
               }}
-              placeholder="Phone Number"
-              keyboardType="phone-pad"
-              iconName="phone"
-              iconHieght={18}
-              iconWidth={16}
-            />
-            {phoneTouched && !validateNigerianPhoneNumber(phone) && (
-              <Text style={styles.validationText}>
-                Please enter a valid Nigerian phone number
-              </Text>
-            )}
-          </View>
-
-          <View>
-            <CustomTextInput
-              inputMode={"email"}
-              value={email}
-              onChange={(text) => {
-                setEmail(text);
-                setEmailTouched(true);
-              }}
-              iconName="mail"
+              placeholder="Bank Account Number"
+              keyboardType="number-pad"
+              iconName="credit-card"
               iconHieght={15}
               iconWidth={15}
-              keyboardType="email-address"
-              maxLength={50}
-              placeholder="Email (Optional)"
             />
-            {emailTouched && email && !validateEmail(email) && (
+            {accountNumberTouched && !(accountNumber < 10) && (
               <Text style={styles.validationText}>
-                Please enter a valid email address
+                Please enter a valid 10-digit account number
               </Text>
             )}
           </View>
-
           <View>
-            <Pressable
-              onPress={() => {
-                setOpen(true);
-                setDobTouched(true);
+            <CustomTextInput
+              inputMode="numeric"
+              maxLength={10}
+              value={phoneNumber}
+              onChange={(text) => {
+                setPhoneNumber(text);
+                setPhoneNumberTouched(true);
               }}
-            >
-              <CustomTextInput
-                inputMode={"text"}
-                maxLength={200}
-                value={formattedDate}
-                placeholder="Date of Birth"
-                editable={false}
-                iconName="calendar"
-                iconHieght={15}
-                iconWidth={15}
-                keyboardType={""}
-              />
-              <DatePicker
-                modal
-                open={open}
-                date={
-                  dateOfBirth ||
-                  new Date(
-                    new Date().setFullYear(new Date().getFullYear() - 16)
-                  )
-                }
-                mode="date"
-                // Set maximum date to exactly 16 years ago (youngest allowed)
-                maximumDate={
-                  new Date(
-                    new Date().setFullYear(new Date().getFullYear() - 16)
-                  )
-                }
-                // Set a reasonable minimum date (oldest allowed, e.g., 150 years ago)
-                minimumDate={
-                  new Date(
-                    new Date().setFullYear(new Date().getFullYear() - 150)
-                  )
-                }
-                onConfirm={(date) => {
-                  setOpen(false);
-                  handleDateChange(date);
-                }}
-                onCancel={() => {
-                  setOpen(false);
-                }}
-              />
-            </Pressable>
-            {dobTouched && (!dateOfBirth || !validateDate(dateOfBirth)) && (
+              placeholder="Phone Number"
+              keyboardType="number-pad"
+              iconName="phone"
+              iconHieght={15}
+              iconWidth={15}
+            />
+            {phoneNumberTouched && phoneNumber.length < 11 && (
               <Text style={styles.validationText}>
-                Please select a valid date of birth (16+ years old)
+                Please enter a valid 11-digit phone number
               </Text>
             )}
           </View>
@@ -329,22 +228,7 @@ const styles = StyleSheet.create({
   formContainer: {
     width: "100%",
     gap: 16,
-  },
-  inputFieldContainer: {
-    backgroundColor: "white",
-    flexDirection: "row",
-    alignItems: "center",
-    height: hp(6.2),
-    borderWidth: 0.7,
-    borderRadius: 4,
-    paddingLeft: 20,
-    paddingRight: 30,
-  },
-  inputField: {
-    fontFamily: "Montserrat-Regular",
-    width: "100%",
-    height: "100%",
-    color: Colors.main.text,
+    marginTop: 20,
   },
   validationText: {
     color: "red",
@@ -404,5 +288,30 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: Colors.main.text,
     fontSize: 16,
+  },
+  loadingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    padding: 15,
+    borderRadius: 4,
+    gap: 10,
+  },
+  loadingText: {
+    fontFamily: "Montserrat-Regular",
+    color: Colors.main.text,
+  },
+  errorContainer: {
+    backgroundColor: "#ffeeee",
+    padding: 12,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#ffcccc",
+  },
+  errorText: {
+    color: "red",
+    fontFamily: "Montserrat-Regular",
+    textAlign: "center",
   },
 });
