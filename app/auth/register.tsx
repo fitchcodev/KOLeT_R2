@@ -18,6 +18,7 @@ import {
   validateNigerianPhoneNumber,
   formatDate,
   validateEmail,
+  dateToString,
 } from '@/helpers/common';
 import { Colors } from '@/constants/Colors';
 import { router } from 'expo-router';
@@ -83,12 +84,12 @@ const Register = () => {
           BANK_NAME: selectedBank.code,
         },
         {
-          onSuccess: (data) => {
+          onSuccess: data => {
             if (data) {
               setAccountName(data.accountName);
             }
           },
-          onError: (error) => {
+          onError: error => {
             console.log('Error fetching account name:', error);
             setAccountName('');
           },
@@ -106,18 +107,17 @@ const Register = () => {
     updateUser({
       ...user,
       email,
-      BANK_NAME: selectedBank?.name || '',
-      BANK_CODE: selectedBank?.code || '',
+      BANK_CODE: selectedBank?.name || '',
+      BANK_NAME: selectedBank?.code || '',
       BANK_ACCOUNT_NUMBER: accountNumber,
-      BANK_ACCOUNT_NAME: accountName,
-      PHONE_NUMBER: phoneNumber,
-      DATE_OF_BIRTH: dateOfBirth ? formatDate(dateOfBirth) : '',
+      phone: phoneNumber,
+      dateOfBirth: dateOfBirth ? dateToString(dateOfBirth) : '',
     });
 
     router.push('/auth/createPassword');
   };
 
-  const handleBankSelect = (bank) => {
+  const handleBankSelect = bank => {
     setSelectedBank(bank);
     setBankTouched(true);
   };
@@ -141,8 +141,7 @@ const Register = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={[styles.container, { paddingTop }]}
-    >
+      style={[styles.container, { paddingTop }]}>
       <StatusBar style='dark' />
       <ScrollView
         contentContainerStyle={{
@@ -155,12 +154,10 @@ const Register = () => {
         showsVerticalScrollIndicator={false}
         horizontal={false}
         accessible={true}
-        accessibilityLabel='Registration form'
-      >
+        accessibilityLabel='Registration form'>
         <Animated.View
           entering={FadeInDown.delay(200).springify()}
-          style={styles.heading}
-        >
+          style={styles.heading}>
           <Text style={styles.headingTextTitle}>
             Sign Up for{' '}
             <Text style={{ color: Colors.main.primary }}>Kolet</Text>{' '}
@@ -176,7 +173,7 @@ const Register = () => {
               inputMode='numeric'
               maxLength={10}
               value={accountNumber}
-              onChange={(text) => {
+              onChange={text => {
                 setAccountNumber(text);
                 setAccountNumberTouched(true);
               }}
@@ -234,7 +231,7 @@ const Register = () => {
             <CustomTextInput
               inputMode={'email'}
               value={email}
-              onChange={(text) => {
+              onChange={text => {
                 setEmail(text);
                 setEmailTouched(true);
               }}
@@ -256,7 +253,7 @@ const Register = () => {
               inputMode='numeric'
               maxLength={15}
               value={phoneNumber}
-              onChange={(text) => {
+              onChange={text => {
                 setPhoneNumber(text);
                 setPhoneNumberTouched(true);
               }}
@@ -278,8 +275,7 @@ const Register = () => {
               onPress={openDatePicker}
               accessible={true}
               accessibilityRole='button'
-              accessibilityLabel='Date of Birth'
-            >
+              accessibilityLabel='Date of Birth'>
               <CustomTextInput
                 inputMode={'text'}
                 maxLength={200}
@@ -313,7 +309,7 @@ const Register = () => {
                     new Date().setFullYear(new Date().getFullYear() - 150)
                   )
                 }
-                onConfirm={(date) => {
+                onConfirm={date => {
                   setOpen(false);
                   handleDateChange(date);
                 }}
@@ -345,8 +341,7 @@ const Register = () => {
         {/* Footer */}
         <Animated.View
           entering={FadeInDown.delay(700).springify()}
-          style={styles.footer}
-        >
+          style={styles.footer}>
           <Text style={styles.footerTextTiltle}>
             By signing up, you agree to our{' '}
             <Text style={{ color: Colors.main.primary }}>Terms</Text> and{' '}
@@ -370,8 +365,7 @@ const Register = () => {
                 ? 'Complete all required fields to continue'
                 : 'Proceed to next step'
             }
-            accessibilityRole='button'
-          >
+            accessibilityRole='button'>
             <Text style={styles.footerBtnText}>Next</Text>
           </TouchableOpacity>
 
@@ -379,8 +373,7 @@ const Register = () => {
             onPress={() => router.navigate('/auth/login')}
             accessible={true}
             accessibilityLabel='Go to login'
-            accessibilityRole='link'
-          >
+            accessibilityRole='link'>
             <Text style={styles.footerText}>
               Already a member?{' '}
               <Text style={{ color: Colors.main.primary }}>Login</Text>
