@@ -228,7 +228,6 @@ const Register = () => {
               <Text style={styles.validationText}>Please select your bank</Text>
             )}
           </View>
-
           <View>
             <CustomTextInput
               inputMode={'email'}
@@ -249,7 +248,8 @@ const Register = () => {
                 Please enter a valid email address
               </Text>
             )}
-
+          </View>
+          <View>
             <CustomTextInput
               inputMode='numeric'
               maxLength={15}
