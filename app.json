@@ -55,6 +55,23 @@
         {
           "launchMode": "most-recent"
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ],
+      [
+        "expo-system-ui",
+        {
+          "statusBar": {
+            "barStyle": "dark-content",
+            "backgroundColor": "#ffffff"
+          }
+        }
       ]
     ],
     "experiments": {
