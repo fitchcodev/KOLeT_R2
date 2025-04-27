@@ -15,7 +15,7 @@ import HaedsetIc from '@/assets/images/svg/HaedsetIc';
 import UserSwitchIC from '@/assets/images/svg/UserSwitch';
 import LogoutIc from '@/assets/images/svg/LogoutIc';
 import StarIc from '@/assets/images/svg/StarIc';
-import { router } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import Modal from 'react-native-modal';
 import { hp } from '@/helpers/common';
 import CustomTextInput from '@/components/CustomTextInput';
@@ -32,6 +32,7 @@ const More = () => {
   const [rating, setRating] = useState(0);
   const { resetUser } = useContext(UserContext);
   const { clearTransaction } = useTransaction();
+  const navigation = useNavigation();
 
   // Simple logout handler
   const handleLogout = () => {
@@ -44,8 +45,14 @@ const More = () => {
     // Close modal
     setLogoutModalVisible(false);
 
-    // Navigate to login screen
-    router.replace('/auth/login');
+    // Clear all previous routes
+    router.dismissAll();
+
+    // Navigate to login screen while clearing all previous routes
+    navigation.getParent()?.reset({
+      index: 0,
+      routes: [{ name: 'auth/login' }],
+    });
   };
 
   return (
@@ -76,7 +83,7 @@ const More = () => {
             maxLength={1000}
             height={hp(10)}
             multiline={true}
-            placeholder="Leave a comment"
+            placeholder='Leave a comment'
             animate={FadeInDown.springify()}
           />
           <View style={{ flexDirection: 'row', gap: 10, marginVertical: 15 }}>
