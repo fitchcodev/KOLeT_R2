@@ -1,5 +1,4 @@
 import { User } from '@/contexts/UserContext';
-import { dateToString } from '@/helpers/common';
 import { useMutation } from '@tanstack/react-query';
 
 interface SignupParams {
@@ -54,6 +53,7 @@ const fetchAPI = async (
 
   try {
     const response = await fetch(url, options);
+
     const responseData = await response.json();
 
     if (!response.ok) {
@@ -61,7 +61,8 @@ const fetchAPI = async (
         response: {
           status: response.status,
           data: responseData,
-          responseMessage: responseData?.message,
+          responseMessage:
+            responseData?.message || responseData?.responseMessage,
         },
       };
     }
@@ -92,11 +93,9 @@ const catchError = (error: any) => {
 export const useSignupMutation = () => {
   const signupUser = async (userData: SignupParams): Promise<AuthResponse> => {
     try {
-      return await fetchAPI('/add.php', 'POST', {
+      return await fetchAPI('/add1.php', 'POST', {
         ...userData,
         model: 'users',
-        last_login: dateToString(new Date()),
-        jwt: '1234',
       });
     } catch (error) {
       throw error;
