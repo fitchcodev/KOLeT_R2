@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { hp, wp } from '@/helpers/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -33,8 +33,43 @@ const OtpScreen = () => {
     autoStart: false, // Don't start automatically
   });
 
-  const handleStartTimer = () => {
+  useEffect(() => {
+    // Start the timer immediately when the screen opens
+    if (!isActive) {
+      restart();
+    }
+  }, []);
+
+  const renderTimerText = () => {
+    if (seconds === 0) {
+      return (
+        <Text style={[styles.timerText, { color: Colors.main.error }]}>
+          Time expired!
+        </Text>
+      );
+    }
+
+    return (
+      <Text
+        style={[
+          styles.timerText,
+          {
+            fontSize: 16,
+            fontFamily: 'Montserrat-SemiBold',
+            color: seconds < 10 ? Colors.main.error : Colors.main.text,
+          },
+        ]}>
+        Time remaining: {formattedTime()} sec
+      </Text>
+    );
+  };
+
+  const handleResendOTP = () => {
+    // Restart the timer
     restart();
+
+    // Show feedback to user
+    Alert.alert('OTP Sent', 'A new OTP has been sent to your phone');
   };
 
   const onSubmit = () => {
@@ -46,10 +81,21 @@ const OtpScreen = () => {
       { ...payload },
       {
         onSuccess: data => {
-          router.push('/auth/login');
+          Alert.alert(
+            'Success!',
+            'Your account has been successfully verified',
+            [
+              {
+                text: "Let's Go",
+                onPress: () => {
+                  router.push('/auth/login');
+                },
+              },
+            ]
+          );
         },
         onError: error => {
-          Alert.alert('Oops!', 'There was an error verifying your OTP');
+          Alert.alert('Oops!', 'There was an error verifying your account');
           console.warn(error);
         },
       }
@@ -57,7 +103,7 @@ const OtpScreen = () => {
   };
 
   const { top } = useSafeAreaInsets();
-  const paddinTop = top > 0 ? top + 10 : 30;
+  const paddingTop = top > 0 ? top + 10 : 30;
 
   const otpInputRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const handleOTPEnter = (value: string, index: number) => {
@@ -77,7 +123,7 @@ const OtpScreen = () => {
   };
 
   return (
-    <View style={[styles.container, { paddingTop: paddinTop }]}>
+    <View style={[styles.container, { paddingTop }]}>
       <TouchableOpacity
         onPress={() => router.back()}
         style={{ width: '100%', paddingVertical: 5, paddingHorizontal: 20 }}>
@@ -143,18 +189,26 @@ const OtpScreen = () => {
             ))}
           </View>
           <View style={styles.timerCon}>
-            <Text style={styles.timerText}>
-              Time remaining: {formattedTime()} Sec
-            </Text>
+            {renderTimerText()}
             <TouchableOpacity
-              onPress={handleStartTimer}
-              disabled={isActive}
+              onPress={handleResendOTP}
+              disabled={isActive && seconds > 0}
               style={{
-                marginTop: 10,
-                opacity: isActive ? 0.5 : 1,
+                marginTop: 15,
+                padding: 10,
+                opacity: isActive && seconds > 0 ? 0.5 : 1,
               }}>
-              <Text style={[styles.timerText, { color: Colors.main.primary }]}>
-                Resend OTP
+              <Text
+                style={[
+                  styles.timerText,
+                  {
+                    color: Colors.main.primary,
+                    fontFamily: 'Montserrat-SemiBold',
+                  },
+                ]}>
+                {isActive && seconds > 0
+                  ? `Resend available in ${formattedTime()}`
+                  : 'Resend OTP'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -250,12 +304,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   timerCon: {
-    //backgroundColor: 'red',
     alignItems: 'center',
     marginBottom: 30,
+    backgroundColor: 'rgba(0,0,0,0.03)',
+    padding: 15,
+    borderRadius: 8,
   },
   timerText: {
     fontFamily: 'Montserrat-Regular',
+    fontSize: 16,
   },
   progressBar: {
     width: '100%',

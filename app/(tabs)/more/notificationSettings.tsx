@@ -15,7 +15,7 @@ const NotificationSettings = () => {
   const [isEnabledNewsAlert, setIsEnabledNewsAlert] = useState(true);
   return (
     <View style={[styles.container, { paddingTop: paddinTop }]}>
-        
+
       <View
         style={{
           width: "100%",
@@ -36,7 +36,7 @@ const NotificationSettings = () => {
             textAlign:'center',
 
           }}
-        >             
+        >
           Notification Settings
         </Text>
         <View style={{ flex: 1 }}></View>
@@ -45,10 +45,10 @@ const NotificationSettings = () => {
       {/* Settings iTems */}
       <View style={styles.itemsContainer}>
         <Pressable
-        
+
           style={styles.item}
         >
-          <View style={{gap:10}}> 
+          <View style={{gap:10}}>
              <Text style={styles.itemText}>Transaction Alerts</Text>
           <Text style={styles.itemDes}>Receive alerts for every transaction.</Text>
           </View>
@@ -59,13 +59,13 @@ const NotificationSettings = () => {
                   value={isEnabledTransAlert}
                 />
               </View>
-         
+
         </Pressable>
         <Pressable
-        
+
           style={styles.item}
         >
-          <View style={{gap:10}}> 
+          <View style={{gap:10}}>
              <Text style={styles.itemText}>Promotions and Offers</Text>
           <Text style={styles.itemDes}>Enjoy exclusive deals with timely notifications.</Text>
           </View>
@@ -76,13 +76,13 @@ const NotificationSettings = () => {
                   value={isEnabledOffersAlert}
                 />
               </View>
-         
+
         </Pressable>
         <Pressable
-        
+
           style={styles.item}
         >
-          <View style={{gap:10}}> 
+          <View style={{gap:10}}>
              <Text style={styles.itemText}>App Updates</Text>
           <Text style={styles.itemDes}>Stay current with the latest app features.</Text>
           </View>
@@ -93,15 +93,15 @@ const NotificationSettings = () => {
                   value={isEnableAppAlert}
                 />
               </View>
-         
+
         </Pressable>
         <Pressable
-        
+
           style={styles.item}
         >
-          <View style={{gap:10}}> 
+          <View style={{gap:10}}>
              <Text style={styles.itemText}>News and Updates</Text>
-          <Text style={styles.itemDes}>Stay connected with relevant Kolet news.</Text>
+          <Text style={styles.itemDes}>Stay connected with relevant KOLeT news.</Text>
           </View>
           <View style={{ transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }], }}>
                 <Switch
@@ -110,7 +110,7 @@ const NotificationSettings = () => {
                   value={isEnabledNewsAlert}
                 />
               </View>
-         
+
         </Pressable>
         </View>
 

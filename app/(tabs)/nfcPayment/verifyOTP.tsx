@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Colors } from '@/constants/Colors';
 import { hp, wp } from '@/helpers/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -19,6 +19,7 @@ import { router } from 'expo-router';
 import ArrowLftIC from '@/assets/images/svg/ArrowLftIC';
 import CustomTextInput from '@/components/CustomTextInput';
 import { useCountdown } from '@/hooks/useCountdown';
+import { Alert } from 'react-native';
 
 const verifyOTP = () => {
   const handleButton = () => {
@@ -36,8 +37,43 @@ const verifyOTP = () => {
     autoStart: false, // Don't start automatically
   });
 
-  const handleStartTimer = () => {
+  useEffect(() => {
+    // Start the timer immediately when the screen opens
+    if (!isActive) {
+      restart();
+    }
+  }, []);
+
+  const renderTimerText = () => {
+    if (seconds === 0) {
+      return (
+        <Text style={[styles.timerText, { color: Colors.main.error }]}>
+          Time expired!
+        </Text>
+      );
+    }
+
+    return (
+      <Text
+        style={[
+          styles.timerText,
+          {
+            fontSize: 16,
+            fontFamily: 'Montserrat-SemiBold',
+            color: seconds < 10 ? Colors.main.error : Colors.main.text,
+          },
+        ]}>
+        Time remaining: {formattedTime()} sec
+      </Text>
+    );
+  };
+
+  const handleResendOTP = () => {
+    // Restart the timer
     restart();
+
+    // Show feedback to user
+    Alert.alert('OTP Sent', 'A new OTP has been sent to your phone');
   };
 
   return (
@@ -83,19 +119,27 @@ const verifyOTP = () => {
             value={otpValues}
           />
           <View style={styles.timerCon}>
-            <Text style={styles.timerText}>
-              Remaining {formattedTime()} Sec
-            </Text>
+            {renderTimerText()}
             <TouchableOpacity
-              disabled={isActive}
-              onPress={handleStartTimer}
+              onPress={handleResendOTP}
+              disabled={isActive && seconds > 0}
               style={{
-                marginTop: 10,
-                backgroundColor: isActive ? 'gray' : Colors.main.primary,
+                marginTop: 15,
                 padding: 10,
-                borderRadius: 5,
+                opacity: isActive && seconds > 0 ? 0.5 : 1,
               }}>
-              <Text style={{ color: 'white' }}>Resend OTP</Text>
+              <Text
+                style={[
+                  styles.timerText,
+                  {
+                    color: Colors.main.primary,
+                    fontFamily: 'Montserrat-SemiBold',
+                  },
+                ]}>
+                {isActive && seconds > 0
+                  ? `Resend available in ${formattedTime()}`
+                  : 'Resend OTP'}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -171,12 +215,15 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   timerCon: {
-    //backgroundColor: 'red',
     alignItems: 'center',
-    marginBottom: 50,
+    marginBottom: 30,
+    backgroundColor: 'rgba(0,0,0,0.03)',
+    padding: 15,
+    borderRadius: 8,
   },
   timerText: {
     fontFamily: 'Montserrat-Regular',
+    fontSize: 16,
   },
   progressBar: {
     width: '100%',

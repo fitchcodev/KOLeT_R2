@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react';
+import { createContext, ReactNode, useState } from 'react';
 
 export const UserContext = createContext<any>(undefined);
 
@@ -11,15 +11,22 @@ export type User = {
   username: string;
 };
 
-export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState<User>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    dateOfBirth: '',
-    username: '',
-  });
+// Add a properly typed initial state for reset
+const initialState: User = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  dateOfBirth: '',
+  username: '',
+};
+
+interface UserProviderProps {
+  children: ReactNode;
+}
+
+export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User>(initialState);
 
   const updateUser = (newInfo: User) => {
     setUser(prevUser => ({
@@ -30,10 +37,16 @@ export const UserProvider = ({ children }) => {
   const saveUser = () => {
     setUser(prevUser => prevUser);
   };
+
+  const resetUser = () => {
+    setUser(initialState);
+  };
+
   const value = {
     user,
     saveUser,
     updateUser,
+    resetUser,
   };
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

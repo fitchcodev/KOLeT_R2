@@ -1,28 +1,49 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
-import axios, { AxiosError } from 'axios';
 
 const API_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
-const api = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const fetchAPI = async (endpoint: string, method = 'GET', data = null) => {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_URL}${endpoint}`;
+
+  const options: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: undefined,
+  };
+
+  if (data) {
+    options.body = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(url, options);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.responseMessage ||
+          errorData.message ||
+          'Unknown error occurred'
+      );
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('API Error:', error);
+    throw new Error(error.message || 'Unknown error occurred');
+  }
+};
 
 export const useAddAccount = (onSuccess, onError) => {
   const requestFn = async data => {
     try {
-      const response = await api.post('/add.php', data);
-      return response.data;
-    } catch (err) {
-      const error = err as AxiosError | Error | any;
+      return await fetchAPI('/add1.php', 'POST', data);
+    } catch (error) {
       console.error('API Error:', error);
-      throw new Error(
-        error.response?.data?.message ||
-          `Error: ${error.message || 'Unknown error occurred'}`
-      );
+      throw error;
     }
   };
 
@@ -40,21 +61,40 @@ export const useAddAccount = (onSuccess, onError) => {
   return mutation;
 };
 
+export const useGetAccountName = () => {
+  const requestFn = async data => {
+    try {
+      return await fetchAPI('/add2.php', 'POST', data);
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  };
+
+  const mutation = useMutation({
+    mutationFn: requestFn,
+    onSuccess: data => {
+      console.log('Account found successfully', data);
+    },
+    onError: error => {
+      console.error('Error finding account:', error);
+    },
+  });
+
+  return mutation;
+};
+
 export const useGetBankList = (options = {}) => {
   const queryKey = ['bankList'];
 
   const fetchBankList = async () => {
     try {
-      const response = await api.get('/get_bank_list_paystack.php');
+      const response = await fetchAPI('https://api.paystack.co/bank', 'GET');
 
-      return response.data.response.data;
-    } catch (err) {
-      const error = err as AxiosError | Error | any;
+      return response.data;
+    } catch (error) {
       console.error('API Error:', error);
-      throw new Error(
-        error.response?.data?.message ||
-          `Error: ${error.message || 'Failed to fetch bank list'}`
-      );
+      throw new Error(error.message || 'Failed to fetch bank list');
     }
   };
 

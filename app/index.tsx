@@ -25,28 +25,28 @@ import { useRouter } from "expo-router";
 const slides = [
   {
     id: "1",
-    title: <Text>Welcome to <Text style={{color: Colors.main.primary}}>KOlet!</Text> </Text>,
+    title: <Text>Welcome to <Text style={{color: Colors.main.primary}}>KOLeT!</Text> </Text>,
     description: "Tap. Pay. Enjoy Your \nseamless journey begins.",
     image: require("@/assets/images/image1.png"),
   },
   {
     id: "2",
-    title: <Text>Discover <Text style={{color: Colors.main.primary}}>KOlet's </Text> Capabilities</Text>,
+    title: <Text>Discover <Text style={{color: Colors.main.primary}}>KOLeT's </Text> Capabilities</Text>,
     description:
-      "Explore the features that make \nKOlet your go-to payment solution.",
+      "Explore the features that make \nKOLeT your go-to payment solution.",
     image: require("@/assets/images/image2.png"),
   },
   {
     id: "3",
     title: "Swift and Efficient Payments",
     description:
-      "Experience the speed of KOlet for \nquick and hassle-free payments.",
+      "Experience the speed of KOLeT for \nquick and hassle-free payments.",
     image: require("@/assets/images/image4.png"),
   },
   {
     id: "4",
     title: "Your Security Matters",
-    description: "KOlet ensures your transactions \nare secure and worry-free.",
+    description: "KOLeT ensures your transactions \nare secure and worry-free.",
     image: require("@/assets/images/image3.png"),
   },
 ];
@@ -99,7 +99,7 @@ const index = () => {
     // Clear interval when the component unmounts or when slides are done
     return () => clearInterval(interval);
   }, [currentIndex]);
-  
+
 
   return (
     <View style={styles.container}>
@@ -114,7 +114,7 @@ const index = () => {
         onScroll={(e) => {
           const index = Math.round(e.nativeEvent.contentOffset.x / width);
           setCurrentIndex(index);
-        }}       
+        }}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
       />
@@ -158,7 +158,7 @@ const index = () => {
 <View  style={{
     position: 'absolute',
     top: hp(28), // Apply it at the top of the screen
-   
+
   }}
 >
   <Image  source={require('@/assets/images/blur.png')}/>
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
   buttonTwo: {
     backgroundColor: 'transparent',
-    
+
     borderWidth: 2,
     borderColor: Colors.main.primary,
     paddingVertical: 15,

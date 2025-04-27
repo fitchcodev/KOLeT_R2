@@ -56,13 +56,12 @@ const Login = () => {
   const checkButtonDisabled = () => {
     return !(validateNigerianPhoneNumber(phone) || password.length < 4);
   };
-  //console.log(checkButtonDisabled())
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={[styles.container, { paddingTop: paddinTop }]}>
-      <StatusBar style="dark" />
+      <StatusBar style='dark' />
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -70,7 +69,7 @@ const Login = () => {
           width: wp(100),
           gap: 15,
         }}
-        keyboardDismissMode="interactive"
+        keyboardDismissMode='interactive'
         showsVerticalScrollIndicator={false}
         horizontal={false}>
         {/* Heading */}
@@ -87,13 +86,13 @@ const Login = () => {
         {/* Form */}
         <View style={styles.formContainer}>
           <CustomTextInput
-            inputMode="numeric"
+            inputMode='numeric'
             maxLength={11}
             value={phone}
             onChange={setPhone}
-            placeholder="Phone "
-            keyboardType="phone-pad"
-            iconName="phone"
+            placeholder='Phone '
+            keyboardType='phone-pad'
+            iconName='phone'
             iconHieght={18}
             iconWidth={16}
           />
@@ -103,7 +102,7 @@ const Login = () => {
             setShowconfirmPassword={setShowPassword}
             value={password}
             onChange={setPassword}
-            placeholder="Password"
+            placeholder='Password'
             iconName={showPassword ? 'viewOn' : 'viewOff'}
             iconWidth={20}
             iconHieght={20}
@@ -131,7 +130,7 @@ const Login = () => {
           style={styles.footer}>
           <TouchableOpacity
             disabled={checkButtonDisabled() || isPending}
-            onPress={() => router.push('/(tabs)/(top-tabs)')}
+            onPress={onSubmit}
             style={[
               styles.footerBtn,
               {
@@ -146,7 +145,7 @@ const Login = () => {
           {error && (
             <Text style={{ color: 'red', fontSize: 12 }}>
               There was an error logging you in. Please try again later{' '}
-              {error.message}
+              {error.response.message}
             </Text>
           )}
           <Text

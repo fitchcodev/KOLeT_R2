@@ -52,11 +52,11 @@ export const validateNigerianPhoneNumber = (phone: string) => {
 };
 
 export const validateDate = (date: Date) => {
-  // At least 18 years old
+  // At least 16 years old
   const today = new Date();
   const age = today.getFullYear() - date.getFullYear();
 
-  return age >= 18;
+  return age >= 16;
 };
 
 export const dateToString = (date: Date) => {

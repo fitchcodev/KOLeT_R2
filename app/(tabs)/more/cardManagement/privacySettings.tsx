@@ -31,7 +31,7 @@ const PrivacySettings = () => {
               fontFamily: "Montserrat-Regular",
               color: Colors.main.primary,
               textAlign:'center',
-  
+
             }}
           >
             Privacy Settings
@@ -43,7 +43,7 @@ const PrivacySettings = () => {
                 <View>
                     <Text style={styles.toogleBoxText}>User Data Agreement</Text>
                 </View>
-                
+
                 <View style={{transform: [{ scaleX: 0.5 }, { scaleY: 0.5 }],  }}>
                 <Switch
                   trackColor={{ false: "#767577", true: "#81b0ff" }}
@@ -52,7 +52,7 @@ const PrivacySettings = () => {
                 />
               </View>
             </View>
-            <Text style={styles.text}>By clicking on the toggle button above, you agree to allow Kolet Tap and Pay to securely store and share your data with trusted third parties for enhanced services and personalized experiences. Your privacy and security are our top priorities. Review our privacy policy for more details.</Text>
+            <Text style={styles.text}>By clicking on the toggle button above, you agree to allow KOLeT Tap and Pay to securely store and share your data with trusted third parties for enhanced services and personalized experiences. Your privacy and security are our top priorities. Review our privacy policy for more details.</Text>
         </View>
     </View>
   )

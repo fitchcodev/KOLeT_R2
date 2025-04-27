@@ -16,20 +16,21 @@ import NotificationModal from '@/components/NotificationModal';
 import NfcManager from 'react-native-nfc-manager';
 import Modal from 'react-native-modal';
 import { Modal as RnModal } from 'react-native';
-import { PaymentMethod, useTransaction } from '@/contexts/ReceiptContext';
+import { PaymentMethod, useTransaction } from '@/contexts/TransactionContext';
 import { BlurView } from 'expo-blur';
 import { UserContext } from '@/contexts/UserContext';
 
 const Keypad = () => {
   const [narration, setNarration] = useState('');
   const [amount, setAmount] = useState(0.0);
+  const [formattedAmount, setFormattedAmount] = useState('₦0.00');
   const [editable, setEditable] = useState(false);
   const [inputBorderColor, setInputBorderColor] = useState(Colors.main.border);
   const textInputRef = useRef(null);
   const [modalNFCVisible, setModalNFCVisible] = useState<boolean>(false);
   const [nfcSupported, setNFCSupported] = useState<boolean>(false);
   const [modalNONNFCVisible, setModalNONNFCVisible] = useState<boolean>(false);
-  const { saveTransaction } = useTransaction();
+  const { saveTransaction, getTransaction } = useTransaction();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>();
   const { user } = useContext(UserContext);
@@ -63,26 +64,38 @@ const Keypad = () => {
     });
   };
 
+  // Function to format the amount
+  useEffect(() => {
+    const formatted = amount.toLocaleString('en-NG', {
+      style: 'currency',
+      currency: 'NGN',
+    });
+    setFormattedAmount(formatted);
+  }, [amount]);
+
   // Function to clear the amount
   const handleClearPress = () => {
     setAmount(0.0);
   };
 
   // payment Navigate
-  const handlePaymentNaviage = () => {
-    saveTransaction({
+  const handlePaymentNavigate = () => {
+    const transactionData = {
       id: generateQRId(),
       amount,
       narration,
       paymentMethod,
-      status: 'Pending',
+      formattedAmount,
+      status: 'Pending' as const,
       date: new Date(),
       user: {
         name: `${user?.firstName} ${user?.lastName}`,
         phone: user?.phone,
         id: user?.id,
       },
-    });
+    };
+
+    saveTransaction(transactionData);
 
     if (amount > 15000) {
       setModalVisible(true);
@@ -90,18 +103,18 @@ const Keypad = () => {
       router.push({
         pathname: '/(tabs)/nfcPayment',
       });
+      // Clear fields immediately after navigation call
+      setAmount(0.0);
+      setNarration('');
     } else {
       router.push({
         pathname: '/(tabs)/payment/cardDetailsForm',
       });
+      // Clear fields immediately after navigation call
+      setAmount(0.0);
+      setNarration('');
     }
   };
-
-  // Format the amount with commas and limit to 2 decimal places
-  const formattedAmount = amount.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 
   // Focus the TextInput when editable is set to true
   useEffect(() => {
@@ -136,6 +149,10 @@ const Keypad = () => {
   const handleModalClose = () => {
     setModalVisible(false);
     router.navigate('/(tabs)/payment/cardDetailsForm');
+
+    // Clear fields immediately after navigation call
+    setAmount(0.0);
+    setNarration('');
   };
 
   return (
@@ -208,7 +225,7 @@ const Keypad = () => {
           keyboardDismissMode="interactive"
           contentContainerStyle={styles.container}>
           {/* Your scrollable content goes here */}
-          <Text style={styles.amount}>₦{formattedAmount}</Text>
+          <Text style={styles.amount}>{formattedAmount}</Text>
           <Pressable
             onPress={() => {}} // Removed toggle since we're already in edit mode
             style={[
@@ -239,7 +256,7 @@ const Keypad = () => {
             handleNumberPress={handleNumberPress}
           />
           <TouchableOpacity
-            onPress={handlePaymentNaviage}
+            onPress={handlePaymentNavigate}
             disabled={amount <= 0}
             style={[
               styles.payButton,
@@ -249,14 +266,14 @@ const Keypad = () => {
               },
             ]}>
             <Text style={styles.payButtonText}>
-              Pay{amount > 0 ? ` ₦${formattedAmount}` : ''}
+              Pay{amount > 0 ? ` ${formattedAmount}` : ''}
             </Text>
           </TouchableOpacity>
         </ScrollView>
       ) : (
         <View style={styles.container}>
           {/* Your non-scrollable content goes here */}
-          <Text style={styles.amount}>₦{formattedAmount}</Text>
+          <Text style={styles.amount}>{formattedAmount}</Text>
           <Pressable
             onPress={() => setEditable(true)}
             style={[
@@ -278,7 +295,7 @@ const Keypad = () => {
             handleNumberPress={handleNumberPress}
           />
           <TouchableOpacity
-            onPress={handlePaymentNaviage}
+            onPress={handlePaymentNavigate}
             disabled={amount <= 0}
             style={[
               styles.payButton,
@@ -288,7 +305,7 @@ const Keypad = () => {
               },
             ]}>
             <Text style={styles.payButtonText}>
-              Pay{amount > 0 ? ` ₦${formattedAmount}` : ''}
+              Pay{amount > 0 ? ` ${formattedAmount}` : ''}
             </Text>
           </TouchableOpacity>
         </View>

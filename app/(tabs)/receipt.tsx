@@ -15,18 +15,21 @@ import SuccesIC from '@/assets/images/svg/SuccesIC';
 import ShareIC from '@/assets/images/svg/ShareIC';
 import ShareICWhite from '@/assets/images/svg/ShareICWhite';
 import { hp, toTransactionDate } from '@/helpers/common';
-import { TransactionData, useTransaction } from '@/contexts/ReceiptContext';
+import { useTransaction } from '@/contexts/TransactionContext';
 
 const Receipt = () => {
   const { top } = useSafeAreaInsets();
-  const { getTransaction, saveTransaction, clearTransaction } =
-    useTransaction();
-  const [transaction, setTransaction] = useState<TransactionData>();
+  const {
+    saveTransaction,
+    clearTransaction,
+    transaction: contextTransaction,
+  } = useTransaction();
+  const [transaction, setTransaction] = useState(contextTransaction);
 
   // Mark local transaction as completed
   // and save it to the context
   useEffect(() => {
-    const transactionData = getTransaction();
+    const transactionData = contextTransaction;
     if (transactionData) {
       const updatedTransaction = {
         ...transactionData,
@@ -69,34 +72,40 @@ const Receipt = () => {
       <View style={styles.header}>
         <SuccesIC width={70} height={70} />
         <Text style={styles.total}>Total</Text>
-        <Text style={styles.amount}>₦{transaction?.amount}</Text>
+        <Text style={styles.amount}>{contextTransaction?.formattedAmount}</Text>
       </View>
 
       {/* Block */}
       <View style={styles.block}>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Name</Text>
-          <Text style={styles.blockItemText}>{transaction?.user.name}</Text>
+          <Text style={styles.blockItemText}>
+            {contextTransaction?.user.name}
+          </Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Date</Text>
           <Text style={styles.blockItemText}>
-            {toTransactionDate(new Date(transaction?.date!))}
+            {toTransactionDate(new Date(contextTransaction?.date!))}
           </Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Amount</Text>
 
-          <Text style={styles.blockItemText}>₦{transaction?.amount}</Text>
+          <Text style={styles.blockItemText}>
+            {contextTransaction?.formattedAmount}
+          </Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Method</Text>
-          <Text style={styles.blockItemText}>{transaction?.paymentMethod}</Text>
+          <Text style={styles.blockItemText}>
+            {contextTransaction?.paymentMethod}
+          </Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Transaction ID</Text>
 
-          <Text style={styles.blockItemText}>{transaction?.id}</Text>
+          <Text style={styles.blockItemText}>{contextTransaction?.id}</Text>
         </View>
         <View style={styles.blockItem}>
           <Text style={styles.blockItemDes}>Status</Text>
@@ -106,7 +115,7 @@ const Receipt = () => {
       </View>
       {/* Footer */}
       <View style={styles.footer}>
-        <Pressable style={styles.footerBtn1}>
+        <Pressable style={styles.footerBtn1} onPress={() => clearTransaction()}>
           <ShareICWhite width={20} height={20} />
           <Text style={styles.footerBtn1Text}>Share</Text>
         </Pressable>
