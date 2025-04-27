@@ -145,7 +145,7 @@ const Login = () => {
           {error && (
             <Text style={{ color: 'red', fontSize: 12 }}>
               There was an error logging you in. Please try again later{' '}
-              {error.message}
+              {error.response.message}
             </Text>
           )}
           <Text

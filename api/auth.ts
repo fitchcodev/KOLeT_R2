@@ -61,33 +61,23 @@ const fetchAPI = async (
         response: {
           status: response.status,
           data: responseData,
-          responseMessage:
-            responseData?.message || responseData?.responseMessage,
+          message:
+            responseData?.message || responseData?.responseMessage || responseData?.responsemessage
         },
       };
     }
 
     return responseData;
-  } catch (error: any) {
+  } catch (error: Error) {
     return catchError(error);
   }
 };
 
 // Global error handler
-const catchError = (error: any) => {
+const catchError = (error: Error) => {
   console.error('API error:', error);
 
-  if (error.response) {
-    throw new Error(
-      error.response.responseMessage ||
-        error.response.data?.message ||
-        'Server error occurred'
-    );
-  } else if (error.request) {
-    throw new Error('No response from server. Please check your connection.');
-  } else {
-    throw new Error(error.message || 'An error occurred during the request');
-  }
+  throw error;
 };
 
 export const useSignupMutation = () => {
