@@ -105,7 +105,7 @@ export const useSignupMutation = () => {
 
   const mutation = useMutation({
     mutationFn: signupUser,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('Signup successful', data);
     },
   });
@@ -129,7 +129,7 @@ export const useConfirmOTPMutation = () => {
 
   const mutation = useMutation({
     mutationFn: confirmOTPSignup,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('OTP confirmation successful', data);
     },
   });
@@ -149,7 +149,7 @@ export const useSetPasswordMutation = () => {
 
   const mutation = useMutation({
     mutationFn: setPassword,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('Set password successful', data);
     },
   });
@@ -167,7 +167,7 @@ export const useLoginMutation = () => {
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('Login successful', data);
     },
   });
