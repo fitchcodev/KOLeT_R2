@@ -3,14 +3,15 @@ import { useMutation } from '@tanstack/react-query';
 
 const API_URL = process.env.EXPO_PUBLIC_BASE_URL;
 
-const fetchAPI = async (endpoint, method = 'GET', data = null) => {
+const fetchAPI = async (endpoint: string, method = 'GET', data = null) => {
   const url = endpoint.startsWith('http') ? endpoint : `${API_URL}${endpoint}`;
 
-  const options = {
+  const options: RequestInit = {
     method,
     headers: {
       'Content-Type': 'application/json',
     },
+    body: undefined,
   };
 
   if (data) {
@@ -35,7 +36,7 @@ const fetchAPI = async (endpoint, method = 'GET', data = null) => {
 };
 
 export const useAddAccount = (onSuccess, onError) => {
-  const requestFn = async (data) => {
+  const requestFn = async data => {
     try {
       return await fetchAPI('/add1.php', 'POST', data);
     } catch (error) {
@@ -46,11 +47,11 @@ export const useAddAccount = (onSuccess, onError) => {
 
   const mutation = useMutation({
     mutationFn: requestFn,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('Account added successfully:', data);
       if (onSuccess) onSuccess(data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error adding account:', error);
       if (onError) onError(error);
     },
@@ -59,7 +60,7 @@ export const useAddAccount = (onSuccess, onError) => {
 };
 
 export const useGetAccountName = () => {
-  const requestFn = async (data) => {
+  const requestFn = async data => {
     try {
       return await fetchAPI('/add2.php', 'POST', data);
     } catch (error) {
@@ -70,10 +71,10 @@ export const useGetAccountName = () => {
 
   const mutation = useMutation({
     mutationFn: requestFn,
-    onSuccess: (data) => {
+    onSuccess: data => {
       console.log('Account found successfully', data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Error finding account:', error);
     },
   });
@@ -86,7 +87,9 @@ export const useGetBankList = (options = {}) => {
 
   const fetchBankList = async () => {
     try {
-      return await fetchAPI('https://api.paystack.co/bank', 'GET');
+      const response = await fetchAPI('https://api.paystack.co/bank', 'GET');
+
+      return response.data;
     } catch (error) {
       console.error('API Error:', error);
       throw new Error(error.message || 'Failed to fetch bank list');
