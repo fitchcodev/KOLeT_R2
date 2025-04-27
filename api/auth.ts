@@ -48,7 +48,11 @@ const catchError = (error: any) => {
   console.error('API error:', error);
 
   if (error.response) {
-    throw new Error(error.response.data?.message || 'Server error occurred');
+    throw new Error(
+      error.response.responseMessage ||
+        error.response.data?.message ||
+        'Server error occurred'
+    );
   } else if (error.request) {
     throw new Error('No response from server. Please check your connection.');
   } else {
