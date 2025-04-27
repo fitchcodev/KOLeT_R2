@@ -24,7 +24,9 @@ const fetchAPI = async (endpoint: string, method = 'GET', data = null) => {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
-        errorData.message || `Error: HTTP status ${response.status}`
+        errorData.responseMessage ||
+          errorData.message ||
+          'Unknown error occurred'
       );
     }
 
