@@ -162,55 +162,59 @@ const Register = () => {
           style={styles.heading}
         >
           <Text style={styles.headingTextTitle}>
-            Add Your{' '}
-            <Text style={{ color: Colors.main.primary }}>Bank Details</Text>{' '}
+            Sign Up for{' '}
+            <Text style={{ color: Colors.main.primary }}>Kolet</Text>{' '}
           </Text>
           <Text style={styles.headingTextDescript}>
-            Link your bank account to start using Kolet for seamless
-            transactions
+            Unlock the future of convenient transactions with Kolet. Sign up
+            now!
           </Text>
         </Animated.View>
-        <View>
-          <CustomTextInput
-            inputMode='numeric'
-            maxLength={10}
-            value={accountNumber}
-            onChange={(text) => {
-              setAccountNumber(text);
-              setAccountNumberTouched(true);
-            }}
-            placeholder='Bank Account Number'
-            keyboardType='number-pad'
-            iconName='credit-card'
-            iconHieght={15}
-            iconWidth={15}
-          />
-          {accountNumberTouched && accountNumber.length < 10 && (
-            <Text style={styles.validationText}>
-              Please enter a valid 10-digit account number
-            </Text>
-          )}
-
-          {accountNumber.length === 10 && selectedBank && (
-            <View style={styles.accountNameContainer}>
-              {isLoadingAccountName ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size='small' color={Colors.main.primary} />
-                  <Text style={styles.loadingText}>
-                    Fetching account name...
-                  </Text>
-                </View>
-              ) : accountName ? (
-                <Text style={styles.accountNameText}>{accountName}</Text>
-              ) : accountNameError ? (
-                <Text style={styles.validationText}>
-                  Could not verify account. Please check details and try again.
-                </Text>
-              ) : null}
-            </View>
-          )}
-        </View>
         <View style={styles.formContainer}>
+          <View>
+            <CustomTextInput
+              inputMode='numeric'
+              maxLength={10}
+              value={accountNumber}
+              onChange={(text) => {
+                setAccountNumber(text);
+                setAccountNumberTouched(true);
+              }}
+              placeholder='Bank Account Number'
+              keyboardType='number-pad'
+              iconName='credit-card'
+              iconHieght={15}
+              iconWidth={15}
+            />
+            {accountNumberTouched && accountNumber.length < 10 && (
+              <Text style={styles.validationText}>
+                Please enter a valid 10-digit account number
+              </Text>
+            )}
+
+            {accountNumber.length === 10 && selectedBank && (
+              <View style={styles.accountNameContainer}>
+                {isLoadingAccountName ? (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator
+                      size='small'
+                      color={Colors.main.primary}
+                    />
+                    <Text style={styles.loadingText}>
+                      Fetching account name...
+                    </Text>
+                  </View>
+                ) : accountName ? (
+                  <Text style={styles.accountNameText}>{accountName}</Text>
+                ) : accountNameError ? (
+                  <Text style={styles.validationText}>
+                    Could not verify account. Please check details and try
+                    again.
+                  </Text>
+                ) : null}
+              </View>
+            )}
+          </View>
           <View>
             <BankInput
               selectedBank={selectedBank}
